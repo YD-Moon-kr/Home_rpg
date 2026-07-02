@@ -1,4 +1,4 @@
-const CACHE_NAME = 'chore-rpg-v6'; // 캐시 버전을 v6로 상향하여 프로필 카드 상단 배치 및 팝오버 겹침 방지 레이어 패치 배포
+const CACHE_NAME = 'chore-rpg-v7'; // 캐시 버전을 v7로 상향하여 정밀 핀 위치 이동 및 쓰레기통 오브젝트 합성 버전 배포
 const ASSETS = [
   './',
   './index.html',
