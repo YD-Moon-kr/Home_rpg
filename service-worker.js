@@ -1,4 +1,4 @@
-const CACHE_NAME = 'chore-rpg-v2'; // 버전을 v2로 올려 캐시 갱신 유도
+const CACHE_NAME = 'chore-rpg-v3'; // 버전을 v3로 올려 최신 서비스 워커 설치 강제화
 const ASSETS = [
   './',
   './index.html',
@@ -15,10 +15,10 @@ self.addEventListener('install', event => {
       return cache.addAll(ASSETS);
     })
   );
-  self.skipWaiting();
+  self.skipWaiting(); // 새로운 서비스 워커를 발견하면 대기하지 않고 즉시 활성화
 });
 
-// 활성화 이벤트 - 구버전 v1 캐시 강제 삭제
+// 활성화 이벤트 - 구버전 캐시 정리
 self.addEventListener('activate', event => {
   event.waitUntil(
     caches.keys().then(keys => {
@@ -35,12 +35,11 @@ self.addEventListener('activate', event => {
   self.clients.claim();
 });
 
-// 페치 이벤트 - Network First (네트워크 우선) 전략으로 수정 (캐시 고착화 해결)
+// 페치 이벤트 - 네트워크 우선 (Network First) 전략
 self.addEventListener('fetch', event => {
   event.respondWith(
     fetch(event.request)
       .then(response => {
-        // 네트워크 응답이 정상이면 캐시를 최신으로 갱신하고 반환
         if (response && response.status === 200 && response.type === 'basic') {
           const responseToCache = response.clone();
           caches.open(CACHE_NAME).then(cache => {
@@ -50,7 +49,6 @@ self.addEventListener('fetch', event => {
         return response;
       })
       .catch(() => {
-        // 네트워크 연결 실패 시(오프라인)에만 저장된 캐시 데이터 반환
         return caches.match(event.request);
       })
   );

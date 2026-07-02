@@ -2379,11 +2379,40 @@
         window.onload = function() {
             loadGame();
             
-            // PWA 서비스 워커 등록
+            // PWA 서비스 워커 등록 (스마트 업데이트 & 자동 리로드 탑재)
             if ('serviceWorker' in navigator) {
-                navigator.serviceWorker.register('./service-worker.js')
-                    .then(reg => console.log('Service Worker registered successfully!', reg))
-                    .catch(err => console.log('Service Worker registration failed.', err));
+                navigator.serviceWorker.register('./service-worker.js').then(reg => {
+                    console.log('Service Worker registered successfully!', reg);
+                    
+                    // 주기적으로 깃허브 원격 서버에서 서비스 워커 변경 체크
+                    reg.update();
+
+                    // 서비스 워커 업데이트가 감지되었을 때 자동 새로고침 처리
+                    reg.onupdatefound = () => {
+                        const installingWorker = reg.installing;
+                        if (installingWorker) {
+                            installingWorker.onstatechange = () => {
+                                if (installingWorker.state === 'installed') {
+                                    if (navigator.serviceWorker.controller) {
+                                        console.log('New update available! Reloading page...');
+                                        window.location.reload();
+                                    }
+                                }
+                            };
+                        }
+                    };
+                }).catch(err => {
+                    console.log('Service Worker registration failed.', err);
+                });
+
+                // 제어권이 새로 활성화되는 순간 페이지 새로고침
+                let refreshing = false;
+                navigator.serviceWorker.addEventListener('controllerchange', () => {
+                    if (!refreshing) {
+                        refreshing = true;
+                        window.location.reload();
+                    }
+                });
             }
         };
     </script>
