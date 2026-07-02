@@ -1498,7 +1498,7 @@
             <div class="card" style="padding: 16px 20px;">
                 <div class="character-profile">
                     <div class="avatar-container">
-                        <img src="character_avatar.jpg" alt="Avatar" id="char-avatar" class="avatar-image" onerror="this.src='https://api.dicebear.com/7.x/pixel-art/svg?seed=cleaner'">
+                        <img src="character_avatar.jpg" alt="Avatar" id="char-avatar" class="avatar-image" onerror="this.src='https://api.dicebear.com/7.x/pixel-art/svg?seed=cleaner'" onclick="onAvatarClick()" style="cursor: pointer;">
                         <div class="level-badge" id="char-level">Lv.1</div>
                     </div>
                     
@@ -1741,6 +1741,54 @@
             <div class="modal-footer">
                 <button class="btn-modal-cancel" onclick="closeAddFoodModal()">취소</button>
                 <button class="btn-action complete" onclick="submitAddFoodForm()" style="padding: 10px 20px;">던전에 보관</button>
+            </div>
+        </div>
+    </div>
+
+    <!-- 🛠️ [신규 추가] 비상 모험가 데이터 복구 모달 창 -->
+    <div class="modal-overlay" id="recovery-modal" onclick="onRecoveryModalOverlayClick(event)">
+        <div class="modal-content" style="max-width: 400px;">
+            <div class="modal-header">🛠️ 모험가 복구 관리 도구</div>
+            <div style="font-size: 0.72rem; color: var(--text-muted); margin-bottom: 12px; line-height: 1.4;">
+                브라우저나 PWA 캐시 문제로 레벨/골드가 소실되었을 경우 복구하는 툴입니다. 복구하고자 하는 수치를 직접 입력해 주세요.
+            </div>
+            <div class="form-group">
+                <label for="recovery-level-input">🎯 레벨 (Level)</label>
+                <input type="number" id="recovery-level-input" min="1" max="100" value="1" style="width: 100%; box-sizing: border-box;">
+            </div>
+            <div class="form-group">
+                <label for="recovery-gold-input">🪙 골드 (Gold)</label>
+                <input type="number" id="recovery-gold-input" min="0" max="99999" value="0" style="width: 100%; box-sizing: border-box;">
+            </div>
+            <div class="form-group">
+                <label style="margin-bottom: 6px; display: block;">🎒 보유 아이템 복구</label>
+                <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 8px; background: rgba(0,0,0,0.2); padding: 10px; border-radius: 8px; max-height: 120px; overflow-y: auto;">
+                    <label style="display: flex; align-items: center; gap: 4px; font-size: 0.75rem; cursor: pointer;">
+                        <input type="checkbox" id="rec-item-broom" checked disabled> 🧹 빗자루 (기본)
+                    </label>
+                    <label style="display: flex; align-items: center; gap: 4px; font-size: 0.75rem; cursor: pointer;">
+                        <input type="checkbox" id="rec-item-crown"> 👑 왕관
+                    </label>
+                    <label style="display: flex; align-items: center; gap: 4px; font-size: 0.75rem; cursor: pointer;">
+                        <input type="checkbox" id="rec-item-glasses"> 🕶️ 선글라스
+                    </label>
+                    <label style="display: flex; align-items: center; gap: 4px; font-size: 0.75rem; cursor: pointer;">
+                        <input type="checkbox" id="rec-item-ribbon"> 🎀 리본
+                    </label>
+                    <label style="display: flex; align-items: center; gap: 4px; font-size: 0.75rem; cursor: pointer;">
+                        <input type="checkbox" id="rec-item-shield"> 🛡️ 방패
+                    </label>
+                    <label style="display: flex; align-items: center; gap: 4px; font-size: 0.75rem; cursor: pointer;">
+                        <input type="checkbox" id="rec-item-sword"> 🍳 성검
+                    </label>
+                    <label style="display: flex; align-items: center; gap: 4px; font-size: 0.75rem; cursor: pointer;">
+                        <input type="checkbox" id="rec-item-mantle"> 🧥 망토
+                    </label>
+                </div>
+            </div>
+            <div class="modal-footer" style="margin-top: 16px;">
+                <button class="btn-modal-cancel" onclick="closeRecoveryModal()">닫기</button>
+                <button class="btn-action complete" onclick="applyRecoveryData()" style="padding: 10px 15px; font-weight: 700; background: var(--color-primary); color: #000;">🛠️ 복구 적용하기</button>
             </div>
         </div>
     </div>
@@ -2500,6 +2548,172 @@
                 saveGame();
                 updateUI();
             }
+        }
+
+        // ==========================================
+        // 5-1. [신규 추가] 매일 자정(00시) 자동 리셋 로직
+        // ==========================================
+        function getTodayString() {
+            const date = new Date();
+            const offset = date.getTimezoneOffset() * 60000;
+            const localISOTime = (new Date(date - offset)).toISOString().slice(0, 10);
+            return localISOTime; // 'YYYY-MM-DD' 반환
+        }
+
+        function checkDailyReset() {
+            if (!gameState) return;
+            
+            const todayStr = getTodayString();
+            
+            if (!gameState.lastResetDate) {
+                gameState.lastResetDate = todayStr;
+                saveGame();
+                return;
+            }
+
+            if (gameState.lastResetDate !== todayStr) {
+                // 자정이 넘어가 날짜가 변경되었을 때 리셋 작동!
+                gameState.quests.forEach(q => {
+                    q.isCompleted = false;
+                    if (q.subQuests) {
+                        q.subQuests.forEach(sq => {
+                            sq.isCompleted = false;
+                        });
+                    }
+                });
+                
+                gameState.lastResetDate = todayStr;
+                saveGame();
+                updateUI();
+                screenLog(`🌅 날짜가 변경되어(${todayStr}) 모든 일일 퀘스트 진행 상태가 초기화되었습니다!`);
+            }
+        }
+
+        // ==========================================
+        // 5-2. [신규 추가] 연대기 UI 제어 함수 (Chronicle Control)
+        // ==========================================
+        let isHistoryCollapsed = true; // 기본 접힌 상태
+        
+        function toggleHistoryCollapse() {
+            const content = document.getElementById('quest-history-content');
+            const icon = document.getElementById('history-toggle-icon');
+            
+            if (isHistoryCollapsed) {
+                content.style.display = 'block';
+                icon.style.transform = 'rotate(180deg)';
+                isHistoryCollapsed = false;
+            } else {
+                content.style.display = 'none';
+                icon.style.transform = 'rotate(0deg)';
+                isHistoryCollapsed = true;
+            }
+        }
+        
+        function clearQuestHistory() {
+            if (confirm("정말로 그동안의 모든 모험가의 연대기 기록을 지우시겠습니까?")) {
+                gameState.history = [];
+                saveGame();
+                updateUI();
+                screenLog("🧹 모험가의 연대기 기록을 모두 비웠습니다.");
+            }
+        }
+
+        // ==========================================
+        // 5-3. [신규 추가] 비상 데이터 복구 시스템 (Recovery Tools)
+        // ==========================================
+        let avatarClickCount = 0;
+        let avatarClickTimer = null;
+        
+        function onAvatarClick() {
+            avatarClickCount++;
+            screenLog(`💡 캐릭터 프로필 터치 (${avatarClickCount}/5)`);
+            
+            if (avatarClickTimer) clearTimeout(avatarClickTimer);
+            avatarClickTimer = setTimeout(() => {
+                avatarClickCount = 0;
+            }, 3000); // 3초 이내에 연속 5번 클릭해야 발동
+            
+            if (avatarClickCount >= 5) {
+                avatarClickCount = 0;
+                clearTimeout(avatarClickTimer);
+                openRecoveryModal();
+            }
+        }
+        
+        function openRecoveryModal() {
+            // 현재 수치 폼에 세팅
+            document.getElementById('recovery-level-input').value = gameState.character.level;
+            document.getElementById('recovery-gold-input').value = gameState.character.gold;
+            
+            // 아이템 소지상태 세팅
+            const inv = gameState.inventory || [];
+            document.getElementById('rec-item-crown').checked = inv.includes('crown');
+            document.getElementById('rec-item-glasses').checked = inv.includes('glasses');
+            document.getElementById('rec-item-ribbon').checked = inv.includes('ribbon');
+            document.getElementById('rec-item-shield').checked = inv.includes('shield');
+            document.getElementById('rec-item-sword').checked = inv.includes('sword');
+            document.getElementById('rec-item-mantle').checked = inv.includes('mantle');
+            
+            document.getElementById('recovery-modal').classList.add('active');
+            screenLog("🛠️ [시스템] 모험가 복구 도구가 열렸습니다.");
+        }
+        
+        function closeRecoveryModal() {
+            document.getElementById('recovery-modal').classList.remove('active');
+        }
+        
+        function onRecoveryModalOverlayClick(event) {
+            if (event.target === document.getElementById('recovery-modal')) {
+                closeRecoveryModal();
+            }
+        }
+        
+        function applyRecoveryData() {
+            const levelVal = parseInt(document.getElementById('recovery-level-input').value, 10) || 1;
+            const goldVal = parseInt(document.getElementById('recovery-gold-input').value, 10) || 0;
+            
+            if (levelVal < 1 || levelVal > 100) {
+                alert("레벨은 1에서 100까지만 가능합니다.");
+                return;
+            }
+            if (goldVal < 0) {
+                alert("골드는 0 이상이어야 합니다.");
+                return;
+            }
+            
+            // 캐릭터 정보 복구
+            gameState.character.level = levelVal;
+            gameState.character.gold = goldVal;
+            gameState.character.currentXp = 0;
+            
+            // 레벨당 필요 경험치 역산
+            let nextXp = 100;
+            for (let i = 1; i < levelVal; i++) {
+                nextXp = Math.floor(nextXp * 1.2);
+            }
+            gameState.character.nextLevelXp = nextXp;
+            
+            // 인벤토리 아이템 복구
+            const newInv = ['broom']; // 빗자루 기본
+            const checkKeys = ['crown', 'glasses', 'ribbon', 'shield', 'sword', 'mantle'];
+            checkKeys.forEach(key => {
+                const chk = document.getElementById(`rec-item-${key}`);
+                if (chk && chk.checked) {
+                    newInv.push(key);
+                }
+            });
+            gameState.inventory = newInv;
+            
+            if (gameState.equippedItem && !newInv.includes(gameState.equippedItem)) {
+                gameState.equippedItem = null;
+            }
+            
+            saveGame();
+            updateUI();
+            closeRecoveryModal();
+            
+            screenLog(`🛠️ [시스템 복구] 모험가 정보 복구 적용! (Lv.${levelVal} / 🪙${goldVal}G / 아이템 ${newInv.length}종 보유)`);
+            alert("🎉 모험가 복구가 성공적으로 적용되었습니다!");
         }
 
         // ==========================================

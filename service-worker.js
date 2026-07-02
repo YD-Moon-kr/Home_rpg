@@ -1,4 +1,4 @@
-const CACHE_NAME = 'chore-rpg-v18'; // 캐시 버전을 v18로 상향하여 강제 업데이트 캐시 파괴(Cache Busting) 기능 버전 배포
+const CACHE_NAME = 'chore-rpg-v19'; // 캐시 버전을 v19로 상향하여 비상 데이터 복구 모드 및 자정 리셋 픽스 버전 배포
 const ASSETS = [
   './',
   './index.html',
