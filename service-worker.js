@@ -1,4 +1,4 @@
-const CACHE_NAME = 'chore-rpg-v10'; // 캐시 버전을 v10으로 상향하여 q3 핀 최종 보정 버전 배포
+const CACHE_NAME = 'chore-rpg-v11'; // 캐시 버전을 v11로 상향하여 리셋 버튼 개행 및 q3 핀 left:60% 버전 배포
 const ASSETS = [
   './',
   './index.html',

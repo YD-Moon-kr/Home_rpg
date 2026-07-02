@@ -1396,6 +1396,35 @@
             0%, 100% { transform: translate(-50%, -50%) rotate(0deg); }
             50% { transform: translate(-50%, -50%) rotate(4deg) scale(1.05); }
         }
+
+        /* 데이터 초기화 버튼 전용 미니 스타일 (모바일 줄바꿈 최적화) */
+        .btn-reset {
+            background: rgba(255, 107, 107, 0.08);
+            border: 1px solid rgba(255, 107, 107, 0.25);
+            color: #ff6b6b;
+            padding: 8px 14px;
+            border-radius: 8px;
+            font-family: var(--font-display);
+            font-weight: 700;
+            font-size: 0.8rem;
+            cursor: pointer;
+            transition: all 0.2s ease;
+            text-align: center;
+            line-height: 1.35;
+        }
+
+        .btn-reset:hover {
+            background: #ff6b6b;
+            color: #fff;
+            box-shadow: 0 0 10px rgba(255, 107, 107, 0.4);
+        }
+        
+        @media (max-width: 480px) {
+            .btn-reset {
+                padding: 6px 10px;
+                font-size: 0.72rem;
+            }
+        }
     </style>
 </head>
 <body>
@@ -1408,7 +1437,7 @@
                 <div class="subtitle">집안일을 완료하고 캐릭터를 육성하세요!</div>
             </div>
             <div class="header-actions">
-                <button class="btn-reset" onclick="resetGameData()">데이터 초기화</button>
+                <button class="btn-reset" onclick="resetGameData()">데이터<br>초기화</button>
             </div>
         </header>
 
@@ -1488,7 +1517,7 @@
                     </div>
 
                     <!-- 4. 분리수거 핀 & 팝오버 (1인용 소파 다리 근처로 이동) -->
-                    <div class="map-pin-container popover-up" style="top: 76%; left: 55%;">
+                    <div class="map-pin-container popover-up" style="top: 76%; left: 60%;">
                         <div class="map-pin green" onclick="toggleMapPopover('q3', event)">🗑️</div>
                         <div class="map-popover" id="popover-q3">
                             <div class="popover-header">
