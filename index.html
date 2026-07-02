@@ -280,6 +280,8 @@
             display: flex;
             flex-direction: column;
             gap: 16px;
+            position: relative;
+            z-index: 50; /* 팝오버가 아래 다른 카드를 가리지 않고 위로 덮도록 레이어 확보 */
         }
 
         .map-wrapper {
@@ -1390,6 +1392,36 @@
 
         <!-- 메인 대시보드 그리드 -->
         <div class="dashboard-grid">
+
+            <!-- 1. 캐릭터 상태 카드 (슬림 가로형 배치 - 맨 위로 이동) -->
+            <div class="card" style="padding: 16px 20px;">
+                <div class="character-profile">
+                    <div class="avatar-container">
+                        <img src="character_avatar.jpg" alt="Avatar" class="avatar-image" onerror="this.src='https://api.dicebear.com/7.x/pixel-art/svg?seed=cleaner'">
+                        <div class="level-badge" id="char-level">Lv.1</div>
+                    </div>
+                    
+                    <div class="char-info-right">
+                        <div class="char-header-row">
+                            <div class="character-name" id="char-name">집안일 야옹이</div>
+                            <div class="char-gold-badge">
+                                <span>보유 골드</span>
+                                <span id="char-gold" style="margin-left:4px;">🪙 0</span>
+                            </div>
+                        </div>
+                        
+                        <div class="xp-container">
+                            <div class="xp-text" style="margin-bottom: 4px;">
+                                <span style="font-size: 0.75rem;">경험치 (XP)</span>
+                                <span id="char-xp-ratio" style="font-size: 0.75rem;">0 / 100</span>
+                            </div>
+                            <div class="xp-bar-bg" style="height: 8px;">
+                                <div class="xp-bar-fill" id="char-xp-bar"></div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
             
             <!-- 🏡 [대폭 개편] 아기자기한 인터랙티브 홈 맵 및 오버레이 팝오버 카드 -->
             <div class="card house-map-card">
@@ -1455,36 +1487,6 @@
                             </div>
                             <div class="popover-food-grid" id="popover-food-list"></div>
                             <button class="btn-add-food" onclick="openAddFoodModal()" style="width:100%; justify-content:center; margin-top:12px; font-size:0.75rem;">➕ 식재료 던전에 등록</button>
-                        </div>
-                    </div>
-                </div>
-            </div>
-
-            <!-- 1. 캐릭터 상태 카드 (슬림 가로형 배치) -->
-            <div class="card" style="padding: 16px 20px;">
-                <div class="character-profile">
-                    <div class="avatar-container">
-                        <img src="character_avatar.jpg" alt="Avatar" class="avatar-image" onerror="this.src='https://api.dicebear.com/7.x/pixel-art/svg?seed=cleaner'">
-                        <div class="level-badge" id="char-level">Lv.1</div>
-                    </div>
-                    
-                    <div class="char-info-right">
-                        <div class="char-header-row">
-                            <div class="character-name" id="char-name">집안일 야옹이</div>
-                            <div class="char-gold-badge">
-                                <span>보유 골드</span>
-                                <span id="char-gold" style="margin-left:4px;">🪙 0</span>
-                            </div>
-                        </div>
-                        
-                        <div class="xp-container">
-                            <div class="xp-text" style="margin-bottom: 4px;">
-                                <span style="font-size: 0.75rem;">경험치 (XP)</span>
-                                <span id="char-xp-ratio" style="font-size: 0.75rem;">0 / 100</span>
-                            </div>
-                            <div class="xp-bar-bg" style="height: 8px;">
-                                <div class="xp-bar-fill" id="char-xp-bar"></div>
-                            </div>
                         </div>
                     </div>
                 </div>

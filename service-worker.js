@@ -1,4 +1,4 @@
-const CACHE_NAME = 'chore-rpg-v5'; // 캐시 버전을 v5로 상향하여 모바일 팝오버 짤림 해결 버전 배포
+const CACHE_NAME = 'chore-rpg-v6'; // 캐시 버전을 v6로 상향하여 프로필 카드 상단 배치 및 팝오버 겹침 방지 레이어 패치 배포
 const ASSETS = [
   './',
   './index.html',
