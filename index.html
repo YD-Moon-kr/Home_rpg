@@ -1411,6 +1411,7 @@
             transition: all 0.2s ease;
             text-align: center;
             line-height: 1.35;
+            touch-action: manipulation;
         }
 
         .btn-reset:hover {
@@ -1487,6 +1488,7 @@
             </div>
             <div class="header-actions" style="display: flex; gap: 8px;">
                 <button class="btn-reset" onclick="forceAppUpdate()" style="background: rgba(85, 239, 196, 0.15); border-color: rgba(85, 239, 196, 0.3); color: #55efc4;">앱<br>업데이트</button>
+                <button class="btn-reset" onclick="openRecoveryModal()" style="background: rgba(255, 118, 117, 0.15); border-color: rgba(255, 118, 117, 0.3); color: #ff7675;">🛠️ 데이터<br>복구</button>
                 <button class="btn-reset" onclick="resetGameData()">데이터<br>초기화</button>
             </div>
         </header>
