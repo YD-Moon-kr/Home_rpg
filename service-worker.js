@@ -1,4 +1,4 @@
-const CACHE_NAME = 'chore-rpg-v9'; // 캐시 버전을 v9로 상향하여 핀 위치 조정 및 이모지 삭제 버전 배포
+const CACHE_NAME = 'chore-rpg-v10'; // 캐시 버전을 v10으로 상향하여 q3 핀 최종 보정 버전 배포
 const ASSETS = [
   './',
   './index.html',
