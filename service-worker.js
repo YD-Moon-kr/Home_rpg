@@ -1,4 +1,4 @@
-const CACHE_NAME = 'chore-rpg-v11'; // 캐시 버전을 v11로 상향하여 리셋 버튼 개행 및 q3 핀 left:60% 버전 배포
+const CACHE_NAME = 'chore-rpg-v12'; // 캐시 버전을 v12로 상향하여 냐옹이 장비 상점 및 가방 장착 시스템 배포
 const ASSETS = [
   './',
   './index.html',
