@@ -1638,6 +1638,34 @@
                         <span style="font-size: 0.68rem; color: #45b6fe; font-weight: 700;">골드 획득 +5%</span>
                         <button class="btn-action complete" onclick="buyShopItem('glasses', 50)" style="width:100%; justify-content:center; padding: 6px; font-size: 0.75rem; margin-top: 4px;" id="btn-buy-glasses">🪙 50</button>
                     </div>
+                    <!-- 5. 러블리 핑크 리본 -->
+                    <div class="shop-item" id="shop-ribbon" style="background: rgba(255,255,255,0.02); border: 1px solid rgba(255,255,255,0.05); border-radius: 12px; padding: 12px; display: flex; flex-direction: column; align-items: center; text-align: center; gap: 6px; position: relative;">
+                        <span style="font-size: 1.8rem;">🎀</span>
+                        <span style="font-size: 0.85rem; font-weight: 700;">러블리 리본</span>
+                        <span style="font-size: 0.68rem; color: #ff7675; font-weight: 700;">경험치 획득 +5%</span>
+                        <button class="btn-action complete" onclick="buyShopItem('ribbon', 40)" style="width:100%; justify-content:center; padding: 6px; font-size: 0.75rem; margin-top: 4px;" id="btn-buy-ribbon">🪙 40</button>
+                    </div>
+                    <!-- 6. 냄비 뚜껑 방패 -->
+                    <div class="shop-item" id="shop-shield" style="background: rgba(255,255,255,0.02); border: 1px solid rgba(255,255,255,0.05); border-radius: 12px; padding: 12px; display: flex; flex-direction: column; align-items: center; text-align: center; gap: 6px; position: relative;">
+                        <span style="font-size: 1.8rem;">🛡️</span>
+                        <span style="font-size: 0.85rem; font-weight: 700;">냄비뚜껑 방패</span>
+                        <span style="font-size: 0.68rem; color: #ffeaa7; font-weight: 700;">레벨업 보너스 2배</span>
+                        <button class="btn-action complete" onclick="buyShopItem('shield', 100)" style="width:100%; justify-content:center; padding: 6px; font-size: 0.75rem; margin-top: 4px;" id="btn-buy-shield">🪙 100</button>
+                    </div>
+                    <!-- 7. 거품기 성검 -->
+                    <div class="shop-item" id="shop-sword" style="background: rgba(255,255,255,0.02); border: 1px solid rgba(255,255,255,0.05); border-radius: 12px; padding: 12px; display: flex; flex-direction: column; align-items: center; text-align: center; gap: 6px; position: relative;">
+                        <span style="font-size: 1.8rem;">🍳</span>
+                        <span style="font-size: 0.85rem; font-weight: 700;">거품기 성검</span>
+                        <span style="font-size: 0.68rem; color: #55efc4; font-weight: 700;">냉장고 섭취 보상 +50%</span>
+                        <button class="btn-action complete" onclick="buyShopItem('sword', 120)" style="width:100%; justify-content:center; padding: 6px; font-size: 0.75rem; margin-top: 4px;" id="btn-buy-sword">🪙 120</button>
+                    </div>
+                    <!-- 8. 용사의 빨간 망토 -->
+                    <div class="shop-item" id="shop-mantle" style="background: rgba(255,255,255,0.02); border: 1px solid rgba(255,255,255,0.05); border-radius: 12px; padding: 12px; display: flex; flex-direction: column; align-items: center; text-align: center; gap: 6px; position: relative;">
+                        <span style="font-size: 1.8rem;">🧥</span>
+                        <span style="font-size: 0.85rem; font-weight: 700;">용사 빨간망토</span>
+                        <span style="font-size: 0.68rem; color: #ff7675; font-weight: 700;">전체 보상 +8%</span>
+                        <button class="btn-action complete" onclick="buyShopItem('mantle', 200)" style="width:100%; justify-content:center; padding: 6px; font-size: 0.75rem; margin-top: 4px;" id="btn-buy-mantle">🪙 200</button>
+                    </div>
                     <!-- 4. 참치 캔 -->
                     <div class="shop-item" id="shop-tuna" style="background: rgba(255,255,255,0.02); border: 1px solid rgba(255,255,255,0.05); border-radius: 12px; padding: 12px; display: flex; flex-direction: column; align-items: center; text-align: center; gap: 6px; position: relative;">
                         <span style="font-size: 1.8rem;">🐟</span>
@@ -1947,15 +1975,11 @@
             document.getElementById('char-name').innerText = char.name;
             document.getElementById('char-gold').innerText = `🪙 ${char.gold}`;
             
-            // [신규] 장착 장비에 따른 캐릭터 아바타 이미지 실시간 변경
+            // [신규] 장착 장비에 따른 캐릭터 아바타 이미지 실시간 변경 (7종 대응)
             const charAvatarEl = document.getElementById('char-avatar');
             if (charAvatarEl) {
-                if (gameState.equippedItem === 'broom') {
-                    charAvatarEl.src = 'avatar_broom.jpg';
-                } else if (gameState.equippedItem === 'crown') {
-                    charAvatarEl.src = 'avatar_crown.jpg';
-                } else if (gameState.equippedItem === 'glasses') {
-                    charAvatarEl.src = 'avatar_glasses.jpg';
+                if (gameState.equippedItem) {
+                    charAvatarEl.src = `avatar_${gameState.equippedItem}.jpg`;
                 } else {
                     charAvatarEl.src = 'character_avatar.jpg';
                 }
@@ -2256,48 +2280,25 @@
 
             // 7. [신규 추가] 상점 아이템 구매 버튼 상태 동기화
             if (!gameState.inventory) gameState.inventory = [];
-            const broomBtn = document.getElementById('btn-buy-broom');
-            if (broomBtn) {
-                if (gameState.inventory.includes('broom')) {
-                    broomBtn.innerText = '✔️ 보유 중';
-                    broomBtn.disabled = true;
-                    broomBtn.style.opacity = '0.5';
-                    broomBtn.className = 'btn-action repeat';
-                } else {
-                    broomBtn.innerText = '🪙 80';
-                    broomBtn.disabled = false;
-                    broomBtn.style.opacity = '1';
-                    broomBtn.className = 'btn-action complete';
+            const equipItemKeys = ['broom', 'crown', 'glasses', 'ribbon', 'shield', 'sword', 'mantle'];
+            equipItemKeys.forEach(key => {
+                const btn = document.getElementById(`btn-buy-${key}`);
+                if (btn) {
+                    if (gameState.inventory.includes(key)) {
+                        btn.innerText = '✔️ 보유 중';
+                        btn.disabled = true;
+                        btn.style.opacity = '0.5';
+                        btn.className = 'btn-action repeat';
+                    } else {
+                        const prices = { broom: 80, crown: 150, glasses: 50, ribbon: 40, shield: 100, sword: 120, mantle: 200 };
+                        const price = prices[key] || 100;
+                        btn.innerText = `🪙 ${price}`;
+                        btn.disabled = false;
+                        btn.style.opacity = '1';
+                        btn.className = 'btn-action complete';
+                    }
                 }
-            }
-            const crownBtn = document.getElementById('btn-buy-crown');
-            if (crownBtn) {
-                if (gameState.inventory.includes('crown')) {
-                    crownBtn.innerText = '✔️ 보유 중';
-                    crownBtn.disabled = true;
-                    crownBtn.style.opacity = '0.5';
-                    crownBtn.className = 'btn-action repeat';
-                } else {
-                    crownBtn.innerText = '🪙 150';
-                    crownBtn.disabled = false;
-                    crownBtn.style.opacity = '1';
-                    crownBtn.className = 'btn-action complete';
-                }
-            }
-            const glassesBtn = document.getElementById('btn-buy-glasses');
-            if (glassesBtn) {
-                if (gameState.inventory.includes('glasses')) {
-                    glassesBtn.innerText = '✔️ 보유 중';
-                    glassesBtn.disabled = true;
-                    glassesBtn.style.opacity = '0.5';
-                    glassesBtn.className = 'btn-action repeat';
-                } else {
-                    glassesBtn.innerText = '🪙 50';
-                    glassesBtn.disabled = false;
-                    glassesBtn.style.opacity = '1';
-                    glassesBtn.className = 'btn-action complete';
-                }
-            }
+            });
 
             // 8. [신규 추가] 모험가의 연대기(History) 타임라인 렌더링
             const historyTimelineContainer = document.getElementById('history-timeline-container');
@@ -2376,7 +2377,20 @@
             gameState.character.nextLevelXp = Math.floor(gameState.character.nextLevelXp * 1.2);
             
             const newLevel = gameState.character.level;
-            screenLog(`🎉 축하합니다! 레벨 업! 현재 레벨: ${newLevel}`);
+            
+            // [신규] 레벨업 골드 축하금 지급 로직 추가!
+            let levelUpGoldBonus = oldLevel * 20; // 1렙 ➔ 2렙업 시 20골드 등
+            if (gameState.equippedItem === 'shield') {
+                // 냄비뚜껑 방패 장착 시 골드 축하금 2배!
+                levelUpGoldBonus *= 2;
+                screenLog(`🎉 축하합니다! 레벨 업! 현재 레벨: ${newLevel} (🛡️ 방패 버프로 레벨업 축하 골드 2배!)`);
+            } else {
+                screenLog(`🎉 축하합니다! 레벨 업! 현재 레벨: ${newLevel}`);
+            }
+            
+            // 보상 누적
+            gameState.character.gold += levelUpGoldBonus;
+            screenLog(`🪙 레벨업 보너스로 🪙${levelUpGoldBonus} 골드를 획득했습니다!`);
             
             openLevelUpModal(oldLevel, newLevel);
         }
@@ -2396,7 +2410,7 @@
                 let xpReward = subQuest.xpReward;
                 let goldReward = subQuest.goldReward;
                 
-                // [신규] 장착 중인 장비 버프 연동
+                // [신규] 장착 중인 장비 버프 연동 (7종 대응)
                 if (gameState.equippedItem === 'broom') {
                     // 마법 빗자루: 골드 +10%
                     goldReward = Math.ceil(goldReward * 1.10);
@@ -2406,6 +2420,13 @@
                 } else if (gameState.equippedItem === 'glasses') {
                     // 멋쟁이 선글라스: 골드 +5%
                     goldReward = Math.ceil(goldReward * 1.05);
+                } else if (gameState.equippedItem === 'ribbon') {
+                    // 러블리 리본: 경험치 +5%
+                    xpReward = Math.ceil(xpReward * 1.05);
+                } else if (gameState.equippedItem === 'mantle') {
+                    // 용사 빨간망토: 경험치 & 골드 둘 다 +8%
+                    xpReward = Math.ceil(xpReward * 1.08);
+                    goldReward = Math.ceil(goldReward * 1.08);
                 }
                 
                 gainRewards(xpReward, goldReward);
@@ -2431,9 +2452,18 @@
                     // 보너스에서도 장비 버프 연동
                     let bonusXp = 25;
                     let bonusGold = 10;
-                    if (gameState.equippedItem === 'broom') bonusGold = Math.ceil(bonusGold * 1.10);
-                    else if (gameState.equippedItem === 'crown') bonusXp = Math.ceil(bonusXp * 1.15);
-                    else if (gameState.equippedItem === 'glasses') bonusGold = Math.ceil(bonusGold * 1.05);
+                    if (gameState.equippedItem === 'broom') {
+                        bonusGold = Math.ceil(bonusGold * 1.10);
+                    } else if (gameState.equippedItem === 'crown') {
+                        bonusXp = Math.ceil(bonusXp * 1.15);
+                    } else if (gameState.equippedItem === 'glasses') {
+                        bonusGold = Math.ceil(bonusGold * 1.05);
+                    } else if (gameState.equippedItem === 'ribbon') {
+                        bonusXp = Math.ceil(bonusXp * 1.05);
+                    } else if (gameState.equippedItem === 'mantle') {
+                        bonusXp = Math.ceil(bonusXp * 1.08);
+                        bonusGold = Math.ceil(bonusGold * 1.08);
+                    }
                     
                     setTimeout(() => {
                         if (event) spawnParticles(event);
@@ -2464,7 +2494,11 @@
         const SHOP_ITEMS = {
             broom: { name: "마법 빗자루", icon: "🧹", desc: "골드 획득 +10%" },
             crown: { name: "왕실의 왕관", icon: "👑", desc: "경험치 획득 +15%" },
-            glasses: { name: "멋쟁이 선글라스", icon: "🕶️", desc: "골드 획득 +5%" }
+            glasses: { name: "멋쟁이 선글라스", icon: "🕶️", desc: "골드 획득 +5%" },
+            ribbon: { name: "러블리 리본", icon: "🎀", desc: "경험치 획득 +5%" },
+            shield: { name: "냄비뚜껑 방패", icon: "🛡️", desc: "레벨업 골드 축하금 2배" },
+            sword: { name: "거품기 성검", icon: "🍳", desc: "임박 식재료 보상 +50%" },
+            mantle: { name: "용사 빨간망토", icon: "🧥", desc: "모든 획득 보상 +8%" }
         };
 
         function buyShopItem(itemId, price) {
@@ -2668,8 +2702,18 @@
                     screenLog(`🤮 [냉장고 던전] 어이쿠.. 상했을 지도 모르는 "${food.name}"을(를) 먹어치웠습니다. (+5 XP / +0 Gold)`);
                     gainRewards(5, 0);
                 } else {
-                    screenLog(`😋 [냉장고 던전] 유통기한 내에 "${food.name}"을(를) 맛있게 해치웠습니다! (+15 XP / +5 Gold)`);
-                    gainRewards(15, 5);
+                    let xpReward = 15;
+                    let goldReward = 5;
+                    
+                    // 거품기 성검 장착 시 유통기한 임박(D-3 이하) 식재료 요리/섭취 보상 1.5배!
+                    if (gameState.equippedItem === 'sword' && dday <= 3) {
+                        xpReward = Math.ceil(xpReward * 1.5);
+                        goldReward = Math.ceil(goldReward * 1.5);
+                        screenLog(`😋 [냉장고 던전] 🍳성검의 가호로 임박 식재료 "${food.name}"을 맛있게 요리했습니다! (+${xpReward} XP / +${goldReward} Gold)`);
+                    } else {
+                        screenLog(`😋 [냉장고 던전] 유통기한 내에 "${food.name}"을(를) 맛있게 해치웠습니다! (+${xpReward} XP / +${goldReward} Gold)`);
+                    }
+                    gainRewards(xpReward, goldReward);
                 }
                 saveGame();
                 updateUI();

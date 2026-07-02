@@ -1,4 +1,4 @@
-const CACHE_NAME = 'chore-rpg-v15'; // 캐시 버전을 v15로 상향하여 매일 자정 자동 초기화 및 모험가의 연대기 히스토리 추가 버전 배포
+const CACHE_NAME = 'chore-rpg-v16'; // 캐시 버전을 v16으로 상향하여 신규 4종 장비 및 프사 동적 합성 스왑 완전 배포
 const ASSETS = [
   './',
   './index.html',
@@ -7,6 +7,10 @@ const ASSETS = [
   './avatar_broom.jpg',
   './avatar_crown.jpg',
   './avatar_glasses.jpg',
+  './avatar_ribbon.jpg',
+  './avatar_shield.jpg',
+  './avatar_sword.jpg',
+  './avatar_mantle.jpg',
   './manifest.json'
 ];
 
