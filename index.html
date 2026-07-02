@@ -1485,7 +1485,8 @@
                 <h1>⚔️ HOUSE CHORE RPG (PWA_V3_COZY)</h1>
                 <div class="subtitle">집안일을 완료하고 캐릭터를 육성하세요!</div>
             </div>
-            <div class="header-actions">
+            <div class="header-actions" style="display: flex; gap: 8px;">
+                <button class="btn-reset" onclick="forceAppUpdate()" style="background: rgba(85, 239, 196, 0.15); border-color: rgba(85, 239, 196, 0.3); color: #55efc4;">앱<br>업데이트</button>
                 <button class="btn-reset" onclick="resetGameData()">데이터<br>초기화</button>
             </div>
         </header>
@@ -2938,6 +2939,31 @@
             }
             checkDailyReset();
             updateUI();
+        }
+
+        function forceAppUpdate() {
+            if (confirm("서버에서 최신 모험가 장비 및 기능 업데이트를 강제로 다운로드하시겠습니까?\n(현재의 캐릭터 데이터나 모험 진행 상황은 안전하게 유지됩니다)")) {
+                if ('serviceWorker' in navigator) {
+                    navigator.serviceWorker.getRegistrations().then(function(registrations) {
+                        for(let registration of registrations) {
+                            registration.unregister();
+                        }
+                    });
+                }
+                
+                if ('caches' in window) {
+                    caches.keys().then(function(names) {
+                        for (let name of names) {
+                            caches.delete(name);
+                        }
+                    });
+                }
+                
+                screenLog("🔄 캐시 데이터를 비우고 서버 업데이트를 요청합니다. 곧 새로고침됩니다...");
+                setTimeout(() => {
+                    window.location.href = window.location.pathname + '?update=' + Date.now();
+                }, 800);
+            }
         }
 
         function resetGameData() {
