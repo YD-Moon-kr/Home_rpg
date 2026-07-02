@@ -1,4 +1,4 @@
-const CACHE_NAME = 'chore-rpg-v14'; // 캐시 버전을 v14로 상향하여 냐옹이 장착 전용 아바타 스킨 스왑 시스템 배포
+const CACHE_NAME = 'chore-rpg-v15'; // 캐시 버전을 v15로 상향하여 매일 자정 자동 초기화 및 모험가의 연대기 히스토리 추가 버전 배포
 const ASSETS = [
   './',
   './index.html',

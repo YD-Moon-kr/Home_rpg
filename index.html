@@ -1425,6 +1425,55 @@
                 font-size: 0.72rem;
             }
         }
+
+        /* 📜 [신규 추가] 연대기 타임라인 스타일 */
+        .history-day-group {
+            margin-bottom: 16px;
+        }
+        .history-day-title {
+            font-size: 0.8rem;
+            font-weight: 700;
+            color: var(--color-primary);
+            margin-bottom: 8px;
+            display: flex;
+            align-items: center;
+            gap: 6px;
+            border-bottom: 1px solid rgba(255, 215, 0, 0.15);
+            padding-bottom: 4px;
+        }
+        .history-item-row {
+            font-size: 0.76rem;
+            padding: 8px 10px;
+            border-left: 2px solid var(--color-accent);
+            margin-left: 6px;
+            margin-bottom: 6px;
+            display: flex;
+            justify-content: space-between;
+            align-items: flex-start;
+            background: rgba(255, 255, 255, 0.015);
+            border-radius: 0 6px 6px 0;
+            border-top: 1px solid rgba(255,255,255,0.01);
+            border-right: 1px solid rgba(255,255,255,0.01);
+            border-bottom: 1px solid rgba(255,255,255,0.01);
+        }
+        .history-item-left {
+            display: flex;
+            flex-direction: column;
+            gap: 2px;
+        }
+        .history-item-title {
+            color: var(--text-main);
+        }
+        .history-item-sub {
+            font-size: 0.65rem;
+            color: var(--text-muted);
+        }
+        .history-item-right {
+            display: flex;
+            flex-direction: column;
+            align-items: flex-end;
+            gap: 2px;
+        }
     </style>
 </head>
 <body>
@@ -1622,8 +1671,24 @@
 
             <!-- 3. 모험 로그 카드 -->
             <div class="card adventure-log-card">
-                <div class="card-title">📜 모험 로그 (Adventure Log)</div>
+                <div class="card-title">📜 실시간 알림창 (Log)</div>
                 <div class="log-box" id="console-log"></div>
+            </div>
+
+            <!-- 📜 [신규 추가] 퀘스트 완료 히스토리 연대기 카드 -->
+            <div class="card quest-history-card">
+                <div class="card-title" onclick="toggleHistoryCollapse()" style="cursor: pointer; display: flex; justify-content: space-between; align-items: center; user-select: none;">
+                    <span>📜 모험가의 연대기 (Quest History)</span>
+                    <span id="history-toggle-icon" style="font-size: 0.9rem; transition: transform 0.2s;">▼</span>
+                </div>
+                <div id="quest-history-content" class="history-content" style="display: none; margin-top: 12px; border-top: 1px solid rgba(255,255,255,0.05); padding-top: 12px;">
+                    <div style="display: flex; justify-content: flex-end; margin-bottom: 10px;">
+                        <button class="btn-action repeat" style="padding: 4px 8px; font-size: 0.7rem; background: rgba(255,255,255,0.02); border: 1px solid rgba(255,255,255,0.08);" onclick="clearQuestHistory()">🧹 연대기 기록 비우기</button>
+                    </div>
+                    <div id="history-timeline-container" style="max-height: 350px; overflow-y: auto; padding-right: 6px;">
+                        <!-- JS로 날짜별 그룹 렌더링 -->
+                    </div>
+                </div>
             </div>
         </div>
     </div>
@@ -2233,6 +2298,57 @@
                     glassesBtn.className = 'btn-action complete';
                 }
             }
+
+            // 8. [신규 추가] 모험가의 연대기(History) 타임라인 렌더링
+            const historyTimelineContainer = document.getElementById('history-timeline-container');
+            if (historyTimelineContainer) {
+                historyTimelineContainer.innerHTML = '';
+                if (!gameState.history) gameState.history = [];
+                
+                if (gameState.history.length === 0) {
+                    historyTimelineContainer.innerHTML = `<div style="text-align:center; font-size:0.75rem; color:var(--text-muted); padding:20px 0;">아직 완료한 퀘스트 연대기가 없습니다.</div>`;
+                } else {
+                    const grouped = {};
+                    for (let i = gameState.history.length - 1; i >= 0; i--) {
+                        const record = gameState.history[i];
+                        if (!grouped[record.date]) {
+                            grouped[record.date] = [];
+                        }
+                        grouped[record.date].push(record);
+                    }
+                    
+                    const sortedDates = Object.keys(grouped).sort((a, b) => b.localeCompare(a));
+                    
+                    sortedDates.forEach(date => {
+                        const dayGroup = document.createElement('div');
+                        dayGroup.className = 'history-day-group';
+                        
+                        dayGroup.innerHTML = `
+                            <div class="history-day-title">
+                                📅 ${date}
+                            </div>
+                        `;
+                        
+                        grouped[date].forEach(record => {
+                            const item = document.createElement('div');
+                            item.className = 'history-item-row';
+                            item.innerHTML = `
+                                <div class="history-item-left">
+                                    <span class="history-item-title">${record.questName} > <strong style="color:var(--color-primary);">${record.subQuestName}</strong></span>
+                                    <span class="history-item-sub">수행 시간: ${record.time}</span>
+                                </div>
+                                <div class="history-item-right">
+                                    <span style="color:var(--color-accent); font-weight:700;">✨ +${record.xp} XP</span>
+                                    <span style="color:var(--color-primary); font-weight:700;">🪙 +${record.gold} G</span>
+                                </div>
+                            `;
+                            dayGroup.appendChild(item);
+                        });
+                        
+                        historyTimelineContainer.appendChild(dayGroup);
+                    });
+                }
+            }
         }
 
         // ==========================================
@@ -2274,7 +2390,7 @@
                 if (event) spawnParticles(event);
 
                 subQuest.isCompleted = true;
-                screenLog(`⚔️ 하위 퀘스트 완료: [${quest.name} > ${subQuest.name}]`);
+                screenLog("⚔️ 하위 퀘스트 완료: [" + quest.name + " > " + subQuest.name + "]");
                 
                 // 기본 보상 산정
                 let xpReward = subQuest.xpReward;
@@ -2294,6 +2410,21 @@
                 
                 gainRewards(xpReward, goldReward);
 
+                // [신규] 모험가의 연대기에 기록 추가
+                const todayStr = getTodayString();
+                const now = new Date();
+                const timeStr = `${String(now.getHours()).padStart(2, '0')}:${String(now.getMinutes()).padStart(2, '0')}`;
+                
+                if (!gameState.history) gameState.history = [];
+                gameState.history.push({
+                    date: todayStr,
+                    time: timeStr,
+                    questName: quest.name,
+                    subQuestName: subQuest.name,
+                    xp: xpReward,
+                    gold: goldReward
+                });
+
                 const allDoneNow = quest.subQuests.every(sq => sq.isCompleted);
                 if (allDoneNow && !quest.isCompleted) {
                     quest.isCompleted = true;
@@ -2308,6 +2439,18 @@
                         if (event) spawnParticles(event);
                         screenLog(`🏆 [퀘스트 마스터!] "${quest.name}" 완수 보너스 (+${bonusXp} XP / +${bonusGold} Gold)`);
                         gainRewards(bonusXp, bonusGold);
+                        
+                        // [신규] 보너스 완료도 연대기 기록
+                        gameState.history.push({
+                            date: todayStr,
+                            time: timeStr,
+                            questName: quest.name,
+                            subQuestName: "★ 카테고리 전체 완수 보너스!",
+                            xp: bonusXp,
+                            gold: bonusGold
+                        });
+                        saveGame();
+                        updateUI();
                     }, 200);
                 }
                 saveGame();
@@ -2745,6 +2888,7 @@
             } else {
                 screenLog("👶 신규 모험가입니다. 새로운 모험을 시작합니다!");
             }
+            checkDailyReset();
             updateUI();
         }
 
@@ -2815,6 +2959,9 @@
 
         window.onload = function() {
             loadGame();
+            
+            // 매 15초마다 백그라운드 자정 자동 리셋 여부 확인
+            setInterval(checkDailyReset, 15000);
             
             // PWA 서비스 워커 등록 (스마트 업데이트 & 자동 리로드 탑재)
             if ('serviceWorker' in navigator) {
