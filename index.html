@@ -303,6 +303,11 @@
             z-index: 10;
         }
 
+        /* 팝오버 활성화 시 핀 컨테이너의 z-index를 최상위로 끌어올려 겹침 방지 */
+        .map-pin-container.active-container {
+            z-index: 999 !important;
+        }
+
         .map-pin {
             width: 32px;
             height: 32px;
@@ -1612,6 +1617,11 @@
             // 이미 열려있던 게 아니라면 새로 열기
             if (!isAlreadyActive) {
                 popover.classList.add('active');
+                // 부모 핀 컨테이너의 z-index를 일시적으로 최상위로 지정
+                const container = popover.closest('.map-pin-container');
+                if (container) {
+                    container.classList.add('active-container');
+                }
                 screenLog(`📍 지도에서 [${targetId === 'refrigerator' ? '냉장고' : '집안일'}] 세부 팝업을 열었습니다.`);
             }
         }
@@ -1620,6 +1630,10 @@
             if (event) event.stopPropagation();
             const popovers = document.querySelectorAll('.map-popover');
             popovers.forEach(p => p.classList.remove('active'));
+            
+            // 활성화된 핀 컨테이너 z-index 클래스 모두 제거
+            const containers = document.querySelectorAll('.map-pin-container');
+            containers.forEach(c => c.classList.remove('active-container'));
         }
 
         // 지도 밖의 영역을 클릭하면 팝오버가 닫히게 처리
