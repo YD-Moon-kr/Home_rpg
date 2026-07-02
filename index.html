@@ -1800,6 +1800,19 @@
 
     <script>
         // ==========================================
+        // 0. 글로벌 아이템 마스터 데이터 (Master Data)
+        // ==========================================
+        const SHOP_ITEMS = {
+            broom: { name: "마법 빗자루", icon: "🧹", desc: "골드 획득 +10%" },
+            crown: { name: "왕실의 왕관", icon: "👑", desc: "경험치 획득 +15%" },
+            glasses: { name: "멋쟁이 선글라스", icon: "🕶️", desc: "골드 획득 +5%" },
+            ribbon: { name: "러블리 리본", icon: "🎀", desc: "경험치 획득 +5%" },
+            shield: { name: "냄비뚜껑 방패", icon: "🛡️", desc: "레벨업 골드 축하금 2배" },
+            sword: { name: "거품기 성검", icon: "🍳", desc: "임박 식재료 보상 +50%" },
+            mantle: { name: "용사 빨간망토", icon: "🧥", desc: "모든 획득 보상 +8%" }
+        };
+
+        // ==========================================
         // 1. 글로벌 게임 데이터 상태 (Global State)
         // ==========================================
         let gameState = {
@@ -2491,15 +2504,6 @@
         // ==========================================
         // 4-1. [신규 추가] 상점 및 장착 시스템 로직 (Shop & Equip)
         // ==========================================
-        const SHOP_ITEMS = {
-            broom: { name: "마법 빗자루", icon: "🧹", desc: "골드 획득 +10%" },
-            crown: { name: "왕실의 왕관", icon: "👑", desc: "경험치 획득 +15%" },
-            glasses: { name: "멋쟁이 선글라스", icon: "🕶️", desc: "골드 획득 +5%" },
-            ribbon: { name: "러블리 리본", icon: "🎀", desc: "경험치 획득 +5%" },
-            shield: { name: "냄비뚜껑 방패", icon: "🛡️", desc: "레벨업 골드 축하금 2배" },
-            sword: { name: "거품기 성검", icon: "🍳", desc: "임박 식재료 보상 +50%" },
-            mantle: { name: "용사 빨간망토", icon: "🧥", desc: "모든 획득 보상 +8%" }
-        };
 
         function buyShopItem(itemId, price) {
             const char = gameState.character;

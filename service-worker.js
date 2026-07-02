@@ -1,4 +1,4 @@
-const CACHE_NAME = 'chore-rpg-v16'; // 캐시 버전을 v16으로 상향하여 신규 4종 장비 및 프사 동적 합성 스왑 완전 배포
+const CACHE_NAME = 'chore-rpg-v17'; // 캐시 버전을 v17로 상향하여 JS 선언부 호이스팅 참조 에러 픽스 버전 배포
 const ASSETS = [
   './',
   './index.html',
