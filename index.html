@@ -1249,6 +1249,129 @@
             color: #111;
             background-color: #fff;
         }
+
+        /* -------------------------------------------------------------
+           [신규 추가] 팝오버 위치별 정렬 제어 (모바일 잘림 전면 차단)
+           ------------------------------------------------------------- */
+        /* 1. popover-left: 핀 기준 왼쪽으로 열림 (우측 쏠린 핀용) */
+        .popover-left .map-popover {
+            left: auto;
+            right: -12px;
+            transform: scale(0.8) translateY(-10px);
+        }
+        .popover-left .map-popover.active {
+            transform: scale(1) translateY(0);
+        }
+        .popover-left .map-popover::before {
+            left: auto;
+            right: 18px;
+            transform: none;
+        }
+
+        /* 2. popover-right: 핀 기준 오른쪽으로 열림 (좌측 쏠린 핀용) */
+        .popover-right .map-popover {
+            left: -12px;
+            transform: scale(0.8) translateY(-10px);
+        }
+        .popover-right .map-popover.active {
+            transform: scale(1) translateY(0);
+        }
+        .popover-right .map-popover::before {
+            left: 18px;
+            transform: none;
+        }
+
+        /* 3. popover-up .popover-left 조합: 위로 뜨면서 왼쪽 정렬 */
+        .popover-up.popover-left .map-popover {
+            top: auto;
+            bottom: 45px;
+            left: auto;
+            right: -12px;
+            transform: scale(0.8) translateY(10px);
+        }
+        .popover-up.popover-left .map-popover.active {
+            transform: scale(1) translateY(0);
+        }
+        .popover-up.popover-left .map-popover::before {
+            top: auto;
+            bottom: -10px;
+            left: auto;
+            right: 18px;
+            transform: none;
+            border-width: 10px 10px 0;
+            border-color: var(--color-primary) transparent transparent;
+        }
+
+        /* 4. popover-up .popover-right 조합: 위로 뜨면서 오른쪽 정렬 */
+        .popover-up.popover-right .map-popover {
+            top: auto;
+            bottom: 45px;
+            left: -12px;
+            transform: scale(0.8) translateY(10px);
+        }
+        .popover-up.popover-right .map-popover.active {
+            transform: scale(1) translateY(0);
+        }
+        .popover-up.popover-right .map-popover::before {
+            top: auto;
+            bottom: -10px;
+            left: 18px;
+            transform: none;
+            border-width: 10px 10px 0;
+            border-color: var(--color-primary) transparent transparent;
+        }
+
+        /* -------------------------------------------------------------
+           [신규 추가] 모바일 반응형 최종 미디어 쿼리 (Responsive Mobile Styling)
+           ------------------------------------------------------------- */
+        @media (max-width: 480px) {
+            body {
+                padding: 16px 10px;
+            }
+            .dashboard-container {
+                gap: 16px;
+            }
+            h1 {
+                font-size: 1.4rem;
+            }
+            .card {
+                padding: 14px;
+            }
+            /* 지도의 팝오버들이 모바일 화면 내에서 짤리지 않게 컴팩트화 */
+            .map-popover {
+                width: 275px;
+                max-width: 82vw;
+                padding: 12px;
+            }
+            #popover-refrigerator {
+                width: 285px !important;
+            }
+            .popover-title {
+                font-size: 0.95rem;
+            }
+            .popover-list-item {
+                font-size: 0.78rem;
+                padding: 6px 8px;
+            }
+            .btn-popover-complete {
+                font-size: 0.7rem;
+                padding: 4px 8px;
+            }
+            .character-profile {
+                gap: 12px;
+            }
+            .avatar-container {
+                width: 60px;
+                height: 60px;
+            }
+            .character-name {
+                font-size: 1rem;
+            }
+            .char-gold-badge {
+                padding: 3px 8px;
+                font-size: 0.75rem;
+            }
+        }
     </style>
 </head>
 <body>
@@ -1274,7 +1397,7 @@
                 <div class="map-wrapper" id="cozy-map-wrapper">
                     <img src="house_map.jpg" alt="House Map" class="map-image">
                     
-                    <!-- 1. 방바닥 청소 (거실) 핀 & 팝오버 (가림 방지 위로 뜨게 설정) -->
+                    <!-- 1. 방바닥 청소 (거실) 핀 & 팝오버 (중앙 배치) -->
                     <div class="map-pin-container popover-up" style="top: 62%; left: 42%;">
                         <div class="map-pin cyan" onclick="toggleMapPopover('q1', event)">🧹</div>
                         <div class="map-popover" id="popover-q1">
@@ -1286,8 +1409,8 @@
                         </div>
                     </div>
                     
-                    <!-- 2. 주방 설거지 핀 & 팝오버 -->
-                    <div class="map-pin-container" style="top: 48%; left: 74%;">
+                    <!-- 2. 주방 설거지 핀 & 팝오버 (우측 배치 ➔ 왼쪽 정렬) -->
+                    <div class="map-pin-container popover-left" style="top: 48%; left: 74%;">
                         <div class="map-pin pink" onclick="toggleMapPopover('q2', event)">🍳</div>
                         <div class="map-popover" id="popover-q2">
                             <div class="popover-header">
@@ -1298,8 +1421,8 @@
                         </div>
                     </div>
 
-                    <!-- 3. 세탁기 작동 핀 & 팝오버 -->
-                    <div class="map-pin-container" style="top: 36%; left: 24%;">
+                    <!-- 3. 세탁기 작동 핀 & 팝오버 (좌측 배치 ➔ 오른쪽 정렬) -->
+                    <div class="map-pin-container popover-right" style="top: 36%; left: 24%;">
                         <div class="map-pin blue" onclick="toggleMapPopover('q4', event)">🧺</div>
                         <div class="map-popover" id="popover-q4">
                             <div class="popover-header">
@@ -1310,8 +1433,8 @@
                         </div>
                     </div>
 
-                    <!-- 4. 분리수거 핀 & 팝오버 (하단부 짤림 픽스) -->
-                    <div class="map-pin-container popover-up" style="top: 80%; left: 68%;">
+                    <!-- 4. 분리수거 핀 & 팝오버 (우하단 배치 ➔ 위로 열기 + 왼쪽 정렬) -->
+                    <div class="map-pin-container popover-up popover-left" style="top: 80%; left: 68%;">
                         <div class="map-pin green" onclick="toggleMapPopover('q3', event)">🗑️</div>
                         <div class="map-popover" id="popover-q3">
                             <div class="popover-header">
@@ -1322,8 +1445,8 @@
                         </div>
                     </div>
                     
-                    <!-- 5. 냉장고 던전 핀 & 팝오버 (가로 삐져나감 제어) -->
-                    <div class="map-pin-container" style="top: 28%; left: 82%;">
+                    <!-- 5. 냉장고 던전 핀 & 팝오버 (극우측 배치 ➔ 왼쪽 정렬) -->
+                    <div class="map-pin-container popover-left" style="top: 28%; left: 82%;">
                         <div class="map-pin gold" onclick="toggleMapPopover('refrigerator', event)">🧊</div>
                         <div class="map-popover" id="popover-refrigerator" style="width: 340px; max-width: 85vw;">
                             <div class="popover-header">

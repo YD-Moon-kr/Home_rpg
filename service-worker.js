@@ -1,4 +1,4 @@
-const CACHE_NAME = 'chore-rpg-v4'; // 캐시 버전을 v4로 상향하여 index.html 마이그레이션 변경사항 강제 동기화
+const CACHE_NAME = 'chore-rpg-v5'; // 캐시 버전을 v5로 상향하여 모바일 팝오버 짤림 해결 버전 배포
 const ASSETS = [
   './',
   './index.html',
@@ -15,7 +15,7 @@ self.addEventListener('install', event => {
       return cache.addAll(ASSETS);
     })
   );
-  self.skipWaiting(); // 즉시 활성화
+  self.skipWaiting();
 });
 
 // 활성화 이벤트 - 구버전 캐시 정리
