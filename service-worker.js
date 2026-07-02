@@ -1,4 +1,4 @@
-const CACHE_NAME = 'chore-rpg-v12'; // 캐시 버전을 v12로 상향하여 냐옹이 장비 상점 및 가방 장착 시스템 배포
+const CACHE_NAME = 'chore-rpg-v13'; // 캐시 버전을 v13으로 상향하여 1번 마법 빗자루 기본 인벤토리 지급 배포
 const ASSETS = [
   './',
   './index.html',

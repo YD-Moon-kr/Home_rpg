@@ -2678,9 +2678,11 @@
                     parsed.character.name = "집안일 야옹이";
                 }
 
-                // [신규] 상점 시스템 마이그레이션 (소지품 및 장착 장비 필드 복구)
+                // [신규] 상점 시스템 마이그레이션 (소지품 및 장착 장비 필드 복구 및 기본 빗자루 지급)
                 if (!parsed.inventory) {
-                    parsed.inventory = [];
+                    parsed.inventory = ['broom'];
+                } else if (parsed.inventory.length === 0) {
+                    parsed.inventory = ['broom']; // 기존 유저도 가방이 비어있으면 1번 빗자루 기본 지급
                 }
                 if (parsed.equippedItem === undefined) {
                     parsed.equippedItem = null;
@@ -2788,7 +2790,7 @@
                         }
                     ],
                     refrigerator: [],
-                    inventory: [],
+                    inventory: ['broom'], // 초기화 시 1번 마법 빗자루 기본 지급
                     equippedItem: null
                 };
                 saveGame();
