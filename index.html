@@ -2,7 +2,7 @@
 <html lang="ko">
 <head>
     <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no, viewport-fit=cover">
     <title>⚔️ 집안일 RPG (House Chore RPG)</title>
     
     <!-- PWA 및 아이폰(iOS) 홈 화면 추가 지원 메타 태그 -->
@@ -52,6 +52,11 @@
             box-sizing: border-box;
             margin: 0;
             padding: 0;
+        }
+
+        html, body {
+            overflow-x: hidden;
+            width: 100%;
         }
 
         body {
@@ -409,6 +414,7 @@
             box-shadow: 0 15px 35px rgba(0,0,0,0.6);
             z-index: 100;
             width: 320px;
+            max-width: 85vw; /* 모바일 가로 삐져나감 방지 */
             opacity: 0;
             pointer-events: none;
             transition: all 0.25s cubic-bezier(0.175, 0.885, 0.32, 1.15);
@@ -1316,10 +1322,10 @@
                         </div>
                     </div>
                     
-                    <!-- 5. 냉장고 던전 핀 & 팝오버 -->
+                    <!-- 5. 냉장고 던전 핀 & 팝오버 (가로 삐져나감 제어) -->
                     <div class="map-pin-container" style="top: 28%; left: 82%;">
                         <div class="map-pin gold" onclick="toggleMapPopover('refrigerator', event)">🧊</div>
-                        <div class="map-popover" id="popover-refrigerator" style="width: 340px;">
+                        <div class="map-popover" id="popover-refrigerator" style="width: 340px; max-width: 85vw;">
                             <div class="popover-header">
                                 <span class="popover-title">🧊 미니 냉장고 던전</span>
                                 <button class="btn-popover-close" onclick="closeAllPopovers(event)">&times;</button>
