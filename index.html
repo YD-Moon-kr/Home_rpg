@@ -1448,7 +1448,7 @@
             <div class="card" style="padding: 16px 20px;">
                 <div class="character-profile">
                     <div class="avatar-container">
-                        <img src="character_avatar.jpg" alt="Avatar" class="avatar-image" onerror="this.src='https://api.dicebear.com/7.x/pixel-art/svg?seed=cleaner'">
+                        <img src="character_avatar.jpg" alt="Avatar" id="char-avatar" class="avatar-image" onerror="this.src='https://api.dicebear.com/7.x/pixel-art/svg?seed=cleaner'">
                         <div class="level-badge" id="char-level">Lv.1</div>
                     </div>
                     
@@ -1881,6 +1881,20 @@
             document.getElementById('char-level').innerText = `Lv.${char.level}`;
             document.getElementById('char-name').innerText = char.name;
             document.getElementById('char-gold').innerText = `🪙 ${char.gold}`;
+            
+            // [신규] 장착 장비에 따른 캐릭터 아바타 이미지 실시간 변경
+            const charAvatarEl = document.getElementById('char-avatar');
+            if (charAvatarEl) {
+                if (gameState.equippedItem === 'broom') {
+                    charAvatarEl.src = 'avatar_broom.jpg';
+                } else if (gameState.equippedItem === 'crown') {
+                    charAvatarEl.src = 'avatar_crown.jpg';
+                } else if (gameState.equippedItem === 'glasses') {
+                    charAvatarEl.src = 'avatar_glasses.jpg';
+                } else {
+                    charAvatarEl.src = 'character_avatar.jpg';
+                }
+            }
             
             const xpPercent = Math.min((char.currentXp / char.nextLevelXp) * 100, 100);
             document.getElementById('char-xp-ratio').innerText = `${char.currentXp} / ${char.nextLevelXp}`;
