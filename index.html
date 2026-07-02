@@ -1,0 +1,2367 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>⚔️ 집안일 RPG (House Chore RPG)</title>
+    
+    <!-- PWA 및 아이폰(iOS) 홈 화면 추가 지원 메타 태그 -->
+    <link rel="manifest" href="manifest.json">
+    <meta name="apple-mobile-web-app-capable" content="yes">
+    <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+    <meta name="apple-mobile-web-app-title" content="집안일 RPG">
+    <link rel="apple-touch-icon" href="character_avatar.jpg">
+
+    <!-- Google Fonts: Outfit (헤더/숫자용), Inter (본문용) -->
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&family=Outfit:wght@400;600;700;800&display=swap" rel="stylesheet">
+    
+    <style>
+        /* -------------------------------------------------------------
+           1. 글로벌 디자인 시스템 & 캐주얼 RPG 테마 변수 (Warm Cozy Theme)
+           ------------------------------------------------------------- */
+        :root {
+            --bg-color: #171821; /* 조금 더 부드러운 다크 그레이 */
+            --panel-bg: rgba(33, 37, 54, 0.85); /* 웜 다크 톤 */
+            --panel-border: rgba(255, 255, 255, 0.08);
+            --panel-border-hover: rgba(78, 205, 196, 0.4); /* 따뜻한 민트/사이안 */
+            
+            /* 아기자기한 파스텔 테마 컬러 */
+            --color-primary: #4ecdc4; /* 민트/하늘 */
+            --color-primary-glow: rgba(78, 205, 196, 0.4);
+            --color-secondary: #45b6fe; /* 파스텔 블루 */
+            --color-accent: #ffde4d; /* 레몬 골드 */
+            --color-accent-glow: rgba(255, 222, 77, 0.4);
+            --color-danger: #ff6b6b; /* 파스텔 핑크/레드 */
+            --color-danger-glow: rgba(255, 107, 107, 0.4);
+            --color-success: #87d37c; /* 파스텔 그린 */
+            --color-success-glow: rgba(135, 211, 124, 0.4);
+            
+            --text-main: #f3f4f6;
+            --text-muted: #a5aab5;
+            --font-display: 'Outfit', sans-serif;
+            --font-body: 'Inter', sans-serif;
+            
+            --shadow-neon: 0 0 15px var(--color-primary-glow);
+            --shadow-gold: 0 0 15px var(--color-accent-glow);
+            --shadow-card: 0 8px 32px 0 rgba(0, 0, 0, 0.4);
+        }
+
+        * {
+            box-sizing: border-box;
+            margin: 0;
+            padding: 0;
+        }
+
+        body {
+            background-color: var(--bg-color);
+            background-image: 
+                radial-gradient(at 10% 20%, rgba(78, 205, 196, 0.06) 0px, transparent 50%),
+                radial-gradient(at 90% 80%, rgba(255, 222, 77, 0.04) 0px, transparent 50%);
+            color: var(--text-main);
+            font-family: var(--font-body);
+            padding: 40px 20px;
+            min-height: 100vh;
+            display: flex;
+            justify-content: center;
+        }
+
+        /* -------------------------------------------------------------
+           2. 레이아웃 & 컨테이너 (Layout & Containers)
+           ------------------------------------------------------------- */
+        .dashboard-container {
+            width: 100%;
+            max-width: 1100px;
+            display: flex;
+            flex-direction: column;
+            gap: 24px;
+        }
+
+        header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            padding: 10px 0;
+            border-bottom: 1px solid var(--panel-border);
+        }
+
+        header h1 {
+            font-family: var(--font-display);
+            font-size: 1.8rem;
+            font-weight: 800;
+            letter-spacing: -0.5px;
+            background: linear-gradient(135deg, var(--color-primary), var(--color-secondary));
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            display: flex;
+            align-items: center;
+            gap: 8px;
+        }
+
+        header .subtitle {
+            font-size: 0.85rem;
+            color: var(--text-muted);
+            margin-top: 4px;
+        }
+
+        .dashboard-grid {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            gap: 24px;
+            width: 100%;
+        }
+
+        /* -------------------------------------------------------------
+           3. 공통 카드 컴포넌트 (Glassmorphism Cards)
+           ------------------------------------------------------------- */
+        .card {
+            background: var(--panel-bg);
+            backdrop-filter: blur(12px);
+            -webkit-backdrop-filter: blur(12px);
+            border: 1px solid var(--panel-border);
+            border-radius: 20px;
+            padding: 24px;
+            box-shadow: var(--shadow-card);
+            transition: border-color 0.3s ease, box-shadow 0.3s ease;
+            width: 100%;
+            max-width: 850px; /* 맵 이미지의 권장 가로폭과 일치시킴 */
+        }
+
+        .card:hover {
+            border-color: var(--panel-border-hover);
+        }
+
+        .card-title {
+            font-family: var(--font-display);
+            font-size: 1.25rem;
+            font-weight: 700;
+            margin-bottom: 20px;
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            gap: 8px;
+            border-bottom: 1px solid rgba(255, 255, 255, 0.05);
+            padding-bottom: 10px;
+        }
+
+        .card-title-left {
+            display: flex;
+            align-items: center;
+            gap: 8px;
+        }
+
+        /* -------------------------------------------------------------
+           4. 캐릭터 프로필 카드 (Character Card CSS)
+           ------------------------------------------------------------- */
+        .character-profile {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            text-align: center;
+            gap: 16px;
+        }
+
+        .avatar-container {
+            width: 110px;
+            height: 110px;
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            box-shadow: var(--shadow-neon);
+            border: 3px solid var(--color-primary);
+            position: relative;
+            background: #1e2235;
+        }
+
+        .avatar-image {
+            width: 100%;
+            height: 100%;
+            border-radius: 50%;
+            object-fit: cover;
+        }
+
+        .level-badge {
+            position: absolute;
+            bottom: -5px;
+            right: -5px;
+            background: var(--color-accent);
+            color: #000;
+            font-family: var(--font-display);
+            font-weight: 800;
+            font-size: 0.9rem;
+            padding: 4px 8px;
+            border-radius: 20px;
+            box-shadow: var(--shadow-gold);
+            border: 2px solid var(--bg-color);
+        }
+
+        .character-name {
+            font-family: var(--font-display);
+            font-size: 1.5rem;
+            font-weight: 700;
+            letter-spacing: -0.3px;
+        }
+
+        .stats-row {
+            display: flex;
+            justify-content: center;
+            width: 100%;
+            margin-top: 10px;
+        }
+
+        .stat-box {
+            background: rgba(255, 255, 255, 0.03);
+            border: 1px solid rgba(255, 255, 255, 0.05);
+            border-radius: 12px;
+            padding: 12px 24px;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            gap: 4px;
+            min-width: 120px;
+        }
+
+        .stat-value {
+            font-family: var(--font-display);
+            font-size: 1.4rem;
+            font-weight: 700;
+            color: var(--color-accent);
+            text-shadow: 0 0 10px rgba(255, 222, 77, 0.3);
+            display: flex;
+            align-items: center;
+            gap: 4px;
+        }
+
+        .xp-container {
+            width: 100%;
+            margin-top: 15px;
+        }
+
+        .xp-text {
+            display: flex;
+            justify-content: space-between;
+            font-size: 0.8rem;
+            color: var(--text-muted);
+            margin-bottom: 6px;
+        }
+
+        .xp-bar-bg {
+            background: rgba(255, 255, 255, 0.08);
+            border-radius: 8px;
+            height: 12px;
+            overflow: hidden;
+            width: 100%;
+        }
+
+        .xp-bar-fill {
+            background: linear-gradient(90deg, var(--color-primary), var(--color-secondary));
+            height: 100%;
+            width: 0%;
+            border-radius: 8px;
+            box-shadow: 0 0 8px var(--color-primary-glow);
+            transition: width 0.4s cubic-bezier(0.4, 0, 0.2, 1);
+        }
+
+        /* -------------------------------------------------------------
+           5. 아기자기한 인터랙티브 맵 및 팝오버 (Overlay Popovers)
+           ------------------------------------------------------------- */
+        .house-map-card {
+            display: flex;
+            flex-direction: column;
+            gap: 16px;
+        }
+
+        .map-wrapper {
+            position: relative;
+            width: 100%;
+            max-width: 850px;
+            margin: 0 auto;
+            border-radius: 16px;
+            overflow: visible; /* 팝업이 튀어나와야 하므로 visible */
+            box-shadow: 0 10px 30px rgba(0, 0, 0, 0.4);
+            border: 1px solid var(--panel-border);
+            background: #2a2e3f;
+        }
+
+        .map-image {
+            width: 100%;
+            height: auto;
+            display: block;
+            border-radius: 16px;
+        }
+
+        /* 핀 컨테이너 */
+        .map-pin-container {
+            position: absolute;
+            transform: translate(-50%, -50%);
+            z-index: 10;
+        }
+
+        .map-pin {
+            width: 32px;
+            height: 32px;
+            border-radius: 50%;
+            cursor: pointer;
+            border: 3px solid #fff;
+            box-shadow: 0 4px 10px rgba(0, 0, 0, 0.4);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 1.1rem;
+            transition: all 0.3s cubic-bezier(0.175, 0.885, 0.32, 1.275);
+            position: relative;
+        }
+
+        .map-pin:hover {
+            transform: scale(1.2);
+            box-shadow: 0 0 15px #fff;
+        }
+
+        .map-pin.cyan { background-color: var(--color-primary); box-shadow: 0 0 12px var(--color-primary-glow); }
+        .map-pin.gold { background-color: var(--color-accent); box-shadow: 0 0 12px var(--color-accent-glow); }
+        .map-pin.pink { background-color: var(--color-danger); box-shadow: 0 0 12px var(--color-danger-glow); }
+        .map-pin.green { background-color: var(--color-success); box-shadow: 0 0 12px var(--color-success-glow); }
+        .map-pin.blue { background-color: var(--color-secondary); box-shadow: 0 0 12px rgba(79, 172, 254, 0.5); }
+
+        .map-pin::after {
+            content: '';
+            position: absolute;
+            top: -6px;
+            left: -6px;
+            right: -6px;
+            bottom: -6px;
+            border-radius: 50%;
+            opacity: 0;
+            pointer-events: none;
+        }
+        .map-pin.cyan::after { border: 2px solid var(--color-primary); animation: pin-pulse 1.8s infinite; }
+        .map-pin.gold::after { border: 2px solid var(--color-accent); animation: pin-pulse 1.8s infinite; }
+        .map-pin.pink::after { border: 2px solid var(--color-danger); animation: pin-pulse 1.8s infinite; }
+        .map-pin.green::after { border: 2px solid var(--color-success); animation: pin-pulse 1.8s infinite; }
+        .map-pin.blue::after { border: 2px solid var(--color-secondary); animation: pin-pulse 1.8s infinite; }
+
+        @keyframes pin-pulse {
+            0% { transform: scale(0.8); opacity: 0.8; }
+            100% { transform: scale(1.6); opacity: 0; }
+        }
+
+        /* 핀 위에 고정되는 말풍선 라벨 */
+        .pin-label {
+            position: absolute;
+            bottom: 40px;
+            left: 50%;
+            transform: translateX(-50%);
+            background: rgba(20, 22, 33, 0.95);
+            color: #fff;
+            padding: 4px 10px;
+            border-radius: 8px;
+            font-size: 0.75rem;
+            white-space: nowrap;
+            pointer-events: none;
+            opacity: 0.9;
+            font-weight: 700;
+            box-shadow: 0 4px 10px rgba(0,0,0,0.5);
+            display: flex;
+            align-items: center;
+            gap: 4px;
+            border: 1px solid rgba(255,255,255,0.1);
+        }
+        .map-pin.cyan .pin-label { border-color: var(--color-primary); }
+        .map-pin.gold .pin-label { border-color: var(--color-accent); }
+        .map-pin.pink .pin-label { border-color: var(--color-danger); }
+        .map-pin.green .pin-label { border-color: var(--color-success); }
+        .map-pin.blue .pin-label { border-color: var(--color-secondary); }
+
+        .pin-label::after {
+            content: '';
+            position: absolute;
+            bottom: -5px;
+            left: 50%;
+            transform: translateX(-50%);
+            border-width: 5px 5px 0;
+            border-style: solid;
+            border-color: rgba(20, 22, 33, 0.95) transparent transparent;
+        }
+
+        /* -------------------------------------------------------------
+           [핵심 추가] 지도 그림 위에 바로 뜨는 퀘스트/인벤토리 팝오버
+           ------------------------------------------------------------- */
+        .map-popover {
+            position: absolute;
+            top: 45px; /* 핀 아래쪽에 배치 */
+            left: 50%;
+            transform: translateX(-50%) scale(0.8) translateY(-10px);
+            background: #1f2235;
+            border: 2px solid var(--color-primary);
+            border-radius: 16px;
+            padding: 16px;
+            box-shadow: 0 15px 35px rgba(0,0,0,0.6);
+            z-index: 100;
+            width: 320px;
+            opacity: 0;
+            pointer-events: none;
+            transition: all 0.25s cubic-bezier(0.175, 0.885, 0.32, 1.15);
+        }
+
+        .map-popover.active {
+            opacity: 1;
+            transform: translateX(-50%) scale(1) translateY(0);
+            pointer-events: auto;
+        }
+
+        /* 팝오버 화살표 상단 방향 */
+        .map-popover::before {
+            content: '';
+            position: absolute;
+            top: -10px;
+            left: 50%;
+            transform: translateX(-50%);
+            border-width: 0 10px 10px;
+            border-style: solid;
+            border-color: transparent transparent var(--color-primary);
+        }
+
+        /* 팝오버가 위로 뜨도록 설정 (하단부 핀 버그 픽스) */
+        .popover-up .map-popover {
+            top: auto;
+            bottom: 45px;
+            transform: translateX(-50%) scale(0.8) translateY(10px);
+        }
+
+        .popover-up .map-popover.active {
+            transform: translateX(-50%) scale(1) translateY(0);
+        }
+
+        .popover-up .map-popover::before {
+            top: auto;
+            bottom: -10px;
+            border-width: 10px 10px 0;
+            border-style: solid;
+            border-color: var(--color-primary) transparent transparent;
+        }
+
+        /* 팝오버 헤더 */
+        .popover-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 12px;
+            border-bottom: 1px solid rgba(255, 255, 255, 0.05);
+            padding-bottom: 8px;
+        }
+
+        .popover-title {
+            font-family: var(--font-display);
+            font-size: 0.95rem;
+            font-weight: 700;
+            color: var(--text-main);
+            display: flex;
+            align-items: center;
+            gap: 6px;
+        }
+
+        .btn-popover-close {
+            background: transparent;
+            border: none;
+            color: var(--text-muted);
+            font-size: 1.2rem;
+            cursor: pointer;
+            line-height: 1;
+            padding: 2px;
+        }
+
+        .btn-popover-close:hover {
+            color: var(--color-danger);
+        }
+
+        /* 팝오버 리스트 항목 */
+        .popover-list {
+            display: flex;
+            flex-direction: column;
+            gap: 10px;
+            max-height: 250px;
+            overflow-y: auto;
+            padding-right: 4px;
+        }
+
+        .popover-item {
+            background: rgba(255, 255, 255, 0.02);
+            border: 1px solid rgba(255, 255, 255, 0.04);
+            border-radius: 10px;
+            padding: 10px 12px;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+
+        .popover-item.completed {
+            background: rgba(135, 211, 124, 0.03);
+            border-color: rgba(135, 211, 124, 0.1);
+        }
+
+        /* 냉장고 미니 인벤토리 */
+        .popover-food-grid {
+            display: grid;
+            grid-template-columns: repeat(2, 1fr);
+            gap: 10px;
+            max-height: 250px;
+            overflow-y: auto;
+            padding-right: 4px;
+        }
+
+        .popover-food-card {
+            background: rgba(255, 255, 255, 0.02);
+            border: 1px solid rgba(255,255,255,0.05);
+            border-radius: 10px;
+            padding: 8px;
+            display: flex;
+            flex-direction: column;
+            gap: 6px;
+            position: relative;
+        }
+
+        .popover-food-card.danger { border-color: var(--color-danger); }
+        .popover-food-card.warning { border-color: var(--color-accent); }
+
+        .popover-food-name {
+            font-size: 0.8rem;
+            font-weight: 600;
+            white-space: nowrap;
+            overflow: hidden;
+            text-overflow: ellipsis;
+        }
+
+        /* -------------------------------------------------------------
+           6. 반복 및 세분화 퀘스트 카드 (Quests Card CSS)
+           ------------------------------------------------------------- */
+        .quest-list {
+            display: flex;
+            flex-direction: column;
+            gap: 16px;
+        }
+
+        .quest-group {
+            background: rgba(255, 255, 255, 0.02);
+            border: 1px solid rgba(255, 255, 255, 0.05);
+            border-radius: 12px;
+            overflow: hidden;
+            transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+            position: relative;
+        }
+
+        .quest-group.expanded {
+            border-color: rgba(78, 205, 196, 0.25);
+            box-shadow: 0 4px 20px rgba(78, 205, 196, 0.05);
+        }
+
+        .quest-header {
+            padding: 16px 20px;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            cursor: pointer;
+            user-select: none;
+            transition: background 0.2s ease;
+        }
+
+        .quest-header:hover {
+            background: rgba(255, 255, 255, 0.04);
+        }
+
+        .quest-header-left {
+            display: flex;
+            align-items: center;
+            gap: 12px;
+            flex-grow: 1;
+        }
+
+        .arrow-icon {
+            font-size: 0.8rem;
+            color: var(--text-muted);
+            transition: transform 0.3s ease;
+        }
+
+        .expanded .arrow-icon {
+            transform: rotate(90deg);
+            color: var(--color-primary);
+        }
+
+        .quest-title-container {
+            display: flex;
+            flex-direction: column;
+            gap: 4px;
+        }
+
+        .quest-group-title {
+            font-size: 1rem;
+            font-weight: 600;
+            color: var(--text-main);
+            display: flex;
+            align-items: center;
+            gap: 8px;
+        }
+
+        .quest-group.completed-all .quest-group-title {
+            color: var(--color-success);
+        }
+
+        .quest-progress-container {
+            width: 120px;
+            display: flex;
+            flex-direction: column;
+            gap: 4px;
+        }
+
+        .quest-progress-text {
+            font-size: 0.75rem;
+            color: var(--text-muted);
+            text-align: right;
+        }
+
+        .quest-progress-bg {
+            background: rgba(255, 255, 255, 0.05);
+            border-radius: 4px;
+            height: 6px;
+            overflow: hidden;
+        }
+
+        .quest-progress-fill {
+            background: linear-gradient(90deg, var(--color-primary), var(--color-success));
+            height: 100%;
+            width: 0%;
+            border-radius: 4px;
+            transition: width 0.3s ease;
+        }
+
+        .btn-delete-quest {
+            background: transparent;
+            border: none;
+            color: var(--text-muted);
+            cursor: pointer;
+            font-size: 0.95rem;
+            padding: 4px;
+            border-radius: 4px;
+            transition: all 0.2s ease;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+        }
+
+        .btn-delete-quest:hover {
+            color: var(--color-danger);
+            background: rgba(255, 65, 108, 0.1);
+        }
+
+        .subquest-list {
+            max-height: 0;
+            overflow: hidden;
+            transition: max-height 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+            background: rgba(0, 0, 0, 0.2);
+            border-top: 1px solid rgba(255, 255, 255, 0.02);
+        }
+
+        .expanded .subquest-list {
+            max-height: 600px;
+        }
+
+        .subquest-item {
+            padding: 14px 20px 14px 44px;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            border-bottom: 1px solid rgba(255, 255, 255, 0.02);
+            transition: background 0.2s ease;
+        }
+
+        .subquest-item:last-child {
+            border-bottom: none;
+        }
+
+        .subquest-item:hover {
+            background: rgba(255, 255, 255, 0.02);
+        }
+
+        .subquest-item.completed {
+            background: rgba(135, 211, 124, 0.02);
+        }
+
+        .subquest-info {
+            display: flex;
+            flex-direction: column;
+            gap: 4px;
+        }
+
+        .subquest-name {
+            font-size: 0.9rem;
+            font-weight: 500;
+            color: var(--text-main);
+            display: flex;
+            align-items: center;
+            gap: 6px;
+        }
+
+        .completed .subquest-name {
+            color: var(--text-muted);
+            text-decoration: line-through;
+        }
+
+        .subquest-rewards {
+            display: flex;
+            gap: 10px;
+            font-size: 0.75rem;
+        }
+
+        .quest-actions {
+            display: flex;
+            gap: 8px;
+            align-items: center;
+        }
+
+        .btn-action {
+            font-family: var(--font-display);
+            font-weight: 700;
+            font-size: 0.75rem;
+            padding: 6px 12px;
+            border-radius: 6px;
+            cursor: pointer;
+            border: none;
+            transition: all 0.2s ease;
+            position: relative;
+            overflow: hidden;
+        }
+
+        .btn-action.complete {
+            background: linear-gradient(135deg, var(--color-primary), var(--color-secondary));
+            color: #000;
+        }
+
+        .btn-action.complete:hover {
+            transform: translateY(-1px);
+            box-shadow: 0 0 10px var(--color-primary-glow);
+        }
+
+        .btn-action.repeat {
+            background: rgba(255, 255, 255, 0.05);
+            border: 1px solid rgba(255, 255, 255, 0.15);
+            color: var(--text-main);
+        }
+
+        .btn-action.repeat:hover {
+            background: rgba(255, 255, 255, 0.1);
+            border-color: var(--color-accent);
+            color: var(--color-accent);
+            box-shadow: 0 0 8px rgba(255, 222, 77, 0.2);
+        }
+
+        .btn-action.reset-all {
+            background: rgba(135, 211, 124, 0.1);
+            border: 1px solid var(--color-success);
+            color: var(--color-success);
+        }
+
+        .btn-action.reset-all:hover {
+            background: var(--color-success);
+            color: #000;
+            box-shadow: 0 0 12px var(--color-success-glow);
+        }
+
+        /* -------------------------------------------------------------
+           7. Phase 2: 냉장고 던전
+           ------------------------------------------------------------- */
+        .refrigerator-preview {
+            transition: border-color 0.5s ease, box-shadow 0.5s ease;
+        }
+
+        .ref-header-controls {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            flex-wrap: wrap;
+            gap: 16px;
+            margin-bottom: 20px;
+            border-bottom: 1px solid rgba(255, 255, 255, 0.05);
+            padding-bottom: 15px;
+        }
+
+        .ref-filters {
+            display: flex;
+            gap: 8px;
+        }
+
+        .filter-btn {
+            background: rgba(255, 255, 255, 0.04);
+            border: 1px solid rgba(255, 255, 255, 0.08);
+            color: var(--text-muted);
+            padding: 6px 14px;
+            border-radius: 20px;
+            font-size: 0.8rem;
+            font-weight: 500;
+            cursor: pointer;
+            transition: all 0.2s ease;
+        }
+
+        .filter-btn:hover {
+            border-color: rgba(255, 255, 255, 0.2);
+            color: var(--text-main);
+        }
+
+        .filter-btn.active {
+            background: var(--color-primary);
+            color: #000;
+            border-color: var(--color-primary);
+            font-weight: 600;
+            box-shadow: 0 0 12px var(--color-primary-glow);
+        }
+
+        .btn-add-food {
+            background: linear-gradient(135deg, var(--color-primary), var(--color-secondary));
+            border: none;
+            color: #000;
+            font-family: var(--font-display);
+            font-weight: 700;
+            font-size: 0.8rem;
+            padding: 8px 16px;
+            border-radius: 8px;
+            cursor: pointer;
+            display: flex;
+            align-items: center;
+            gap: 6px;
+            transition: all 0.2s ease;
+        }
+
+        .btn-add-food:hover {
+            transform: translateY(-1px);
+            box-shadow: 0 0 12px var(--color-primary-glow);
+        }
+
+        .inventory-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fill, minmax(210px, 1fr));
+            gap: 16px;
+        }
+
+        .empty-inventory {
+            grid-column: 1 / -1;
+            text-align: center;
+            padding: 40px 20px;
+            background: rgba(255, 255, 255, 0.01);
+            border: 1px dashed rgba(255, 255, 255, 0.1);
+            border-radius: 12px;
+            color: var(--text-muted);
+            font-size: 0.9rem;
+        }
+
+        .food-card {
+            background: rgba(255, 255, 255, 0.02);
+            border: 1px solid rgba(255, 255, 255, 0.05);
+            border-radius: 12px;
+            padding: 16px;
+            display: flex;
+            flex-direction: column;
+            gap: 12px;
+            position: relative;
+            transition: all 0.3s ease;
+        }
+
+        .food-card:hover {
+            transform: translateY(-3px);
+        }
+
+        .food-card.danger {
+            border-color: var(--color-danger);
+            box-shadow: 0 4px 15px rgba(255, 65, 107, 0.05);
+            background: linear-gradient(180deg, rgba(255, 65, 107, 0.03) 0%, rgba(255, 255, 255, 0.02) 100%);
+        }
+
+        .food-card.warning {
+            border-color: var(--color-accent);
+            box-shadow: 0 4px 15px rgba(255, 222, 77, 0.03);
+            background: linear-gradient(180deg, rgba(255, 222, 77, 0.02) 0%, rgba(255, 255, 255, 0.02) 100%);
+        }
+
+        .food-card.safe {
+            border-color: rgba(255, 255, 255, 0.05);
+        }
+
+        .food-card.safe:hover {
+            border-color: var(--color-primary);
+        }
+
+        .food-info-top {
+            display: flex;
+            align-items: center;
+            gap: 8px;
+        }
+
+        .food-icon {
+            font-size: 1.6rem;
+            width: 40px;
+            height: 40px;
+            background: rgba(255, 255, 255, 0.03);
+            border-radius: 8px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            border: 1px solid rgba(255, 255, 255, 0.05);
+        }
+
+        .food-name-area {
+            display: flex;
+            flex-direction: column;
+            gap: 2px;
+        }
+
+        .food-card-name {
+            font-size: 0.95rem;
+            font-weight: 600;
+            color: var(--text-main);
+        }
+
+        .food-card-category {
+            font-size: 0.75rem;
+            color: var(--text-muted);
+        }
+
+        .dday-badge {
+            position: absolute;
+            top: 16px;
+            right: 16px;
+            font-family: var(--font-display);
+            font-size: 0.75rem;
+            font-weight: 800;
+            padding: 4px 8px;
+            border-radius: 6px;
+        }
+
+        .danger .dday-badge {
+            background: rgba(255, 107, 107, 0.2);
+            color: var(--color-danger);
+            border: 1px solid var(--color-danger);
+        }
+
+        .warning .dday-badge {
+            background: rgba(255, 222, 77, 0.2);
+            color: var(--color-accent);
+            border: 1px solid var(--color-accent);
+        }
+
+        .safe .dday-badge {
+            background: rgba(255, 255, 255, 0.08);
+            color: var(--text-main);
+            border: 1px solid rgba(255, 255, 255, 0.1);
+        }
+
+        .expiry-date-info {
+            font-size: 0.75rem;
+            color: var(--text-muted);
+            background: rgba(255, 255, 255, 0.01);
+            padding: 6px 10px;
+            border-radius: 6px;
+            border: 1px solid rgba(255, 255, 255, 0.03);
+        }
+
+        .food-card-actions {
+            display: flex;
+            gap: 8px;
+            margin-top: 4px;
+        }
+
+        .food-card-actions button {
+            flex: 1;
+            font-size: 0.75rem;
+        }
+
+        .btn-eat-food {
+            background: linear-gradient(135deg, var(--color-primary), var(--color-secondary));
+            color: #000;
+        }
+
+        .btn-eat-food:hover {
+            box-shadow: 0 0 10px var(--color-primary-glow);
+        }
+
+        .btn-waste-food {
+            background: rgba(255, 107, 107, 0.1);
+            border: 1px solid var(--color-danger);
+            color: var(--color-danger);
+        }
+
+        .btn-waste-food:hover {
+            background: var(--color-danger);
+            color: #fff;
+            box-shadow: 0 0 10px var(--color-danger-glow);
+        }
+
+        /* -------------------------------------------------------------
+           11. 화려한 레벨업 축하 모달 & 파티클 CSS
+           ------------------------------------------------------------- */
+        .levelup-overlay {
+            position: fixed;
+            top: 0;
+            left: 0;
+            right: 0;
+            bottom: 0;
+            background: rgba(0, 0, 0, 0.85);
+            backdrop-filter: blur(15px);
+            -webkit-backdrop-filter: blur(15px);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            opacity: 0;
+            pointer-events: none;
+            transition: opacity 0.5s ease;
+            z-index: 2000;
+        }
+
+        .levelup-overlay.active {
+            opacity: 1;
+            pointer-events: auto;
+        }
+
+        .levelup-content {
+            text-align: center;
+            max-width: 450px;
+            padding: 40px;
+            background: radial-gradient(circle, rgba(42, 46, 63, 0.95) 0%, rgba(20, 22, 33, 0.95) 100%);
+            border: 2px solid var(--color-accent);
+            border-radius: 24px;
+            box-shadow: 0 0 30px rgba(255, 222, 77, 0.25);
+            transform: scale(0.7);
+            transition: transform 0.5s cubic-bezier(0.175, 0.885, 0.32, 1.275);
+        }
+
+        .levelup-overlay.active .levelup-content {
+            transform: scale(1);
+        }
+
+        .levelup-title {
+            font-family: var(--font-display);
+            font-size: 3rem;
+            font-weight: 900;
+            color: var(--color-accent);
+            text-shadow: var(--shadow-gold), 0 0 30px rgba(255, 222, 77, 0.6);
+            letter-spacing: 2px;
+            margin-bottom: 24px;
+            animation: levelup-pulse 1.5s infinite alternate;
+        }
+
+        .levelup-crown {
+            font-size: 4rem;
+            margin-bottom: 16px;
+            display: inline-block;
+            animation: bounce 2s infinite;
+        }
+
+        .levelup-level-display {
+            font-family: var(--font-display);
+            font-size: 1.8rem;
+            font-weight: 700;
+            margin-bottom: 20px;
+            color: var(--text-main);
+        }
+
+        .level-arrow {
+            color: var(--color-primary);
+            margin: 0 15px;
+            text-shadow: var(--shadow-neon);
+        }
+
+        .levelup-desc {
+            font-size: 0.95rem;
+            color: var(--text-muted);
+            line-height: 1.6;
+            margin-bottom: 30px;
+        }
+
+        .particle {
+            position: fixed;
+            pointer-events: none;
+            width: 8px;
+            height: 8px;
+            border-radius: 50%;
+            z-index: 3000;
+            animation: particle-blow 0.8s cubic-bezier(0.1, 0.8, 0.3, 1) forwards;
+        }
+
+        @keyframes particle-blow {
+            0% {
+                opacity: 1;
+                transform: translate(0, 0) scale(1);
+            }
+            100% {
+                opacity: 0;
+                transform: translate(var(--dx), var(--dy)) scale(0);
+            }
+        }
+
+        /* -------------------------------------------------------------
+           12. 모험 로그 카드 (Adventure Log)
+           ------------------------------------------------------------- */
+        .adventure-log-card {
+        }
+
+        .log-box {
+            background: rgba(20, 22, 33, 0.9);
+            border: 1px solid rgba(255, 255, 255, 0.05);
+            color: #87d37c; /* 연두색 터미널 텍스트 */
+            padding: 16px;
+            border-radius: 10px;
+            font-family: 'Courier New', Courier, monospace;
+            font-size: 0.85rem;
+            height: 150px;
+            overflow-y: auto;
+            line-height: 1.6;
+            box-shadow: inset 0 0 10px rgba(0, 0, 0, 0.8);
+        }
+
+        .log-line {
+            border-bottom: 1px solid rgba(255, 255, 255, 0.02);
+            padding: 2px 0;
+        }
+
+        /* -------------------------------------------------------------
+           [신규 추가] 공통 글래스모피즘 모달 창 (Modal Windows CSS)
+           ------------------------------------------------------------- */
+        .modal-overlay {
+            position: fixed;
+            top: 0;
+            left: 0;
+            right: 0;
+            bottom: 0;
+            background: rgba(10, 11, 18, 0.8);
+            backdrop-filter: blur(12px);
+            -webkit-backdrop-filter: blur(12px);
+            display: none; /* 평소에는 완전히 렌더링 배제 */
+            align-items: center;
+            justify-content: center;
+            z-index: 3000;
+            opacity: 0;
+            transition: opacity 0.3s ease;
+        }
+
+        .modal-overlay.active {
+            display: flex;
+            opacity: 1;
+        }
+
+        .modal-content {
+            background: radial-gradient(circle, rgba(33, 37, 54, 0.98) 0%, rgba(20, 22, 33, 0.98) 100%);
+            border: 2px solid var(--panel-border-hover);
+            border-radius: 20px;
+            width: 90%;
+            max-width: 460px;
+            padding: 28px;
+            box-shadow: var(--shadow-card);
+            transform: scale(0.85);
+            transition: transform 0.3s cubic-bezier(0.175, 0.885, 0.32, 1.275);
+            display: flex;
+            flex-direction: column;
+            gap: 20px;
+        }
+
+        .modal-overlay.active .modal-content {
+            transform: scale(1);
+        }
+
+        .modal-header {
+            font-family: var(--font-display);
+            font-size: 1.3rem;
+            font-weight: 800;
+            color: var(--color-primary);
+            text-shadow: var(--shadow-neon);
+            border-bottom: 1px solid rgba(255, 255, 255, 0.08);
+            padding-bottom: 12px;
+        }
+
+        .modal-footer {
+            display: flex;
+            justify-content: flex-end;
+            gap: 12px;
+            border-top: 1px solid rgba(255, 255, 255, 0.08);
+            padding-top: 16px;
+            margin-top: 8px;
+        }
+
+        .btn-modal-cancel {
+            background: rgba(255, 255, 255, 0.05);
+            border: 1px solid rgba(255, 255, 255, 0.1);
+            color: var(--text-muted);
+            padding: 10px 20px;
+            border-radius: 8px;
+            font-family: var(--font-display);
+            font-weight: 700;
+            font-size: 0.85rem;
+            cursor: pointer;
+            transition: all 0.2s ease;
+        }
+
+        .btn-modal-cancel:hover {
+            background: rgba(255, 255, 255, 0.1);
+            color: var(--text-main);
+        }
+
+        .form-group {
+            display: flex;
+            flex-direction: column;
+            gap: 8px;
+            width: 100%;
+        }
+
+        .form-group label {
+            font-size: 0.85rem;
+            font-weight: 600;
+            color: var(--text-muted);
+        }
+
+        .form-group input, .form-group select {
+            background: rgba(0, 0, 0, 0.25);
+            border: 1px solid rgba(255, 255, 255, 0.1);
+            border-radius: 8px;
+            padding: 12px;
+            color: var(--text-main);
+            font-size: 0.9rem;
+            outline: none;
+            transition: border-color 0.2s ease;
+        }
+
+        .form-group input:focus, .form-group select:focus {
+            border-color: var(--color-primary);
+        }
+        
+        .form-group select option {
+            color: #111;
+            background-color: #fff;
+        }
+    </style>
+</head>
+<body>
+
+    <div class="dashboard-container">
+        <!-- 헤더 영역 -->
+        <header>
+            <div>
+                <h1>⚔️ HOUSE CHORE RPG (VER_2_CENTRALIZED)</h1>
+                <div class="subtitle">집안일을 완료하고 캐릭터를 육성하세요!</div>
+            </div>
+            <div class="header-actions">
+                <button class="btn-reset" onclick="resetGameData()">데이터 초기화</button>
+            </div>
+        </header>
+
+        <!-- 메인 대시보드 그리드 -->
+        <div class="dashboard-grid">
+            
+            <!-- 🏡 [대폭 개편] 아기자기한 인터랙티브 홈 맵 및 오버레이 팝오버 카드 -->
+            <div class="card house-map-card">
+                <div class="card-title">🏡 모험의 영토 (Interactive Cozy Map)</div>
+                <div class="map-wrapper" id="cozy-map-wrapper">
+                    <img src="house_map.jpg" alt="House Map" class="map-image">
+                    
+                    <!-- 1. 방바닥 청소 (거실) 핀 & 팝오버 -->
+                    <div class="map-pin-container" style="top: 62%; left: 42%;">
+                        <div class="map-pin cyan" onclick="toggleMapPopover('q1', event)">🧹</div>
+                        <div class="map-popover" id="popover-q1">
+                            <div class="popover-header">
+                                <span class="popover-title">🧹 거실 청소</span>
+                                <button class="btn-popover-close" onclick="closeAllPopovers(event)">&times;</button>
+                            </div>
+                            <div class="popover-list" id="popover-list-q1"></div>
+                        </div>
+                    </div>
+                    
+                    <!-- 2. 주방 설거지 핀 & 팝오버 -->
+                    <div class="map-pin-container" style="top: 48%; left: 74%;">
+                        <div class="map-pin pink" onclick="toggleMapPopover('q2', event)">🍳</div>
+                        <div class="map-popover" id="popover-q2">
+                            <div class="popover-header">
+                                <span class="popover-title">🍳 주방 설거지</span>
+                                <button class="btn-popover-close" onclick="closeAllPopovers(event)">&times;</button>
+                            </div>
+                            <div class="popover-list" id="popover-list-q2"></div>
+                        </div>
+                    </div>
+
+                    <!-- 3. 세탁기 작동 핀 & 팝오버 -->
+                    <div class="map-pin-container" style="top: 36%; left: 24%;">
+                        <div class="map-pin blue" onclick="toggleMapPopover('q4', event)">🧺</div>
+                        <div class="map-popover" id="popover-q4">
+                            <div class="popover-header">
+                                <span class="popover-title">🧺 세탁기 가동</span>
+                                <button class="btn-popover-close" onclick="closeAllPopovers(event)">&times;</button>
+                            </div>
+                            <div class="popover-list" id="popover-list-q4"></div>
+                        </div>
+                    </div>
+
+                    <!-- 4. 분리수거 핀 & 팝오버 (하단부 짤림 픽스) -->
+                    <div class="map-pin-container popover-up" style="top: 80%; left: 68%;">
+                        <div class="map-pin green" onclick="toggleMapPopover('q3', event)">🗑️</div>
+                        <div class="map-popover" id="popover-q3">
+                            <div class="popover-header">
+                                <span class="popover-title">🗑️ 쓰레기 분리수거</span>
+                                <button class="btn-popover-close" onclick="closeAllPopovers(event)">&times;</button>
+                            </div>
+                            <div class="popover-list" id="popover-list-q3"></div>
+                        </div>
+                    </div>
+                    
+                    <!-- 5. 냉장고 던전 핀 & 팝오버 -->
+                    <div class="map-pin-container" style="top: 28%; left: 82%;">
+                        <div class="map-pin gold" onclick="toggleMapPopover('refrigerator', event)">🧊</div>
+                        <div class="map-popover" id="popover-refrigerator" style="width: 340px;">
+                            <div class="popover-header">
+                                <span class="popover-title">🧊 미니 냉장고 던전</span>
+                                <button class="btn-popover-close" onclick="closeAllPopovers(event)">&times;</button>
+                            </div>
+                            <div class="popover-food-grid" id="popover-food-list"></div>
+                            <button class="btn-add-food" onclick="openAddFoodModal()" style="width:100%; justify-content:center; margin-top:12px; font-size:0.75rem;">➕ 식재료 던전에 등록</button>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- 1. 캐릭터 상태 카드 -->
+            <div class="card">
+                <div class="card-title">🛡️ 캐릭터 프로필</div>
+                <div class="character-profile">
+                    <div class="avatar-container">
+                        <img src="character_avatar.jpg" alt="Avatar" class="avatar-image" onerror="this.src='https://api.dicebear.com/7.x/pixel-art/svg?seed=cleaner'">
+                        <div class="level-badge" id="char-level">Lv.1</div>
+                    </div>
+                    <div class="character-name" id="char-name">청소 전사</div>
+                    
+                    <div class="stats-row">
+                        <div class="stat-box">
+                            <span class="stat-label">보유 골드</span>
+                            <span class="stat-value" id="char-gold">🪙 0</span>
+                        </div>
+                    </div>
+
+                    <div class="xp-container">
+                        <div class="xp-text">
+                            <span>경험치 (XP)</span>
+                            <span id="char-xp-ratio">0 / 100</span>
+                        </div>
+                        <div class="xp-bar-bg">
+                            <div class="xp-bar-fill" id="char-xp-bar"></div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- 2. 일일 퀘스트 카드 -->
+            <div class="card">
+                <div class="card-title">
+                    <div class="card-title-left">⚔️ 일일 퀘스트 목록</div>
+                </div>
+                <div class="quest-list" id="quest-list-container">
+                    <!-- JavaScript로 동적 생성 -->
+                </div>
+                <div style="margin-top: 20px; border-top: 1px solid rgba(255,255,255,0.05); padding-top: 16px;">
+                    <button class="btn-add-food" onclick="openAddQuestModal()" style="width: 100%; justify-content: center; font-size: 0.85rem; padding: 12px;">➕ 새로운 집안일 퀘스트 추가하기</button>
+                </div>
+            </div>
+
+            <!-- 🧊 냉장고 던전 카드 (인벤토리 보드) -->
+            <div class="card refrigerator-preview" id="refrigerator-card-section">
+                <div class="card-title">🧊 냉장고 던전 (식재료 인벤토리)</div>
+                
+                <div class="ref-header-controls">
+                    <div class="ref-filters">
+                        <button class="filter-btn active" id="filter-all" onclick="setFoodFilter('all')">전체</button>
+                        <button class="filter-btn" id="filter-fresh" onclick="setFoodFilter('fresh')">🥬 신선식품 (3일)</button>
+                        <button class="filter-btn" id="filter-dairy" onclick="setFoodFilter('dairy')">🥛 유제품 (7일)</button>
+                        <button class="filter-btn" id="filter-frozen" onclick="setFoodFilter('frozen')">❄️ 냉동식품 (90일)</button>
+                    </div>
+                </div>
+
+                <div class="inventory-grid" id="inventory-grid-container">
+                    <!-- JavaScript로 동적 생성 -->
+                </div>
+                <div style="margin-top: 20px; border-top: 1px solid rgba(255,255,255,0.05); padding-top: 16px;">
+                    <button class="btn-add-food" onclick="openAddFoodModal()" style="width: 100%; justify-content: center; font-size: 0.85rem; padding: 12px;">➕ 새 식재료 냉장고 던전에 보관하기</button>
+                </div>
+            </div>
+
+            <!-- 3. 모험 로그 카드 -->
+            <div class="card adventure-log-card">
+                <div class="card-title">📜 모험 로그 (Adventure Log)</div>
+                <div class="log-box" id="console-log"></div>
+            </div>
+        </div>
+    </div>
+
+    <!-- 식재료 추가용 글래스모피즘 모달 창 -->
+    <div class="modal-overlay" id="add-food-modal" onclick="onModalOverlayClick(event)">
+        <div class="modal-content">
+            <div class="modal-header">📥 새 식재료 던전에 등록</div>
+            <div class="form-group">
+                <label for="food-name-input">식재료 명칭</label>
+                <input type="text" id="food-name-input" placeholder="예: 우유, 상추, 냉동 돼지고기..." maxlength="20">
+            </div>
+            <div class="form-group">
+                <label for="food-category-select">카테고리 (유통기한 자동 책정)</label>
+                <select id="food-category-select">
+                    <option value="fresh">🥬 신선식품 (보관기한 3일)</option>
+                    <option value="dairy" selected>🥛 유제품 (보관기한 7일)</option>
+                    <option value="frozen">❄️ 냉동식품 (보관기한 90일)</option>
+                </select>
+            </div>
+            <div class="modal-footer">
+                <button class="btn-modal-cancel" onclick="closeAddFoodModal()">취소</button>
+                <button class="btn-action complete" onclick="submitAddFoodForm()" style="padding: 10px 20px;">던전에 보관</button>
+            </div>
+        </div>
+    </div>
+
+    <!-- 퀘스트 추가용 모달 창 -->
+    <div class="modal-overlay" id="add-quest-modal" onclick="onQuestModalOverlayClick(event)">
+        <div class="modal-content">
+            <div class="modal-header">⚔️ 커스텀 집안일 퀘스트 추가</div>
+            <div class="form-group">
+                <label for="quest-name-input">퀘스트 그룹 이름</label>
+                <input type="text" id="quest-name-input" placeholder="예: 화장실 대청소, 안방 정리..." maxlength="25">
+            </div>
+            <div class="form-group">
+                <label for="quest-difficulty-select">보상 난이도</label>
+                <select id="quest-difficulty-select">
+                    <option value="easy">🟩 쉬움 (하위당 15XP / 5Gold)</option>
+                    <option value="normal" selected>🟨 보통 (하위당 25XP / 10Gold)</option>
+                    <option value="hard">🟥 어려움 (하위당 40XP / 20Gold)</option>
+                </select>
+            </div>
+            <div class="form-group">
+                <label style="display:flex; justify-content:space-between; align-items:center;">
+                    <span>세부 집안일 항목들 (최대 5개)</span>
+                    <button class="btn-action complete" onclick="addSubquestInputField()" style="padding: 2px 8px; font-size: 0.7rem;">➕ 항목 추가</button>
+                </label>
+                <div class="subquest-inputs-list" id="subquest-inputs-container">
+                    <div class="subquest-input-item" id="sq-input-0">
+                        <input type="text" class="subquest-name-input" placeholder="세부 항목 1 (예: 거울 닦기)" maxlength="20">
+                    </div>
+                    <div class="subquest-input-item" id="sq-input-1">
+                        <input type="text" class="subquest-name-input" placeholder="세부 항목 2 (예: 배수구 청소)" maxlength="20">
+                    </div>
+                </div>
+            </div>
+            <div class="modal-footer">
+                <button class="btn-modal-cancel" onclick="closeAddQuestModal()">취소</button>
+                <button class="btn-action complete" onclick="submitAddQuestForm()" style="padding: 10px 20px;">퀘스트 봉인 해제(등록)</button>
+            </div>
+        </div>
+    </div>
+
+    <!-- 화려한 레벨업 축하 모달 overlay -->
+    <div class="levelup-overlay" id="levelup-modal">
+        <div class="levelup-content">
+            <span class="levelup-crown">👑</span>
+            <div class="levelup-title">LEVEL UP!</div>
+            <div class="levelup-level-display">
+                <span id="levelup-old-level">Lv.1</span>
+                <span class="level-arrow">➔</span>
+                <span id="levelup-new-level" style="color: var(--color-accent); text-shadow: var(--shadow-gold);">Lv.2</span>
+            </div>
+            <div class="levelup-desc">
+                축하합니다! 끊임없는 집안일 모험을 통해 모험가님의 한계가 확장되었습니다. 새로운 에너지가 전신을 휘감습니다!
+            </div>
+            <button class="btn-action complete" onclick="closeLevelUpModal()" style="padding: 12px 30px; font-size: 0.9rem; font-family: var(--font-display); box-shadow: var(--shadow-gold);">모험 계속하기</button>
+        </div>
+    </div>
+
+    <script>
+        // ==========================================
+        // 1. 글로벌 게임 데이터 상태 (Global State)
+        // ==========================================
+        let gameState = {
+            character: {
+                name: "집안일 야옹이",
+                level: 1,
+                currentXp: 0,
+                nextLevelXp: 100,
+                gold: 0
+            },
+            quests: [
+                { 
+                    id: "q1", 
+                    name: "방바닥 청소", 
+                    isCompleted: false, 
+                    isExpanded: false,
+                    subQuests: [
+                        { id: "q1_1", name: "청소기 돌리기", xpReward: 15, goldReward: 5, isCompleted: false },
+                        { id: "q1_2", name: "물걸레질 수행", xpReward: 20, goldReward: 10, isCompleted: false }
+                    ]
+                },
+                { 
+                    id: "q2", 
+                    name: "주방 정돈 및 설거지", 
+                    isCompleted: false, 
+                    isExpanded: false,
+                    subQuests: [
+                        { id: "q2_1", name: "식기류 세척 및 건조", xpReward: 20, goldReward: 10, isCompleted: false },
+                        { id: "q2_2", name: "싱크대 거름망 및 물기 정리", xpReward: 15, goldReward: 5, isCompleted: false }
+                    ]
+                },
+                { 
+                    id: "q4", 
+                    name: "세탁기 및 옷가지 정리", 
+                    isCompleted: false, 
+                    isExpanded: false,
+                    subQuests: [
+                        { id: "q4_1", name: "세탁기 기동 및 빨래 널기", xpReward: 20, goldReward: 8, isCompleted: false },
+                        { id: "q4_2", name: "마른 옷 개어 수납장 넣기", xpReward: 15, goldReward: 7, isCompleted: false }
+                    ]
+                },
+                { 
+                    id: "q3", 
+                    name: "분리수거 및 쓰레기 처리", 
+                    isCompleted: false, 
+                    isExpanded: false,
+                    subQuests: [
+                        { id: "q3_1", name: "재활용 쓰레기 분류/배출", xpReward: 25, goldReward: 12, isCompleted: false },
+                        { id: "q3_2", name: "일반/음식물 쓰레기 비우기", xpReward: 25, goldReward: 13, isCompleted: false }
+                    ]
+                }
+            ],
+            refrigerator: [] 
+        };
+
+        let currentFoodFilter = 'all';
+        let subquestInputCount = 2;
+
+        // UI 로그 출력 함수
+        const logBox = document.getElementById('console-log');
+        function screenLog(msg) {
+            const time = new Date().toLocaleTimeString();
+            logBox.innerHTML += `<div class="log-line">[${time}] ${msg}</div>`;
+            logBox.scrollTop = logBox.scrollHeight;
+        }
+
+        // ==========================================
+        // 2. 날짜 및 디데이 계산 헬퍼 함수
+        // ==========================================
+        function getDDay(expiryDateStr) {
+            const today = new Date();
+            today.setHours(0,0,0,0);
+            
+            const expiry = new Date(expiryDateStr);
+            expiry.setHours(0,0,0,0);
+            
+            const diffTime = expiry - today;
+            const diffDays = Math.ceil(diffTime / (1000 * 60 * 60 * 24));
+            return diffDays;
+        }
+
+        // 파티클 스폰 이펙트 함수
+        function spawnParticles(event) {
+            const colors = ['#4ecdc4', '#45b6fe', '#ffde4d', '#87d37c', '#ff6b6b', '#a18cd1'];
+            
+            const x = event && event.clientX ? event.clientX : window.innerWidth / 2;
+            const y = event && event.clientY ? event.clientY : window.innerHeight / 2;
+
+            for (let i = 0; i < 16; i++) {
+                const particle = document.createElement('div');
+                particle.className = 'particle';
+                
+                const color = colors[Math.floor(Math.random() * colors.length)];
+                particle.style.background = color;
+                particle.style.boxShadow = `0 0 8px ${color}`;
+
+                particle.style.left = `${x}px`;
+                particle.style.top = `${y}px`;
+
+                const angle = Math.random() * Math.PI * 2;
+                const velocity = 40 + Math.random() * 80;
+                const dx = Math.cos(angle) * velocity;
+                const dy = Math.sin(angle) * velocity;
+                
+                particle.style.setProperty('--dx', `${dx}px`);
+                particle.style.setProperty('--dy', `${dy}px`);
+
+                document.body.appendChild(particle);
+
+                setTimeout(() => {
+                    particle.remove();
+                }, 800);
+            }
+        }
+
+        // ==========================================
+        // [신규 추가] 지도 위 오버레이 팝오버 제어 로직
+        // ==========================================
+        function toggleMapPopover(targetId, event) {
+            if (event) {
+                event.stopPropagation();
+                spawnParticles(event);
+            }
+
+            const popover = document.getElementById(`popover-${targetId}`);
+            if (!popover) return;
+
+            const isAlreadyActive = popover.classList.contains('active');
+            
+            // 모든 팝오버 초기 닫기
+            closeAllPopovers();
+
+            // 이미 열려있던 게 아니라면 새로 열기
+            if (!isAlreadyActive) {
+                popover.classList.add('active');
+                screenLog(`📍 지도에서 [${targetId === 'refrigerator' ? '냉장고' : '집안일'}] 세부 팝업을 열었습니다.`);
+            }
+        }
+
+        function closeAllPopovers(event) {
+            if (event) event.stopPropagation();
+            const popovers = document.querySelectorAll('.map-popover');
+            popovers.forEach(p => p.classList.remove('active'));
+        }
+
+        // 지도 밖의 영역을 클릭하면 팝오버가 닫히게 처리
+        document.addEventListener('click', function(e) {
+            const isInsideMapWrapper = e.target.closest('#cozy-map-wrapper');
+            const isModalOpen = document.querySelector('.modal-overlay.active');
+            // 모달이 열려있거나 지도 내부 클릭이 아니라면 팝오버 다 닫기
+            if (!isInsideMapWrapper && !isModalOpen) {
+                closeAllPopovers();
+            }
+        });
+
+        // ==========================================
+        // 3. UI 갱신 로직 (UI Rendering)
+        // ==========================================
+        function updateUI() {
+            const char = gameState.character;
+            
+            // 1. 캐릭터 정보 갱신
+            document.getElementById('char-level').innerText = `Lv.${char.level}`;
+            document.getElementById('char-name').innerText = char.name;
+            document.getElementById('char-gold').innerText = `🪙 ${char.gold}`;
+            
+            const xpPercent = Math.min((char.currentXp / char.nextLevelXp) * 100, 100);
+            document.getElementById('char-xp-ratio').innerText = `${char.currentXp} / ${char.nextLevelXp}`;
+            document.getElementById('char-xp-bar').style.width = `${xpPercent}%`;
+
+            // 2. 퀘스트 목록 갱신 (우측 카드 목록)
+            const questListContainer = document.getElementById('quest-list-container');
+            questListContainer.innerHTML = '';
+
+            gameState.quests.forEach(quest => {
+                const subQuests = quest.subQuests || [];
+                const completedCount = subQuests.filter(sq => sq.isCompleted).length;
+                const totalCount = subQuests.length;
+                const progressPercent = totalCount > 0 ? (completedCount / totalCount) * 100 : 0;
+                
+                const allCompleted = totalCount > 0 && completedCount === totalCount;
+                quest.isCompleted = allCompleted;
+
+                const questGroup = document.createElement('div');
+                questGroup.id = `quest-group-${quest.id}`;
+                questGroup.className = `quest-group ${quest.isExpanded ? 'expanded' : ''} ${allCompleted ? 'completed-all' : ''}`;
+                
+                let headerRightHtml = '';
+                if (allCompleted) {
+                    headerRightHtml = `
+                        <div class="quest-actions" onclick="event.stopPropagation();">
+                            <button class="btn-action reset-all" onclick="resetAllSubQuests('${quest.id}', event)">🔄 일괄 반복</button>
+                            <button class="btn-delete-quest" onclick="deleteQuest('${quest.id}', event)" title="퀘스트 삭제">❌</button>
+                        </div>
+                    `;
+                } else {
+                    headerRightHtml = `
+                        <div class="quest-actions" onclick="event.stopPropagation();" style="gap:15px;">
+                            <div class="quest-progress-container">
+                                <div class="quest-progress-text">${completedCount} / ${totalCount} 완료</div>
+                                <div class="quest-progress-bg">
+                                    <div class="quest-progress-fill" style="width: ${progressPercent}%;"></div>
+                                </div>
+                            </div>
+                            <button class="btn-delete-quest" onclick="deleteQuest('${quest.id}', event)" title="퀘스트 삭제">❌</button>
+                        </div>
+                    `;
+                }
+
+                let subQuestsHtml = '';
+                subQuests.forEach(sq => {
+                    subQuestsHtml += `
+                        <div class="subquest-item ${sq.isCompleted ? 'completed' : ''}">
+                            <div class="subquest-info">
+                                <div class="subquest-name">
+                                    ${sq.isCompleted ? '✅' : '🛡️'} ${sq.name}
+                                </div>
+                                <div class="subquest-rewards">
+                                    <span class="reward-tag xp">✨ +${sq.xpReward} XP</span>
+                                    <span class="reward-tag gold">🪙 +${sq.goldReward} Gold</span>
+                                </div>
+                            </div>
+                            <div class="quest-actions">
+                                ${sq.isCompleted 
+                                    ? `<button class="btn-action repeat" onclick="resetSubQuest('${quest.id}', '${sq.id}')">🔄 다시 수행</button>`
+                                    : `<button class="btn-action complete" onclick="completeSubQuest('${quest.id}', '${sq.id}', event)">완료하기</button>`
+                                }
+                            </div>
+                        </div>
+                    `;
+                });
+
+                questGroup.innerHTML = `
+                    <div class="quest-header" onclick="toggleQuestExpand('${quest.id}')">
+                        <div class="quest-header-left">
+                            <span class="arrow-icon">▶</span>
+                            <div class="quest-title-container">
+                                <div class="quest-group-title">
+                                    ${allCompleted ? '🏆' : '⚔️'} ${quest.name} 
+                                    ${allCompleted ? '<span style="font-size:0.75rem; background:rgba(135,211,124,0.15); padding:2px 6px; border-radius:4px; margin-left:6px;">완료 보너스!</span>' : ''}
+                                </div>
+                            </div>
+                        </div>
+                        ${headerRightHtml}
+                    </div>
+                    <div class="subquest-list">
+                        ${subQuestsHtml}
+                    </div>
+                `;
+                questListContainer.appendChild(questGroup);
+            });
+
+            // -------------------------------------------------------------
+            // [대폭 보완] 지도 위 오버레이 팝오버 내용 동적 렌더링
+            // -------------------------------------------------------------
+            gameState.quests.forEach(quest => {
+                const popoverList = document.getElementById(`popover-list-${quest.id}`);
+                if (!popoverList) return; // 커스텀 생성 퀘스트 중 맵 핀이 없는 경우
+
+                popoverList.innerHTML = '';
+                const subQuests = quest.subQuests || [];
+                const completedCount = subQuests.filter(sq => sq.isCompleted).length;
+                const totalCount = subQuests.length;
+                const allCompleted = totalCount > 0 && completedCount === totalCount;
+
+                subQuests.forEach(sq => {
+                    const item = document.createElement('div');
+                    item.className = `popover-item ${sq.isCompleted ? 'completed' : ''}`;
+                    
+                    item.innerHTML = `
+                        <div style="display:flex; flex-direction:column; gap:2px; max-width: 170px;">
+                            <span style="font-size:0.8rem; font-weight:600; color:var(--text-main); text-decoration:${sq.isCompleted ? 'line-through' : 'none'};">
+                                ${sq.isCompleted ? '✅' : '🛡️'} ${sq.name}
+                            </span>
+                            <span style="font-size:0.7rem; color:var(--text-muted);">
+                                ✨+${sq.xpReward} / 🪙+${sq.goldReward}
+                            </span>
+                        </div>
+                        <div>
+                            ${sq.isCompleted 
+                                ? `<button class="btn-action repeat" style="padding:4px 8px; font-size:0.65rem;" onclick="resetSubQuest('${quest.id}', '${sq.id}')">🔄 다시</button>`
+                                : `<button class="btn-action complete" style="padding:4px 8px; font-size:0.65rem;" onclick="completeSubQuest('${quest.id}', '${sq.id}', event)">완료</button>`
+                            }
+                        </div>
+                    `;
+                    popoverList.appendChild(item);
+                });
+
+                // [신규 추가] 팝오버 드롭박스 내 일괄 반복 버튼 동적 노출
+                if (allCompleted) {
+                    const resetBtnContainer = document.createElement('div');
+                    resetBtnContainer.style.marginTop = '12px';
+                    resetBtnContainer.style.borderTop = '1px solid rgba(255,255,255,0.05)';
+                    resetBtnContainer.style.paddingTop = '8px';
+                    resetBtnContainer.innerHTML = `
+                        <button class="btn-action reset-all" style="width:100%; justify-content:center;" onclick="resetAllSubQuests('${quest.id}', event)">🔄 일괄 반복</button>
+                    `;
+                    popoverList.appendChild(resetBtnContainer);
+                }
+            });
+
+            // 지도 위 미니 냉장고 던전 팝오버 렌더링
+            const popoverFoodList = document.getElementById('popover-food-list');
+            if (popoverFoodList) {
+                popoverFoodList.innerHTML = '';
+                const storedFoods = gameState.refrigerator.filter(f => f.status === "stored");
+
+                if (storedFoods.length === 0) {
+                    popoverFoodList.innerHTML = `<div style="grid-column:1/-1; text-align:center; font-size:0.75rem; color:var(--text-muted); padding:10px 0;">냉장고 던전이 비었습니다.</div>`;
+                } else {
+                    storedFoods.forEach(food => {
+                        const dday = getDDay(food.expiryDate);
+                        let warningClass = 'safe';
+                        let ddayText = `D-${dday}`;
+                        if (dday < 0) { warningClass = 'danger'; ddayText = `만료`; }
+                        else if (dday === 0) { warningClass = 'danger'; ddayText = 'D-Day'; }
+                        else if (dday === 1) { warningClass = 'danger'; ddayText = 'D-1'; }
+                        else if (dday <= 3) { warningClass = 'warning'; }
+
+                        let icon = '🥦';
+                        if (food.category === 'dairy') icon = '🥛';
+                        else if (food.category === 'frozen') icon = '❄️';
+
+                        const card = document.createElement('div');
+                        card.className = `popover-food-card ${warningClass}`;
+                        card.innerHTML = `
+                            <span style="font-size:0.65rem; font-weight:700; position:absolute; top:4px; right:4px; color:${warningClass === 'danger' ? 'var(--color-danger)' : warningClass === 'warning' ? 'var(--color-accent)' : 'var(--text-muted)'};">${ddayText}</span>
+                            <div style="font-size:1.1rem; margin-bottom:2px;">${icon}</div>
+                            <span class="popover-food-name">${food.name}</span>
+                            <div style="display:flex; gap:4px; margin-top:2px;">
+                                <button class="btn-action btn-eat-food" style="padding:2px; font-size:0.6rem; width:100%; border-radius:4px;" onclick="eatFood('${food.id}', event)">🍽️ 먹기</button>
+                                <button class="btn-action btn-waste-food" style="padding:2px; font-size:0.6rem; border-radius:4px;" onclick="wasteFood('${food.id}')">🗑️</button>
+                            </div>
+                        `;
+                        popoverFoodList.appendChild(card);
+                    });
+                }
+            }
+
+            // 4. 메인 냉장고 인벤토리 갱신 (기존 아래쪽 카드)
+            const gridContainer = document.getElementById('inventory-grid-container');
+            gridContainer.innerHTML = '';
+
+            let foods = gameState.refrigerator.filter(f => f.status === "stored");
+            if (currentFoodFilter !== 'all') {
+                foods = foods.filter(f => f.category === currentFoodFilter);
+            }
+
+            if (foods.length === 0) {
+                gridContainer.innerHTML = `
+                    <div class="empty-inventory">
+                        🧊 냉장고 던전이 비어 있습니다. 식재료를 등록하여 유통기한을 감시(관리)해 보세요!
+                    </div>
+                `;
+            } else {
+                foods.forEach(food => {
+                    const dday = getDDay(food.expiryDate);
+                    
+                    let warningClass = 'safe';
+                    let ddayText = `D-${dday}`;
+                    
+                    if (dday < 0) {
+                        warningClass = 'danger';
+                        ddayText = `만료 D+${Math.abs(dday)}`;
+                    } else if (dday === 0) {
+                        warningClass = 'danger';
+                        ddayText = 'D-Day';
+                    } else if (dday === 1) {
+                        warningClass = 'danger';
+                        ddayText = 'D-1';
+                    } else if (dday <= 3) {
+                        warningClass = 'warning';
+                    }
+
+                    let categoryIcon = '🥦';
+                    let categoryKorean = '신선식품';
+                    if (food.category === 'dairy') {
+                        categoryIcon = '🥛';
+                        categoryKorean = '유제품';
+                    } else if (food.category === 'frozen') {
+                        categoryIcon = '❄️';
+                        categoryKorean = '냉동식품';
+                    }
+
+                    const card = document.createElement('div');
+                    card.className = `food-card ${warningClass}`;
+                    card.innerHTML = `
+                        <span class="dday-badge">${ddayText}</span>
+                        <div class="food-info-top">
+                            <div class="food-icon">${categoryIcon}</div>
+                            <div class="food-name-area">
+                                <span class="food-card-name">${food.name}</span>
+                                <span class="food-card-category">${categoryKorean}</span>
+                            </div>
+                        </div>
+                        <div class="expiry-date-info">
+                            <div>등록일: ${food.registeredDate}</div>
+                            <div>기한: ${food.expiryDate} 까지</div>
+                        </div>
+                        <div class="food-card-actions">
+                            <button class="btn-action btn-eat-food" onclick="eatFood('${food.id}', event)">🍽️ 섭취</button>
+                            <button class="btn-action btn-waste-food" onclick="wasteFood('${food.id}')">🗑️ 폐기</button>
+                        </div>
+                    `;
+                    gridContainer.appendChild(card);
+                });
+            }
+        }
+
+        // ==========================================
+        // 4. 게임 핵심 비즈니스 로직 (Core Logic)
+        // ==========================================
+        function gainRewards(xp, gold, silent = false) {
+            gameState.character.currentXp += xp;
+            gameState.character.gold += gold;
+            
+            if (!silent) {
+                screenLog(`✨ 보상 획득! +${xp}XP / +${gold}Gold`);
+            }
+            
+            while (gameState.character.currentXp >= gameState.character.nextLevelXp) {
+                levelUp();
+            }
+            saveGame();
+            updateUI();
+        }
+
+        function levelUp() {
+            const oldLevel = gameState.character.level;
+            gameState.character.currentXp -= gameState.character.nextLevelXp;
+            gameState.character.level += 1;
+            gameState.character.nextLevelXp = Math.floor(gameState.character.nextLevelXp * 1.2);
+            
+            const newLevel = gameState.character.level;
+            screenLog(`🎉 축하합니다! 레벨 업! 현재 레벨: ${newLevel}`);
+            
+            openLevelUpModal(oldLevel, newLevel);
+        }
+
+        function completeSubQuest(questId, subQuestId, event) {
+            let quest = gameState.quests.find(q => q.id === questId);
+            if (!quest) return;
+
+            let subQuest = quest.subQuests.find(sq => sq.id === subQuestId);
+            if (subQuest && !subQuest.isCompleted) {
+                if (event) spawnParticles(event);
+
+                subQuest.isCompleted = true;
+                screenLog(`⚔️ 하위 퀘스트 완료: [${quest.name} > ${subQuest.name}]`);
+                gainRewards(subQuest.xpReward, subQuest.goldReward);
+
+                const allDoneNow = quest.subQuests.every(sq => sq.isCompleted);
+                if (allDoneNow && !quest.isCompleted) {
+                    quest.isCompleted = true;
+                    const bonusXp = 25;
+                    const bonusGold = 10;
+                    
+                    setTimeout(() => {
+                        if (event) spawnParticles(event);
+                        screenLog(`🏆 [퀘스트 마스터!] "${quest.name}" 완수 보너스 (+25 XP / +10 Gold)`);
+                        gainRewards(bonusXp, bonusGold);
+                    }, 200);
+                }
+                saveGame();
+                updateUI();
+            }
+        }
+
+        function resetSubQuest(questId, subQuestId) {
+            let quest = gameState.quests.find(q => q.id === questId);
+            if (!quest) return;
+
+            let subQuest = quest.subQuests.find(sq => sq.id === subQuestId);
+            if (subQuest && subQuest.isCompleted) {
+                subQuest.isCompleted = false;
+                quest.isCompleted = false;
+                screenLog(`🔄 [반복 시작] "${subQuest.name}" 항목이 다시 미완료 상태가 되었습니다.`);
+                saveGame();
+                updateUI();
+            }
+        }
+
+        function resetAllSubQuests(questId, event) {
+            let quest = gameState.quests.find(q => q.id === questId);
+            if (quest) {
+                if (event) spawnParticles(event);
+                quest.subQuests.forEach(sq => {
+                    sq.isCompleted = false;
+                });
+                quest.isCompleted = false;
+                screenLog(`🔄 [일괄 반복] "${quest.name}"의 모든 세부 항목이 초기화되었습니다.`);
+                saveGame();
+                updateUI();
+            }
+        }
+
+        function deleteQuest(questId, event) {
+            if (event) event.stopPropagation();
+
+            if (confirm("정말로 이 집안일 퀘스트 그룹을 삭제하시겠습니까?")) {
+                gameState.quests = gameState.quests.filter(q => q.id !== questId);
+                screenLog("❌ 퀘스트 그룹을 전장에서 제외(삭제)했습니다.");
+                saveGame();
+                updateUI();
+            }
+        }
+
+        function addCustomQuest(name, subNames, difficulty) {
+            if (!name.trim()) {
+                alert("퀘스트 그룹 이름을 입력해 주세요!");
+                return false;
+            }
+            if (subNames.length === 0) {
+                alert("세부 집안일 항목을 최소 1개 이상 입력해 주세요!");
+                return false;
+            }
+
+            let xpReward = 20;
+            let goldReward = 10;
+            if (difficulty === 'easy') {
+                xpReward = 15;
+                goldReward = 5;
+            } else if (difficulty === 'hard') {
+                xpReward = 40;
+                goldReward = 20;
+            }
+
+            const timestamp = Date.now();
+            const subQuests = subNames.map((subName, index) => {
+                return {
+                    id: `sq_${timestamp}_${index}`,
+                    name: subName,
+                    xpReward: xpReward,
+                    goldReward: goldReward,
+                    isCompleted: false
+                };
+            });
+
+            const newQuest = {
+                id: `q_${timestamp}`,
+                name: name.trim(),
+                isCompleted: false,
+                isExpanded: true,
+                subQuests: subQuests
+            };
+
+            gameState.quests.push(newQuest);
+            screenLog(`⚔️ [퀘스트 보드] 새 퀘스트 추가 완료: "${newQuest.name}" (${subQuests.length}개 세부업무)`);
+            saveGame();
+            updateUI();
+            return true;
+        }
+
+        function toggleQuestExpand(questId) {
+            let quest = gameState.quests.find(q => q.id === questId);
+            if (quest) {
+                quest.isExpanded = !quest.isExpanded;
+                saveGame();
+                updateUI();
+            }
+        }
+
+        // ==========================================
+        // [냉장고 전용 비즈니스 로직]
+        // ==========================================
+        const CATEGORY_EXPIRY = {
+            fresh: 3,
+            dairy: 7,
+            frozen: 90
+        };
+
+        function setFoodFilter(filterType) {
+            currentFoodFilter = filterType;
+            const filters = ['all', 'fresh', 'dairy', 'frozen'];
+            filters.forEach(f => {
+                const btn = document.getElementById(`filter-${f}`);
+                if (f === filterType) {
+                    btn.classList.add('active');
+                } else {
+                    btn.classList.remove('active');
+                }
+            });
+            updateUI();
+        }
+
+        function addFood(name, category) {
+            if (!name.trim()) {
+                alert("식재료 명칭을 입력해 주세요!");
+                return false;
+            }
+
+            const today = new Date();
+            const expiryDays = CATEGORY_EXPIRY[category] || 5;
+            
+            const expiryDate = new Date();
+            expiryDate.setDate(today.getDate() + expiryDays);
+
+            const newFood = {
+                id: "f_" + Date.now(),
+                name: name.trim(),
+                category: category,
+                registeredDate: today.toISOString().split('T')[0],
+                expiryDate: expiryDate.toISOString().split('T')[0],
+                status: "stored"
+            };
+
+            gameState.refrigerator.push(newFood);
+            screenLog(`🧊 [냉장고 던전] 새 식재료 등록: "${newFood.name}" (유통기한 약 ${expiryDays}일 남음)`);
+            saveGame();
+            updateUI();
+            return true;
+        }
+
+        function eatFood(foodId, event) {
+            const food = gameState.refrigerator.find(f => f.id === foodId);
+            
+            if (food && food.status === "stored") {
+                if (event) spawnParticles(event);
+                const dday = getDDay(food.expiryDate);
+                food.status = "eaten";
+                
+                if (dday < 0) {
+                    screenLog(`🤮 [냉장고 던전] 어이쿠.. 상했을 지도 모르는 "${food.name}"을(를) 먹어치웠습니다. (+5 XP / +0 Gold)`);
+                    gainRewards(5, 0);
+                } else {
+                    screenLog(`😋 [냉장고 던전] 유통기한 내에 "${food.name}"을(를) 맛있게 해치웠습니다! (+15 XP / +5 Gold)`);
+                    gainRewards(15, 5);
+                }
+                saveGame();
+                updateUI();
+            }
+        }
+
+        function wasteFood(foodId) {
+            const food = gameState.refrigerator.find(f => f.id === foodId);
+            
+            if (food && food.status === "stored") {
+                food.status = "wasted";
+                screenLog(`😭 [냉장고 던전] 유통기한이 지난 "${food.name}"을(를) 폐기 처리하였습니다.`);
+                saveGame();
+                updateUI();
+            }
+        }
+
+        // ==========================================
+        // 모달 및 팝업 제어 함수
+        // ==========================================
+        function openAddFoodModal() {
+            document.getElementById('food-name-input').value = '';
+            document.getElementById('food-category-select').value = 'dairy';
+            document.getElementById('add-food-modal').classList.add('active');
+            document.getElementById('food-name-input').focus();
+        }
+
+        function closeAddFoodModal() {
+            document.getElementById('add-food-modal').classList.remove('active');
+        }
+
+        function submitAddFoodForm() {
+            const name = document.getElementById('food-name-input').value;
+            const category = document.getElementById('food-category-select').value;
+            if (addFood(name, category)) {
+                closeAddFoodModal();
+            }
+        }
+
+        function onModalOverlayClick(event) {
+            if (event.target === document.getElementById('add-food-modal')) {
+                closeAddFoodModal();
+            }
+        }
+
+        function openAddQuestModal() {
+            document.getElementById('quest-name-input').value = '';
+            document.getElementById('quest-difficulty-select').value = 'normal';
+            
+            const container = document.getElementById('subquest-inputs-container');
+            container.innerHTML = `
+                <div class="subquest-input-item" id="sq-input-0">
+                    <input type="text" class="subquest-name-input" placeholder="세부 항목 1 (예: 거울 닦기)" maxlength="20">
+                </div>
+                <div class="subquest-input-item" id="sq-input-1">
+                    <input type="text" class="subquest-name-input" placeholder="세부 항목 2 (예: 배수구 청소)" maxlength="20">
+                </div>
+            `;
+            subquestInputCount = 2;
+
+            document.getElementById('add-quest-modal').classList.add('active');
+            document.getElementById('quest-name-input').focus();
+        }
+
+        function addSubquestInputField() {
+            const container = document.getElementById('subquest-inputs-container');
+            const items = container.getElementsByClassName('subquest-input-item');
+            if (items.length >= 5) {
+                alert("세부 항목은 최대 5개까지만 추가할 수 있습니다!");
+                return;
+            }
+
+            const id = `sq-input-${subquestInputCount}`;
+            const div = document.createElement('div');
+            div.className = 'subquest-input-item';
+            div.id = id;
+            div.innerHTML = `
+                <input type="text" class="subquest-name-input" placeholder="세부 항목 ${items.length + 1}" maxlength="20">
+                <button class="btn-remove-input" onclick="removeSubquestInputField('${id}')">❌</button>
+            `;
+            container.appendChild(div);
+            subquestInputCount++;
+            div.querySelector('input').focus();
+        }
+
+        function removeSubquestInputField(id) {
+            const elem = document.getElementById(id);
+            if (elem) {
+                elem.remove();
+                
+                const container = document.getElementById('subquest-inputs-container');
+                const inputs = container.getElementsByClassName('subquest-name-input');
+                for (let i = 0; i < inputs.length; i++) {
+                    inputs[i].placeholder = `세부 항목 ${i + 1}`;
+                }
+            }
+        }
+
+        function submitAddQuestForm() {
+            const name = document.getElementById('quest-name-input').value;
+            const difficulty = document.getElementById('quest-difficulty-select').value;
+            
+            const container = document.getElementById('subquest-inputs-container');
+            const inputElements = container.getElementsByClassName('subquest-name-input');
+            const subNames = [];
+            
+            for (let i = 0; i < inputElements.length; i++) {
+                const val = inputElements[i].value.trim();
+                if (val) {
+                    subNames.push(val);
+                }
+            }
+
+            if (addCustomQuest(name, subNames, difficulty)) {
+                closeAddQuestModal();
+            }
+        }
+
+        function onQuestModalOverlayClick(event) {
+            if (event.target === document.getElementById('add-quest-modal')) {
+                closeAddQuestModal();
+            }
+        }
+
+        function closeAddQuestModal() {
+            document.getElementById('add-quest-modal').classList.remove('active');
+        }
+
+        function openLevelUpModal(oldLevel, newLevel) {
+            document.getElementById('levelup-old-level').innerText = `Lv.${oldLevel}`;
+            document.getElementById('levelup-new-level').innerText = `Lv.${newLevel}`;
+            document.getElementById('levelup-modal').classList.add('active');
+            
+            for (let i = 0; i < 5; i++) {
+                setTimeout(() => {
+                    const mockEvent = {
+                        clientX: window.innerWidth / 2 + (Math.random() - 0.5) * 300,
+                        clientY: window.innerHeight / 2 + (Math.random() - 0.5) * 200
+                    };
+                    spawnParticles(mockEvent);
+                }, i * 200);
+            }
+        }
+
+        function closeLevelUpModal() {
+            document.getElementById('levelup-modal').classList.remove('active');
+        }
+
+        // ==========================================
+        // 5. 데이터 저장 및 불러오기 (Storage)
+        // ==========================================
+        function saveGame() {
+            localStorage.setItem("houseChoreGameData", JSON.stringify(gameState));
+        }
+
+        function loadGame() {
+            let savedData = localStorage.getItem("houseChoreGameData");
+            if (savedData) {
+                let parsed = JSON.parse(savedData);
+                
+                // 마이그레이션 (이름 변경)
+                if (parsed.character && parsed.character.name === "청소 전사") {
+                    parsed.character.name = "집안일 야옹이";
+                }
+
+                if (parsed.quests) {
+                    const hasWashingQuest = parsed.quests.some(q => q.id === 'q4');
+                    if (!hasWashingQuest) {
+                        parsed.quests.push({ 
+                            id: "q4", 
+                            name: "세탁기 및 옷가지 정리", 
+                            isCompleted: false, 
+                            isExpanded: false,
+                            subQuests: [
+                                { id: "q4_1", name: "세탁기 기동 및 빨래 널기", xpReward: 20, goldReward: 8, isCompleted: false },
+                                { id: "q4_2", name: "마른 옷 개어 수납장 넣기", xpReward: 15, goldReward: 7, isCompleted: false }
+                            ]
+                        });
+                        localStorage.setItem("houseChoreGameData", JSON.stringify(parsed));
+                    }
+                }
+                
+                gameState = parsed;
+                saveGame();
+                screenLog("📂 이전 모험 데이터를 성공적으로 불러왔습니다!");
+            } else {
+                screenLog("👶 신규 모험가입니다. 새로운 모험을 시작합니다!");
+            }
+            updateUI();
+        }
+
+        function resetGameData() {
+            if (confirm("정말로 모든 모험 기록을 초기화하시겠습니까? (캐릭터 레벨, 퀘스트 완료 여부 및 냉장고 데이터가 완전히 지워집니다)")) {
+                localStorage.removeItem("houseChoreGameData");
+                gameState = {
+                    character: {
+                        name: "집안일 야옹이",
+                        level: 1,
+                        currentXp: 0,
+                        nextLevelXp: 100,
+                        gold: 0
+                    },
+                    quests: [
+                        { 
+                            id: "q1", 
+                            name: "방바닥 청소", 
+                            isCompleted: false, 
+                            isExpanded: false,
+                            subQuests: [
+                                { id: "q1_1", name: "청소기 돌리기", xpReward: 15, goldReward: 5, isCompleted: false },
+                                { id: "q1_2", name: "물걸레질 수행", xpReward: 20, goldReward: 10, isCompleted: false }
+                            ]
+                        },
+                        { 
+                            id: "q2", 
+                            name: "주방 정돈 및 설거지", 
+                            isCompleted: false, 
+                            isExpanded: false,
+                            subQuests: [
+                                { id: "q2_1", name: "식기류 세척 및 건조", xpReward: 20, goldReward: 10, isCompleted: false },
+                                { id: "q2_2", name: "싱크대 거름망 및 물기 정리", xpReward: 15, goldReward: 5, isCompleted: false }
+                            ]
+                        },
+                        { 
+                            id: "q4", 
+                            name: "세탁기 및 옷가지 정리", 
+                            isCompleted: false, 
+                            isExpanded: false,
+                            subQuests: [
+                                { id: "q4_1", name: "세탁기 기동 및 빨래 널기", xpReward: 20, goldReward: 8, isCompleted: false },
+                                { id: "q4_2", name: "마른 옷 개어 수납장 넣기", xpReward: 15, goldReward: 7, isCompleted: false }
+                            ]
+                        },
+                        { 
+                            id: "q3", 
+                            name: "분리수거 및 쓰레기 처리", 
+                            isCompleted: false, 
+                            isExpanded: false,
+                            subQuests: [
+                                { id: "q3_1", name: "재활용 쓰레기 분류/배출", xpReward: 25, goldReward: 12, isCompleted: false },
+                                { id: "q3_2", name: "일반/음식물 쓰레기 비우기", xpReward: 25, goldReward: 13, isCompleted: false }
+                            ]
+                        }
+                    ],
+                    refrigerator: []
+                };
+                saveGame();
+                updateUI();
+                screenLog("🧹 게임 데이터를 초기화하였습니다. 새로운 모험을 시작하세요!");
+            }
+        }
+
+        window.onload = function() {
+            loadGame();
+            
+            // PWA 서비스 워커 등록
+            if ('serviceWorker' in navigator) {
+                navigator.serviceWorker.register('./service-worker.js')
+                    .then(reg => console.log('Service Worker registered successfully!', reg))
+                    .catch(err => console.log('Service Worker registration failed.', err));
+            }
+        };
+    </script>
+</body>
+</html>
