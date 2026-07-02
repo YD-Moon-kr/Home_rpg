@@ -2290,6 +2290,7 @@
                 }
 
                 if (parsed.quests) {
+                    // q4 세탁기 카테고리가 아예 통째로 없는 구버전 마이그레이션
                     const hasWashingQuest = parsed.quests.some(q => q.id === 'q4');
                     if (!hasWashingQuest) {
                         parsed.quests.push({ 
@@ -2302,8 +2303,27 @@
                                 { id: "q4_2", name: "마른 옷 개어 수납장 넣기", xpReward: 15, goldReward: 7, isCompleted: false }
                             ]
                         });
-                        localStorage.setItem("houseChoreGameData", JSON.stringify(parsed));
                     }
+
+                    // [마이그레이션] q4 (세탁기) 카테고리에 q4_3 (건조기 돌리기) 추가
+                    let q4 = parsed.quests.find(q => q.id === 'q4');
+                    if (q4 && q4.subQuests) {
+                        const hasDryer = q4.subQuests.some(sub => sub.id === 'q4_3');
+                        if (!hasDryer) {
+                            q4.subQuests.push({ id: "q4_3", name: "건조기 돌리기", xpReward: 15, goldReward: 5, isCompleted: false });
+                        }
+                    }
+
+                    // [마이그레이션] q1 (방바닥 청소) 카테고리에 q1_3 (식탁 정리 및 접기) 추가
+                    let q1 = parsed.quests.find(q => q.id === 'q1');
+                    if (q1 && q1.subQuests) {
+                        const hasTableClean = q1.subQuests.some(sub => sub.id === 'q1_3');
+                        if (!hasTableClean) {
+                            q1.subQuests.push({ id: "q1_3", name: "식탁 정리 및 접기", xpReward: 15, goldReward: 5, isCompleted: false });
+                        }
+                    }
+
+                    localStorage.setItem("houseChoreGameData", JSON.stringify(parsed));
                 }
                 
                 gameState = parsed;
@@ -2334,7 +2354,8 @@
                             isExpanded: false,
                             subQuests: [
                                 { id: "q1_1", name: "청소기 돌리기", xpReward: 15, goldReward: 5, isCompleted: false },
-                                { id: "q1_2", name: "물걸레질 수행", xpReward: 20, goldReward: 10, isCompleted: false }
+                                { id: "q1_2", name: "물걸레질 수행", xpReward: 20, goldReward: 10, isCompleted: false },
+                                { id: "q1_3", name: "식탁 정리 및 접기", xpReward: 15, goldReward: 5, isCompleted: false }
                             ]
                         },
                         { 
@@ -2354,7 +2375,8 @@
                             isExpanded: false,
                             subQuests: [
                                 { id: "q4_1", name: "세탁기 기동 및 빨래 널기", xpReward: 20, goldReward: 8, isCompleted: false },
-                                { id: "q4_2", name: "마른 옷 개어 수납장 넣기", xpReward: 15, goldReward: 7, isCompleted: false }
+                                { id: "q4_2", name: "마른 옷 개어 수납장 넣기", xpReward: 15, goldReward: 7, isCompleted: false },
+                                { id: "q4_3", name: "건조기 돌리기", xpReward: 15, goldReward: 5, isCompleted: false }
                             ]
                         },
                         { 

@@ -1,4 +1,4 @@
-const CACHE_NAME = 'chore-rpg-v3'; // 버전을 v3로 올려 최신 서비스 워커 설치 강제화
+const CACHE_NAME = 'chore-rpg-v4'; // 캐시 버전을 v4로 상향하여 index.html 마이그레이션 변경사항 강제 동기화
 const ASSETS = [
   './',
   './index.html',
@@ -15,7 +15,7 @@ self.addEventListener('install', event => {
       return cache.addAll(ASSETS);
     })
   );
-  self.skipWaiting(); // 새로운 서비스 워커를 발견하면 대기하지 않고 즉시 활성화
+  self.skipWaiting(); // 즉시 활성화
 });
 
 // 활성화 이벤트 - 구버전 캐시 정리
