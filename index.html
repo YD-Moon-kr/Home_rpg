@@ -1151,27 +1151,19 @@
             backdrop-filter: blur(12px);
             -webkit-backdrop-filter: blur(12px);
             display: none;
-            align-items: center;
-            justify-content: center;
             z-index: 3000;
             opacity: 0;
             transition: opacity 0.3s ease;
             
-            /* [마스터 솔루션] 오버레이 자체에 터치스크롤 위임 */
+            /* [마스터 솔루션] 오버레이 자체에 블록 스크롤 위임 */
             overflow-y: auto;
             -webkit-overflow-scrolling: touch;
-            padding: 40px 0;
+            padding: 20px;
             box-sizing: border-box;
         }
 
-        @media (max-height: 650px) {
-            .modal-overlay {
-                align-items: flex-start;
-            }
-        }
-
         .modal-overlay.active {
-            display: flex;
+            display: block; /* Flex 대신 Block으로 주어 스크롤 렌더러 이슈 완전 차단 */
             opacity: 1;
         }
 
@@ -1179,8 +1171,9 @@
             background: radial-gradient(circle, rgba(33, 37, 54, 0.98) 0%, rgba(20, 22, 33, 0.98) 100%);
             border: 2px solid var(--panel-border-hover);
             border-radius: 20px;
-            width: 90%;
-            max-width: 460px;
+            width: 100%;
+            max-width: 420px;
+            margin: 20px auto; /* 가로 가운데 정렬 및 스크롤을 위한 마진 보장 */
             padding: 24px;
             box-shadow: var(--shadow-card);
             transform: scale(0.85);

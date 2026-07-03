@@ -1,4 +1,4 @@
-const CACHE_NAME = 'chore-rpg-v29'; // 캐시 버전을 v29로 상향하여 오버레이 기반 모달 스크롤 마스터 솔루션 배포
+const CACHE_NAME = 'chore-rpg-v30'; // 캐시 버전을 v30으로 상향하여 모바일 block-margin 스크롤 레이아웃 배포
 const ASSETS = [
   './',
   './index.html',
