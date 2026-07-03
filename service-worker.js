@@ -1,4 +1,4 @@
-const CACHE_NAME = 'chore-rpg-v20'; // 캐시 버전을 v20으로 상향하여 수동 복구 버튼 및 줌 방지 배포
+const CACHE_NAME = 'chore-rpg-v21'; // 캐시 버전을 v21로 상향 및 정상 오프라인 캐싱 서비스 워커 복원 버전 배포
 const ASSETS = [
   './',
   './index.html',

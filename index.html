@@ -1788,9 +1788,12 @@
                     </label>
                 </div>
             </div>
-            <div class="modal-footer" style="margin-top: 16px;">
-                <button class="btn-modal-cancel" onclick="closeRecoveryModal()">닫기</button>
-                <button class="btn-action complete" onclick="applyRecoveryData()" style="padding: 10px 15px; font-weight: 700; background: var(--color-primary); color: #000;">🛠️ 복구 적용하기</button>
+            <div class="modal-footer" style="margin-top: 16px; display: flex; justify-content: space-between; align-items: center; gap: 8px;">
+                <button class="btn-action repeat" onclick="triggerResetTest()" style="padding: 10px 12px; font-size: 0.7rem; background: rgba(255,255,255,0.02); border: 1px solid rgba(255,255,255,0.08); color: var(--color-primary); touch-action: manipulation;">📅 자정리셋 즉시테스트</button>
+                <div style="display: flex; gap: 8px;">
+                    <button class="btn-modal-cancel" onclick="closeRecoveryModal()">닫기</button>
+                    <button class="btn-action complete" onclick="applyRecoveryData()" style="padding: 10px 15px; font-weight: 700; background: var(--color-primary); color: #000;">🛠️ 복구 적용</button>
+                </div>
             </div>
         </div>
     </div>
@@ -2716,6 +2719,22 @@
             
             screenLog(`🛠️ [시스템 복구] 모험가 정보 복구 적용! (Lv.${levelVal} / 🪙${goldVal}G / 아이템 ${newInv.length}종 보유)`);
             alert("🎉 모험가 복구가 성공적으로 적용되었습니다!");
+        }
+
+        function triggerResetTest() {
+            if (confirm("테스트를 위해 리셋 기준 날짜를 강제로 어제로 변경하시겠습니까?\n(확인을 누르면 즉시 자정 초기화 로직이 1회 실행되어 오늘 완료 상태가 리셋됩니다)")) {
+                const yesterday = new Date();
+                yesterday.setDate(yesterday.getDate() - 1);
+                const offset = yesterday.getTimezoneOffset() * 60000;
+                const yesterdayStr = (new Date(yesterday - offset)).toISOString().slice(0, 10);
+                
+                gameState.lastResetDate = yesterdayStr;
+                saveGame();
+                closeRecoveryModal();
+                checkDailyReset();
+                
+                alert("📅 리셋 테스트 완료!\n날짜 차이가 감지되어 자정 퀘스트 리셋이 즉시 트리거되었습니다.");
+            }
         }
 
         // ==========================================
