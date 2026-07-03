@@ -1,4 +1,4 @@
-const CACHE_NAME = 'chore-rpg-v25'; // 캐시 버전을 v25로 상향하여 모바일 복구 UI 개선 및 난수 데미지 적용 배포
+const CACHE_NAME = 'chore-rpg-v26'; // 캐시 버전을 v26으로 상향하여 모바일 바디 스크롤 락 기능 배포
 const ASSETS = [
   './',
   './index.html',

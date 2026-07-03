@@ -1178,6 +1178,12 @@
             gap: 20px;
         }
 
+        body.modal-open {
+            overflow: hidden;
+            height: 100vh;
+            touch-action: none;
+        }
+
         .modal-overlay.active .modal-content {
             transform: scale(1);
         }
@@ -2774,11 +2780,13 @@
             document.getElementById('rec-item-mantle').checked = inv.includes('mantle');
             
             document.getElementById('recovery-modal').classList.add('active');
+            document.body.classList.add('modal-open');
             screenLog("🛠️ [시스템] 모험가 복구 도구가 열렸습니다.");
         }
         
         function closeRecoveryModal() {
             document.getElementById('recovery-modal').classList.remove('active');
+            document.body.classList.remove('modal-open');
         }
         
         function onRecoveryModalOverlayClick(event) {
@@ -3222,11 +3230,13 @@
             document.getElementById('food-name-input').value = '';
             document.getElementById('food-category-select').value = 'dairy';
             document.getElementById('add-food-modal').classList.add('active');
+            document.body.classList.add('modal-open');
             document.getElementById('food-name-input').focus();
         }
 
         function closeAddFoodModal() {
             document.getElementById('add-food-modal').classList.remove('active');
+            document.body.classList.remove('modal-open');
         }
 
         function submitAddFoodForm() {
@@ -3259,6 +3269,7 @@
             subquestInputCount = 2;
 
             document.getElementById('add-quest-modal').classList.add('active');
+            document.body.classList.add('modal-open');
             document.getElementById('quest-name-input').focus();
         }
 
@@ -3324,12 +3335,14 @@
 
         function closeAddQuestModal() {
             document.getElementById('add-quest-modal').classList.remove('active');
+            document.body.classList.remove('modal-open');
         }
 
         function openLevelUpModal(oldLevel, newLevel) {
             document.getElementById('levelup-old-level').innerText = `Lv.${oldLevel}`;
             document.getElementById('levelup-new-level').innerText = `Lv.${newLevel}`;
             document.getElementById('levelup-modal').classList.add('active');
+            document.body.classList.add('modal-open');
             
             for (let i = 0; i < 5; i++) {
                 setTimeout(() => {
@@ -3344,6 +3357,7 @@
 
         function closeLevelUpModal() {
             document.getElementById('levelup-modal').classList.remove('active');
+            document.body.classList.remove('modal-open');
         }
 
         // ==========================================
