@@ -3042,7 +3042,7 @@
                 id: `q_${timestamp}`,
                 name: name.trim(),
                 isCompleted: false,
-                isExpanded: true,
+                isExpanded: false,
                 subQuests: subQuests
             };
 
@@ -3355,6 +3355,11 @@
                             q1.subQuests.push({ id: "q1_3", name: "식탁 정리 및 접기", xpReward: 15, goldReward: 5, isCompleted: false });
                         }
                     }
+
+                    // [신규] 모바일 가독성을 위해 로딩 시 퀘스트 접기
+                    parsed.quests.forEach(q => {
+                        q.isExpanded = false;
+                    });
 
                     localStorage.setItem("houseChoreGameData", JSON.stringify(parsed));
                 }

@@ -1,4 +1,4 @@
-const CACHE_NAME = 'chore-rpg-v23'; // 캐시 버전을 v23으로 상향하여 서비스 워커 쿼리 스트링 변경 강제 업데이트 배포
+const CACHE_NAME = 'chore-rpg-v24'; // 캐시 버전을 v24로 상향하여 퀘스트 카테고리 기본 접힘 상태 배포
 const ASSETS = [
   './',
   './index.html',
