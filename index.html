@@ -3473,7 +3473,7 @@
             
             // PWA 서비스 워커 등록 (스마트 업데이트 & 자동 리로드 탑재)
             if ('serviceWorker' in navigator) {
-                navigator.serviceWorker.register('./service-worker.js').then(reg => {
+                navigator.serviceWorker.register('./service-worker.js?v=21').then(reg => {
                     console.log('Service Worker registered successfully!', reg);
                     
                     // 주기적으로 깃허브 원격 서버에서 서비스 워커 변경 체크
