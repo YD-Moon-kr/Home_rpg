@@ -1,4 +1,4 @@
-const CACHE_NAME = 'chore-rpg-v26'; // 캐시 버전을 v26으로 상향하여 모바일 바디 스크롤 락 기능 배포
+const CACHE_NAME = 'chore-rpg-v27'; // 캐시 버전을 v27로 상향하여 모바일 position:fixed 스크롤 락 기법 배포
 const ASSETS = [
   './',
   './index.html',
