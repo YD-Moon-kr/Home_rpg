@@ -1508,6 +1508,12 @@
             </div>
         </header>
 
+        <!-- 🗺️ [신규 추가] 마이 홈 / 연구실&오피스 DLC 전환 탭 바 -->
+        <div class="tab-container" style="display: flex; gap: 10px; margin-top: 10px;">
+            <button class="btn-action complete active" id="tab-home" onclick="switchTab('home')" style="flex: 1; padding: 12px 20px; font-size: 0.9rem; justify-content: center; background: linear-gradient(135deg, var(--color-primary), var(--color-secondary)); color: #000; border-radius: 8px; touch-action: manipulation;">🏠 마이 홈 (Home)</button>
+            <button class="btn-action repeat" id="tab-workplace" onclick="switchTab('workplace')" style="flex: 1; padding: 12px 20px; font-size: 0.9rem; justify-content: center; color: var(--text-main); border: 1px solid rgba(255,255,255,0.1); background: rgba(255,255,255,0.02); border-radius: 8px; touch-action: manipulation;">🏫 연구실 & 오피스 DLC</button>
+        </div>
+
         <!-- 메인 대시보드 그리드 -->
         <div class="dashboard-grid">
 
@@ -1553,7 +1559,7 @@
             <div class="card house-map-card">
                 <div class="card-title">🏡 모험의 영토 (Interactive Cozy Map)</div>
                 <div class="map-wrapper" id="cozy-map-wrapper">
-                    <img src="house_map.jpg" alt="House Map" class="map-image">
+                    <img src="house_map.jpg" alt="Space Map" class="map-image" id="space-map">
                     
                     <!-- 1. 방바닥 청소 (거실) 핀 & 팝오버 (두 러그 사이 복도로 이동) -->
                     <div class="map-pin-container popover-up" style="top: 64%; left: 51%;">
@@ -1567,31 +1573,31 @@
                         </div>
                     </div>
                     
-                    <!-- 2. 주방 설거지 핀 & 팝오버 (싱크대 개수대 위로 정밀 이동) -->
-                    <div class="map-pin-container" style="top: 43%; left: 58%;">
-                        <div class="map-pin pink" onclick="toggleMapPopover('q2', event)">🍳</div>
+                    <!-- 2. 주방 정돈 및 설거지 핀 & 팝오버 (주방 싱크대 위로 정밀 이동) -->
+                    <div class="map-pin-container popover-down" style="top: 25%; left: 16%;">
+                        <div class="map-pin purple" onclick="toggleMapPopover('q2', event)">🧽</div>
                         <div class="map-popover" id="popover-q2">
                             <div class="popover-header">
-                                <span class="popover-title">🍳 주방 설거지</span>
+                                <span class="popover-title">🧽 설거지/주방 정리</span>
                                 <button class="btn-popover-close" onclick="closeAllPopovers(event)">&times;</button>
                             </div>
                             <div class="popover-list" id="popover-list-q2"></div>
                         </div>
                     </div>
-
-                    <!-- 3. 세탁기 작동 핀 & 팝오버 (우측 세탁기 기기 위로 정밀 이동) -->
-                    <div class="map-pin-container popover-left" style="top: 53%; left: 77%;">
-                        <div class="map-pin blue" onclick="toggleMapPopover('q4', event)">🧺</div>
+                    
+                    <!-- 3. 세탁기 기동 및 정리 핀 & 팝오버 (세탁실 세탁기 드럼 부위로 정밀 이동) -->
+                    <div class="map-pin-container popover-right" style="top: 15%; left: 88%;">
+                        <div class="map-pin pink" onclick="toggleMapPopover('q4', event)">👕</div>
                         <div class="map-popover" id="popover-q4">
                             <div class="popover-header">
-                                <span class="popover-title">🧺 세탁기 가동</span>
+                                <span class="popover-title">👕 세탁/옷가지 정돈</span>
                                 <button class="btn-popover-close" onclick="closeAllPopovers(event)">&times;</button>
                             </div>
                             <div class="popover-list" id="popover-list-q4"></div>
                         </div>
                     </div>
-
-                    <!-- 4. 분리수거 핀 & 팝오버 (1인용 소파 다리 근처로 이동) -->
+                    
+                    <!-- 4. 분리수거 쓰레기 배출 핀 & 팝오버 (현관 신발장 부근으로 이동) -->
                     <div class="map-pin-container popover-up" style="top: 76%; left: 60%;">
                         <div class="map-pin green" onclick="toggleMapPopover('q3', event)">🗑️</div>
                         <div class="map-popover" id="popover-q3">
@@ -1619,7 +1625,7 @@
             </div>
 
             <!-- 2. 일일 퀘스트 카드 -->
-            <div class="card">
+            <div class="card" id="home-quest-section">
                 <div class="card-title">
                     <div class="card-title-left">⚔️ 일일 퀘스트 목록</div>
                 </div>
@@ -1627,7 +1633,20 @@
                     <!-- JavaScript로 동적 생성 -->
                 </div>
                 <div style="margin-top: 20px; border-top: 1px solid rgba(255,255,255,0.05); padding-top: 16px;">
-                    <button class="btn-add-food" onclick="openAddQuestModal()" style="width: 100%; justify-content: center; font-size: 0.85rem; padding: 12px;">➕ 새로운 집안일 퀘스트 추가하기</button>
+                    <button class="btn-add-food" onclick="openAddQuestModal()" style="width: 100%; justify-content: center; font-size: 0.85rem; padding: 12px; touch-action: manipulation;">➕ 새로운 집안일 퀘스트 추가하기</button>
+                </div>
+            </div>
+
+            <!-- 🏫 [신규 추가] 연구실 & 오피스 DLC 퀘스트 카드 -->
+            <div class="card" id="workplace-quest-section" style="display: none;">
+                <div class="card-title">
+                    <div class="card-title-left">🔬 연구실 & 오피스 업무 (Workplace)</div>
+                </div>
+                <div class="quest-list" id="workplace-quest-list-container">
+                    <!-- JS로 동적 생성 -->
+                </div>
+                <div style="font-size: 0.72rem; color: var(--text-muted); margin-top: 12px; text-align: center;">
+                    💡 수석 연구원 가운🥼 및 황금 머그잔☕ 장비 장착 시 전용 보상 버프가 적용됩니다!
                 </div>
             </div>
 
@@ -1683,6 +1702,20 @@
                         <span style="font-size: 0.85rem; font-weight: 700;">용사 빨간망토</span>
                         <span style="font-size: 0.68rem; color: #ff7675; font-weight: 700;">전체 보상 +8%</span>
                         <button class="btn-action complete" onclick="buyShopItem('mantle', 200)" style="width:100%; justify-content:center; padding: 6px; font-size: 0.75rem; margin-top: 4px;" id="btn-buy-mantle">🪙 200</button>
+                    </div>
+                    <!-- 9. 수석 연구원 가운 (DLC) -->
+                    <div class="shop-item" id="shop-labcoat" style="background: rgba(255,255,255,0.02); border: 1px solid rgba(255,255,255,0.05); border-radius: 12px; padding: 12px; display: flex; flex-direction: column; align-items: center; text-align: center; gap: 6px; position: relative;">
+                        <span style="font-size: 1.8rem;">🥼</span>
+                        <span style="font-size: 0.85rem; font-weight: 700;">연구원 가운</span>
+                        <span style="font-size: 0.68rem; color: #a29bfe; font-weight: 700;">연구실 보상 +20%</span>
+                        <button class="btn-action complete" onclick="buyShopItem('labcoat', 250)" style="width:100%; justify-content:center; padding: 6px; font-size: 0.75rem; margin-top: 4px;" id="btn-buy-labcoat">🪙 250</button>
+                    </div>
+                    <!-- 10. 황금 아라비카 머그잔 (DLC) -->
+                    <div class="shop-item" id="shop-mug" style="background: rgba(255,255,255,0.02); border: 1px solid rgba(255,255,255,0.05); border-radius: 12px; padding: 12px; display: flex; flex-direction: column; align-items: center; text-align: center; gap: 6px; position: relative;">
+                        <span style="font-size: 1.8rem;">☕</span>
+                        <span style="font-size: 0.85rem; font-weight: 700;">황금 머그잔</span>
+                        <span style="font-size: 0.68rem; color: #fdcb6e; font-weight: 700;">오피스 보상 +20%</span>
+                        <button class="btn-action complete" onclick="buyShopItem('mug', 180)" style="width:100%; justify-content:center; padding: 6px; font-size: 0.75rem; margin-top: 4px;" id="btn-buy-mug">🪙 180</button>
                     </div>
                     <!-- 4. 참치 캔 -->
                     <div class="shop-item" id="shop-tuna" style="background: rgba(255,255,255,0.02); border: 1px solid rgba(255,255,255,0.05); border-radius: 12px; padding: 12px; display: flex; flex-direction: column; align-items: center; text-align: center; gap: 6px; position: relative;">
@@ -1934,7 +1967,9 @@
             ribbon: { name: "러블리 리본", icon: "🎀", desc: "경험치 획득 +5%" },
             shield: { name: "냄비뚜껑 방패", icon: "🛡️", desc: "레벨업 골드 축하금 2배" },
             sword: { name: "거품기 성검", icon: "🍳", desc: "임박 식재료 보상 +50%" },
-            mantle: { name: "용사 빨간망토", icon: "🧥", desc: "모든 획득 보상 +8%" }
+            mantle: { name: "용사 빨간망토", icon: "🧥", desc: "모든 획득 보상 +8%" },
+            labcoat: { name: "수석 연구원 가운", icon: "🥼", desc: "연구실 퀘스트 경험치 +20%" },
+            mug: { name: "황금 아라비카 머그", icon: "☕", desc: "오피스 퀘스트 골드 +20%" }
         };
 
         // ==========================================
@@ -1990,7 +2025,34 @@
                     ]
                 }
             ],
-            refrigerator: [] 
+            refrigerator: [],
+            inventory: ['broom'],
+            equippedItem: null,
+            currentTab: "home",
+            workplaceQuests: [
+                {
+                    id: "wl_lab",
+                    name: "🔬 연구실 프로젝트",
+                    isCompleted: false,
+                    isExpanded: false,
+                    subQuests: [
+                        { id: "wl_lab_1", name: "📑 전공 논문 읽고 보고서 요약", xpReward: 30, goldReward: 10, isCompleted: false },
+                        { id: "wl_lab_2", name: "🧪 실험 기구 세팅 및 데이터 측정", xpReward: 40, goldReward: 15, isCompleted: false },
+                        { id: "wl_lab_3", name: "🧫 배양 배지 정리 및 장비 기구 청소", xpReward: 20, goldReward: 8, isCompleted: false }
+                    ]
+                },
+                {
+                    id: "wl_office",
+                    name: "💻 오피스 행정 업무",
+                    isCompleted: false,
+                    isExpanded: false,
+                    subQuests: [
+                        { id: "wl_office_1", name: "📧 이메일 답장 및 메일함 정리", xpReward: 15, goldReward: 5, isCompleted: false },
+                        { id: "wl_office_2", name: "📊 주간 진행 보고서 작성 및 결재", xpReward: 35, goldReward: 12, isCompleted: false },
+                        { id: "wl_office_3", name: "📂 책상 서류 철 수납 및 모니터 소독", xpReward: 15, goldReward: 6, isCompleted: false }
+                    ]
+                }
+            ]
         };
 
         let currentFoodFilter = 'all';
@@ -2113,13 +2175,15 @@
             document.getElementById('char-name').innerText = char.name;
             document.getElementById('char-gold').innerText = `🪙 ${char.gold}`;
             
-            // [신규] 장착 장비에 따른 캐릭터 아바타 이미지 실시간 변경 (7종 대응)
+            // [신규] 장착 장비에 따른 캐릭터 아바타 이미지 실시간 변경 (9종 및 DLC 탭 대응)
             const charAvatarEl = document.getElementById('char-avatar');
             if (charAvatarEl) {
                 if (gameState.equippedItem) {
                     charAvatarEl.src = `avatar_${gameState.equippedItem}.jpg`;
+                } else if (gameState.currentTab === 'workplace') {
+                    charAvatarEl.src = 'avatar_mug.jpg'; // 직장 기본 고양이
                 } else {
-                    charAvatarEl.src = 'character_avatar.jpg';
+                    charAvatarEl.src = 'character_avatar.jpg'; // 집안일 기본 고양이
                 }
             }
             
@@ -2418,7 +2482,7 @@
 
             // 7. [신규 추가] 상점 아이템 구매 버튼 상태 동기화
             if (!gameState.inventory) gameState.inventory = [];
-            const equipItemKeys = ['broom', 'crown', 'glasses', 'ribbon', 'shield', 'sword', 'mantle'];
+            const equipItemKeys = ['broom', 'crown', 'glasses', 'ribbon', 'shield', 'sword', 'mantle', 'labcoat', 'mug'];
             equipItemKeys.forEach(key => {
                 const btn = document.getElementById(`btn-buy-${key}`);
                 if (btn) {
@@ -2428,7 +2492,7 @@
                         btn.style.opacity = '0.5';
                         btn.className = 'btn-action repeat';
                     } else {
-                        const prices = { broom: 80, crown: 150, glasses: 50, ribbon: 40, shield: 100, sword: 120, mantle: 200 };
+                        const prices = { broom: 80, crown: 150, glasses: 50, ribbon: 40, shield: 100, sword: 120, mantle: 200, labcoat: 250, mug: 180 };
                         const price = prices[key] || 100;
                         btn.innerText = `🪙 ${price}`;
                         btn.disabled = false;
@@ -2532,6 +2596,208 @@
                 
                 btnAttackEl.innerText = `⚔️ ${attackName} (소모 1 AP)`;
             }
+
+            // ==========================================
+            // [신규 추가] Workplace DLC 전용 UI 동기화
+            // ==========================================
+            const wpQuestContainer = document.getElementById('workplace-quest-list-container');
+            if (wpQuestContainer) {
+                wpQuestContainer.innerHTML = '';
+                
+                if (!gameState.workplaceQuests) {
+                    gameState.workplaceQuests = [
+                        {
+                            id: "wl_lab",
+                            name: "🔬 연구실 프로젝트",
+                            isCompleted: false,
+                            isExpanded: false,
+                            subQuests: [
+                                { id: "wl_lab_1", name: "📑 전공 논문 읽고 보고서 요약", xpReward: 30, goldReward: 10, isCompleted: false },
+                                { id: "wl_lab_2", name: "🧪 실험 기구 세팅 및 데이터 측정", xpReward: 40, goldReward: 15, isCompleted: false },
+                                { id: "wl_lab_3", name: "🧫 배양 배지 정리 및 장비 기구 청소", xpReward: 20, goldReward: 8, isCompleted: false }
+                            ]
+                        },
+                        {
+                            id: "wl_office",
+                            name: "💻 오피스 행정 업무",
+                            isCompleted: false,
+                            isExpanded: false,
+                            subQuests: [
+                                { id: "wl_office_1", name: "📧 이메일 답장 및 메일함 정리", xpReward: 15, goldReward: 5, isCompleted: false },
+                                { id: "wl_office_2", name: "📊 주간 진행 보고서 작성 및 결재", xpReward: 35, goldReward: 12, isCompleted: false },
+                                { id: "wl_office_3", name: "📂 책상 서류 철 수납 및 모니터 소독", xpReward: 15, goldReward: 6, isCompleted: false }
+                            ]
+                        }
+                    ];
+                }
+                
+                gameState.workplaceQuests.forEach(quest => {
+                    const subQuests = quest.subQuests || [];
+                    const completedCount = subQuests.filter(sq => sq.isCompleted).length;
+                    const totalCount = subQuests.length;
+                    const progressPercent = totalCount > 0 ? Math.round((completedCount / totalCount) * 100) : 0;
+                    
+                    const allCompleted = totalCount > 0 && completedCount === totalCount;
+                    quest.isCompleted = allCompleted;
+                    
+                    const questGroup = document.createElement('div');
+                    questGroup.id = `quest-group-${quest.id}`;
+                    questGroup.className = `quest-group ${quest.isExpanded ? 'expanded' : ''} ${allCompleted ? 'completed-all' : ''}`;
+                    
+                    let headerRightHtml = '';
+                    if (allCompleted) {
+                        headerRightHtml = `
+                            <div class="quest-actions" onclick="event.stopPropagation();">
+                                <button class="btn-action reset-all" onclick="resetAllWorkplaceSubQuests('${quest.id}', event)">🔄 일괄 반복</button>
+                            </div>
+                        `;
+                    } else {
+                        headerRightHtml = `
+                            <div class="quest-actions" onclick="event.stopPropagation();" style="gap:15px;">
+                                <div class="quest-progress-container">
+                                    <div class="quest-progress-text">${completedCount} / ${totalCount} 완료</div>
+                                    <div class="quest-progress-bg">
+                                        <div class="quest-progress-fill" style="width: ${progressPercent}%;"></div>
+                                    </div>
+                                </div>
+                            </div>
+                        `;
+                    }
+                    
+                    let subQuestsHtml = '';
+                    subQuests.forEach(sq => {
+                        subQuestsHtml += `
+                            <div class="subquest-item ${sq.isCompleted ? 'completed' : ''}">
+                                <div class="subquest-info">
+                                    <div class="subquest-name">
+                                        ${sq.isCompleted ? '✅' : '🛡️'} ${sq.name}
+                                    </div>
+                                    <div class="subquest-rewards">
+                                        <span class="reward-tag xp">✨ +${sq.xpReward} XP</span>
+                                        <span class="reward-tag gold">🪙 +${sq.goldReward} Gold</span>
+                                    </div>
+                                </div>
+                                <div class="quest-actions">
+                                    ${sq.isCompleted 
+                                        ? `<button class="btn-action repeat" onclick="resetWorkplaceSubQuest('${quest.id}', '${sq.id}')">🔄 다시 수행</button>`
+                                        : `<button class="btn-action complete" onclick="completeWorkplaceSubQuest('${quest.id}', '${sq.id}', event)">완료하기</button>`
+                                    }
+                                </div>
+                            </div>
+                        `;
+                    });
+                    
+                    questGroup.innerHTML = `
+                        <div class="quest-header" onclick="toggleWorkplaceQuestExpand('${quest.id}')">
+                            <div class="quest-header-left">
+                                <span class="arrow-icon">▶</span>
+                                <div class="quest-title-container">
+                                    <div class="quest-group-title">
+                                        ${allCompleted ? '🏆' : '⚔️'} ${quest.name} 
+                                        ${allCompleted ? '<span style="font-size:0.75rem; background:rgba(135,211,124,0.15); padding:2px 6px; border-radius:4px; margin-left:6px;">업무 종료!</span>' : ''}
+                                    </div>
+                                </div>
+                            </div>
+                            ${headerRightHtml}
+                        </div>
+                        <div class="subquest-list">
+                            ${subQuestsHtml}
+                        </div>
+                    `;
+                    wpQuestContainer.appendChild(questGroup);
+                });
+            }
+
+            // 🏫 Workplace DLC 팝오버 내용 동적 렌더링
+            if (gameState.workplaceQuests) {
+                gameState.workplaceQuests.forEach(quest => {
+                    const popoverList = document.getElementById(`popover-list-${quest.id}`);
+                    if (!popoverList) return;
+
+                    popoverList.innerHTML = '';
+                    const subQuests = quest.subQuests || [];
+                    const completedCount = subQuests.filter(sq => sq.isCompleted).length;
+                    const totalCount = subQuests.length;
+                    const allCompleted = totalCount > 0 && completedCount === totalCount;
+
+                    subQuests.forEach(sq => {
+                        const item = document.createElement('div');
+                        item.className = `popover-item ${sq.isCompleted ? 'completed' : ''}`;
+                        
+                        item.innerHTML = `
+                            <div style="display:flex; flex-direction:column; gap:2px; max-width: 170px;">
+                                <span style="font-size:0.8rem; font-weight:600; color:var(--text-main); text-decoration:${sq.isCompleted ? 'line-through' : 'none'};">
+                                    ${sq.isCompleted ? '✅' : '🛡️'} ${sq.name}
+                                </span>
+                                <span style="font-size:0.7rem; color:var(--text-muted);">
+                                    ✨+${sq.xpReward} / 🪙+${sq.goldReward}
+                                </span>
+                            </div>
+                            <div>
+                                ${sq.isCompleted 
+                                    ? `<button class="btn-action repeat" style="padding:4px 8px; font-size:0.65rem;" onclick="resetWorkplaceSubQuest('${quest.id}', '${sq.id}')">🔄 다시</button>`
+                                    : `<button class="btn-action complete" style="padding:4px 8px; font-size:0.65rem;" onclick="completeWorkplaceSubQuest('${quest.id}', '${sq.id}', event)">완료</button>`
+                                }
+                            </div>
+                        `;
+                        popoverList.appendChild(item);
+                    });
+
+                    if (allCompleted) {
+                        const resetBtnContainer = document.createElement('div');
+                        resetBtnContainer.style.marginTop = '12px';
+                        resetBtnContainer.style.borderTop = '1px solid rgba(255,255,255,0.05)';
+                        resetBtnContainer.style.paddingTop = '8px';
+                        resetBtnContainer.innerHTML = `
+                            <button class="btn-action reset-all" style="width:100%; justify-content:center;" onclick="resetAllWorkplaceSubQuests('${quest.id}', event)">🔄 일괄 반복</button>
+                        `;
+                        popoverList.appendChild(resetBtnContainer);
+                    }
+                });
+            }
+
+            // 🗺️ 탭 활성화 상태 토글 및 지도 스왑
+            const isHome = (gameState.currentTab === "home");
+            const tabHomeBtn = document.getElementById('tab-home');
+            const tabWpBtn = document.getElementById('tab-workplace');
+            
+            if (tabHomeBtn && tabWpBtn) {
+                if (isHome) {
+                    tabHomeBtn.className = "btn-action complete active";
+                    tabHomeBtn.style.background = "linear-gradient(135deg, var(--color-primary), var(--color-secondary))";
+                    tabHomeBtn.style.color = "#000";
+                    
+                    tabWpBtn.className = "btn-action repeat";
+                    tabWpBtn.style.background = "rgba(255,255,255,0.02)";
+                    tabWpBtn.style.color = "var(--text-main)";
+                } else {
+                    tabWpBtn.className = "btn-action complete active";
+                    tabWpBtn.style.background = "linear-gradient(135deg, var(--color-primary), var(--color-secondary))";
+                    tabWpBtn.style.color = "#000";
+                    
+                    tabHomeBtn.className = "btn-action repeat";
+                    tabHomeBtn.style.background = "rgba(255,255,255,0.02)";
+                    tabHomeBtn.style.color = "var(--text-main)";
+                }
+            }
+            
+            const spaceMapEl = document.getElementById('space-map');
+            if (spaceMapEl) {
+                spaceMapEl.src = isHome ? "house_map.jpg" : "workplace_map.jpg";
+            }
+            
+            const homePins = document.querySelectorAll('.map-pin-container:not(.workplace-pin)');
+            const wpPins = document.querySelectorAll('.workplace-pin');
+            homePins.forEach(p => p.style.display = isHome ? 'block' : 'none');
+            wpPins.forEach(p => p.style.display = isHome ? 'none' : 'block');
+            
+            const homeQuestSec = document.getElementById('home-quest-section');
+            const wpQuestSec = document.getElementById('workplace-quest-section');
+            const refCardSec = document.getElementById('refrigerator-card-section');
+            
+            if (homeQuestSec) homeQuestSec.style.display = isHome ? 'block' : 'none';
+            if (refCardSec) refCardSec.style.display = isHome ? 'block' : 'none';
+            if (wpQuestSec) wpQuestSec.style.display = isHome ? 'none' : 'block';
         }
 
         // ==========================================
@@ -2708,6 +2974,17 @@
                         });
                     }
                 });
+
+                if (gameState.workplaceQuests) {
+                    gameState.workplaceQuests.forEach(q => {
+                        q.isCompleted = false;
+                        if (q.subQuests) {
+                            q.subQuests.forEach(sq => {
+                                sq.isCompleted = false;
+                            });
+                        }
+                    });
+                }
                 
                 gameState.lastResetDate = todayStr;
                 saveGame();
@@ -3462,6 +3739,40 @@
                         q.isExpanded = false;
                     });
 
+                    // [신규] Workplace DLC 데이터 마이그레이션
+                    if (!parsed.currentTab) {
+                        parsed.currentTab = "home";
+                    }
+                    if (!parsed.workplaceQuests) {
+                        parsed.workplaceQuests = [
+                            {
+                                id: "wl_lab",
+                                name: "🔬 연구실 프로젝트",
+                                isCompleted: false,
+                                isExpanded: false,
+                                subQuests: [
+                                    { id: "wl_lab_1", name: "📑 전공 논문 읽고 보고서 요약", xpReward: 30, goldReward: 10, isCompleted: false },
+                                    { id: "wl_lab_2", name: "🧪 실험 기구 세팅 및 데이터 측정", xpReward: 40, goldReward: 15, isCompleted: false },
+                                    { id: "wl_lab_3", name: "🧫 배양 배지 정리 및 장비 기구 청소", xpReward: 20, goldReward: 8, isCompleted: false }
+                                ]
+                            },
+                            {
+                                id: "wl_office",
+                                name: "💻 오피스 행정 업무",
+                                isCompleted: false,
+                                isExpanded: false,
+                                subQuests: [
+                                    { id: "wl_office_1", name: "📧 이메일 답장 및 메일함 정리", xpReward: 15, goldReward: 5, isCompleted: false },
+                                    { id: "wl_office_2", name: "📊 주간 진행 보고서 작성 및 결재", xpReward: 35, goldReward: 12, isCompleted: false },
+                                    { id: "wl_office_3", name: "📂 책상 서류 철 수납 및 모니터 소독", xpReward: 15, goldReward: 6, isCompleted: false }
+                                ]
+                            }
+                        ];
+                    }
+                    parsed.workplaceQuests.forEach(q => {
+                        q.isExpanded = false;
+                    });
+
                     localStorage.setItem("houseChoreGameData", JSON.stringify(parsed));
                 }
                 
@@ -3563,11 +3874,170 @@
                         bossHp: 200,
                         maxHp: 200,
                         actionPoints: 0
-                    }
+                    },
+                    currentTab: "home",
+                    workplaceQuests: [
+                        {
+                            id: "wl_lab",
+                            name: "🔬 연구실 프로젝트",
+                            isCompleted: false,
+                            isExpanded: false,
+                            subQuests: [
+                                { id: "wl_lab_1", name: "📑 전공 논문 읽고 보고서 요약", xpReward: 30, goldReward: 10, isCompleted: false },
+                                { id: "wl_lab_2", name: "🧪 실험 기구 세팅 및 데이터 측정", xpReward: 40, goldReward: 15, isCompleted: false },
+                                { id: "wl_lab_3", name: "🧫 배양 배지 정리 및 장비 기구 청소", xpReward: 20, goldReward: 8, isCompleted: false }
+                            ]
+                        },
+                        {
+                            id: "wl_office",
+                            name: "💻 오피스 행정 업무",
+                            isCompleted: false,
+                            isExpanded: false,
+                            subQuests: [
+                                { id: "wl_office_1", name: "📧 이메일 답장 및 메일함 정리", xpReward: 15, goldReward: 5, isCompleted: false },
+                                { id: "wl_office_2", name: "📊 주간 진행 보고서 작성 및 결재", xpReward: 35, goldReward: 12, isCompleted: false },
+                                { id: "wl_office_3", name: "📂 책상 서류 철 수납 및 모니터 소독", xpReward: 15, goldReward: 6, isCompleted: false }
+                            ]
+                        }
+                    ]
                 };
                 saveGame();
                 updateUI();
                 screenLog("🧹 게임 데이터를 초기화하였습니다. 새로운 모험을 시작하세요!");
+            }
+        function switchTab(tab) {
+            gameState.currentTab = tab;
+            closeAllPopovers();
+            saveGame();
+            updateUI();
+            screenLog(`🗺️ 영토 탭 전환: [${tab === 'home' ? '🏠 마이 홈' : '🏫 연구실 & 오피스'}]`);
+        }
+
+        function toggleWorkplaceQuestExpand(questId) {
+            const quest = gameState.workplaceQuests.find(q => q.id === questId);
+            if (quest) {
+                quest.isExpanded = !quest.isExpanded;
+                saveGame();
+                updateUI();
+            }
+        }
+
+        function completeWorkplaceSubQuest(questId, subQuestId, event) {
+            if (event) {
+                event.stopPropagation();
+                spawnParticles(event);
+            }
+
+            const quest = gameState.workplaceQuests.find(q => q.id === questId);
+            if (!quest) return;
+
+            const subQuest = quest.subQuests.find(sq => sq.id === subQuestId);
+            if (!subQuest || subQuest.isCompleted) return;
+
+            // 1. 완료 상태 변경 및 AP 증가
+            subQuest.isCompleted = true;
+            if (!gameState.raid) {
+                gameState.raid = { currentBossIndex: 0, bossHp: 200, maxHp: 200, actionPoints: 0 };
+            }
+            gameState.raid.actionPoints = Math.min(gameState.raid.actionPoints + 1, 99); // 최대 99 AP
+
+            // 2. 보상 계산 (장비 버프 연동)
+            let xpReward = subQuest.xpReward;
+            let goldReward = subQuest.goldReward;
+
+            // 연구실/오피스 전용 장비 버프
+            if (gameState.equippedItem === 'labcoat' && questId === 'wl_lab') {
+                xpReward = Math.ceil(xpReward * 1.20); // 🥼 연구실 경험치 +20%
+            } else if (gameState.equippedItem === 'mug' && questId === 'wl_office') {
+                goldReward = Math.ceil(goldReward * 1.20); // ☕ 오피스 골드 +20%
+            }
+
+            // 공용 장비 버프
+            if (gameState.equippedItem === 'broom') {
+                goldReward = Math.ceil(goldReward * 1.10);
+            } else if (gameState.equippedItem === 'crown') {
+                xpReward = Math.ceil(xpReward * 1.15);
+            } else if (gameState.equippedItem === 'glasses') {
+                goldReward = Math.ceil(goldReward * 1.05);
+            } else if (gameState.equippedItem === 'ribbon') {
+                xpReward = Math.ceil(xpReward * 1.05);
+            } else if (gameState.equippedItem === 'mantle') {
+                xpReward = Math.ceil(xpReward * 1.08);
+                goldReward = Math.ceil(goldReward * 1.08);
+            }
+
+            // 3. 골드 및 경험치 반영
+            gameState.character.gold = Math.min(gameState.character.gold + goldReward, 99999);
+            gameState.character.currentXp += xpReward;
+
+            // 4. 히스토리 기록
+            const todayStr = getTodayString();
+            const timeStr = new Date().toLocaleTimeString();
+            if (!gameState.history) gameState.history = [];
+            gameState.history.push({
+                date: todayStr,
+                time: timeStr,
+                questName: quest.name,
+                subQuestName: subQuest.name,
+                xp: xpReward,
+                gold: goldReward
+            });
+
+            // 5. 대그룹 일괄 완료 보너스 체크
+            const allDoneNow = quest.subQuests.every(sq => sq.isCompleted);
+            if (allDoneNow && !quest.isCompleted) {
+                quest.isCompleted = true;
+                let bonusXp = 30;
+                let bonusGold = 15;
+
+                // 버프 연동
+                if (gameState.equippedItem === 'labcoat' && questId === 'wl_lab') {
+                    bonusXp = Math.ceil(bonusXp * 1.20);
+                } else if (gameState.equippedItem === 'mug' && questId === 'wl_office') {
+                    bonusGold = Math.ceil(bonusGold * 1.20);
+                }
+
+                gameState.character.currentXp += bonusXp;
+                gameState.character.gold = Math.min(gameState.character.gold + bonusGold, 99999);
+
+                screenLog(`🏆 [업무 완료 보너스] '${quest.name}' 완료! ✨+${bonusXp}XP / 🪙+${bonusGold}G 획득!`);
+            }
+
+            screenLog(`💼 [업무 수행] ${subQuest.name} 완료! ✨+${xpReward}XP / 🪙+${goldReward}G / ⚔️ AP +1 획득!`);
+
+            // 6. 레벨업 체크
+            checkLevelUp();
+
+            saveGame();
+            updateUI();
+        }
+
+        function resetWorkplaceSubQuest(questId, subQuestId) {
+            const quest = gameState.workplaceQuests.find(q => q.id === questId);
+            if (!quest) return;
+
+            const subQuest = quest.subQuests.find(sq => sq.id === subQuestId);
+            if (subQuest) {
+                subQuest.isCompleted = false;
+                quest.isCompleted = false; // 서브퀘스트 반복 시 메인도 완료 해제
+                saveGame();
+                updateUI();
+                screenLog(`🔄 [업무 초기화] '${subQuest.name}'을 다시 수행할 수 있게 되었습니다.`);
+            }
+        }
+
+        function resetAllWorkplaceSubQuests(questId, event) {
+            if (event) event.stopPropagation();
+
+            const quest = gameState.workplaceQuests.find(q => q.id === questId);
+            if (quest) {
+                quest.isCompleted = false;
+                quest.subQuests.forEach(sq => {
+                    sq.isCompleted = false;
+                });
+                saveGame();
+                updateUI();
+                screenLog(`🔄 [일괄 초기화] '${quest.name}'의 모든 상세 업무를 리셋했습니다.`);
             }
         }
 

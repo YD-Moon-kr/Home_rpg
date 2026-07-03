@@ -1,8 +1,9 @@
-const CACHE_NAME = 'chore-rpg-v30'; // 캐시 버전을 v30으로 상향하여 모바일 block-margin 스크롤 레이아웃 배포
+const CACHE_NAME = 'chore-rpg-v31'; // 캐시 버전을 v31로 상향하여 연구실 & 오피스 DLC 배포
 const ASSETS = [
   './',
   './index.html',
   './house_map.jpg',
+  './workplace_map.jpg',
   './character_avatar.jpg',
   './avatar_broom.jpg',
   './avatar_crown.jpg',
@@ -11,6 +12,8 @@ const ASSETS = [
   './avatar_shield.jpg',
   './avatar_sword.jpg',
   './avatar_mantle.jpg',
+  './avatar_labcoat.jpg',
+  './avatar_mug.jpg',
   './monster_slime.jpg',
   './monster_dragon.jpg',
   './manifest.json'
