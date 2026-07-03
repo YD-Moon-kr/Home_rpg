@@ -1,4 +1,4 @@
-const CACHE_NAME = 'chore-rpg-v21'; // 캐시 버전을 v21로 상향 및 정상 오프라인 캐싱 서비스 워커 복원 버전 배포
+const CACHE_NAME = 'chore-rpg-v22'; // 캐시 버전을 v22로 상향하여 몬스터 레이드 시스템 추가 배포
 const ASSETS = [
   './',
   './index.html',
@@ -11,6 +11,8 @@ const ASSETS = [
   './avatar_shield.jpg',
   './avatar_sword.jpg',
   './avatar_mantle.jpg',
+  './monster_slime.jpg',
+  './monster_dragon.jpg',
   './manifest.json'
 ];
 

@@ -1679,6 +1679,43 @@
                 </div>
             </div>
 
+            <!-- 🐉 [신규 추가] 집안의 유해 몬스터 레이드 카드 -->
+            <div class="card raid-card" style="margin-top: 16px; background: linear-gradient(135deg, rgba(30, 34, 53, 0.6) 0%, rgba(15, 17, 26, 0.8) 100%); border: 1px solid rgba(255, 107, 107, 0.15);">
+                <div class="card-title" style="color: #ff6b6b; display: flex; align-items: center; gap: 6px;">😈 집안의 유해 몬스터 레이드 (Chore Boss)</div>
+                <div style="display: flex; gap: 16px; margin-top: 12px; align-items: center; background: rgba(255,255,255,0.01); padding: 12px; border-radius: 12px; border: 1px solid rgba(255,255,255,0.03);">
+                    <!-- 보스 이미지 -->
+                    <div style="width: 80px; height: 80px; border-radius: 50%; overflow: hidden; border: 2px solid #ff6b6b; flex-shrink: 0; background: #151726; box-shadow: 0 0 10px rgba(255, 107, 107, 0.2);">
+                        <img src="monster_slime.jpg" alt="Boss" id="boss-image" style="width: 100%; height: 100%; object-fit: cover;">
+                    </div>
+                    <!-- 보스 스탯 & HP 바 -->
+                    <div style="flex-grow: 1; display: flex; flex-direction: column; gap: 6px;">
+                        <div style="display: flex; justify-content: space-between; align-items: baseline;">
+                            <span id="boss-name" style="font-size: 0.9rem; font-weight: 700; color: #fff;">👾 Lv.1 곰팡이 슬라임</span>
+                            <span id="boss-hp-text" style="font-size: 0.75rem; color: #ff6b6b; font-weight: 700;">200 / 200 HP</span>
+                        </div>
+                        <!-- HP 바 백그라운드 -->
+                        <div style="width: 100%; height: 10px; background: rgba(255,255,255,0.05); border-radius: 5px; overflow: hidden; border: 1px solid rgba(255,255,255,0.08);">
+                            <div id="boss-hp-bar" style="width: 100%; height: 100%; background: linear-gradient(90deg, #ff6b6b, #ff7675); transition: width 0.3s ease;"></div>
+                        </div>
+                        <div style="font-size: 0.7rem; color: var(--text-muted); line-height: 1.3;" id="boss-reward-desc">
+                            처치 보상: 🪙 50골드 / ✨ 100 XP
+                        </div>
+                    </div>
+                </div>
+                
+                <!-- 공격 컨트롤러 -->
+                <div style="margin-top: 12px; display: flex; align-items: center; justify-content: space-between; gap: 12px;">
+                    <div style="display: flex; flex-direction: column;">
+                        <span style="font-size: 0.72rem; color: var(--text-muted);">보유 ⚔️ 전투 행동력</span>
+                        <span id="raid-ap-counter" style="font-size: 1.1rem; font-weight: 800; color: var(--color-primary);">0 AP</span>
+                    </div>
+                    <button class="btn-action complete" onclick="attackRaidBoss(event)" style="padding: 10px 20px; font-weight: 700; font-size: 0.85rem; background: linear-gradient(135deg, #ff6b6b, #ee5253); color: #fff; box-shadow: 0 4px 15px rgba(255, 107, 107, 0.3); border: none; touch-action: manipulation;" id="btn-attack-boss">⚔️ 냥냥펀치 공격 (소모 1 AP)</button>
+                </div>
+                <div style="font-size: 0.65rem; color: var(--text-muted); margin-top: 8px; text-align: center;">
+                    💡 집안일 하위 퀘스트를 1개 완료할 때마다 ⚔️ 1 AP가 충전됩니다!
+                </div>
+            </div>
+
             <!-- 🧊 냉장고 던전 카드 (인벤토리 보드) -->
             <div class="card refrigerator-preview" id="refrigerator-card-section">
                 <div class="card-title">🧊 냉장고 던전 (식재료 인벤토리)</div>
@@ -2417,6 +2454,50 @@
                     });
                 }
             }
+
+            // 9. [신규 추가] 레이드 보스전 UI 동기화
+            if (!gameState.raid) {
+                gameState.raid = { currentBossIndex: 0, bossHp: 200, maxHp: 200, actionPoints: 0 };
+            }
+            const raid = gameState.raid;
+            const bosses = [
+                { name: "곰팡이 슬라임", maxHp: 200, rewardGold: 50, rewardXp: 100, img: "monster_slime.jpg" },
+                { name: "먼지 마왕 드래곤", maxHp: 500, rewardGold: 120, rewardXp: 250, img: "monster_dragon.jpg" }
+            ];
+            
+            const currentBoss = bosses[raid.currentBossIndex] || bosses[0];
+            
+            const bossImageEl = document.getElementById('boss-image');
+            if (bossImageEl) bossImageEl.src = currentBoss.img;
+            
+            const bossNameEl = document.getElementById('boss-name');
+            if (bossNameEl) bossNameEl.innerText = `${raid.currentBossIndex === 0 ? '👾' : '🐉'} Lv.${raid.currentBossIndex + 1} ${currentBoss.name}`;
+            
+            const bossHpTextEl = document.getElementById('boss-hp-text');
+            if (bossHpTextEl) bossHpTextEl.innerText = `${raid.bossHp} / ${currentBoss.maxHp} HP`;
+            
+            const bossHpBarEl = document.getElementById('boss-hp-bar');
+            if (bossHpBarEl) {
+                const hpPercent = Math.max((raid.bossHp / currentBoss.maxHp) * 100, 0);
+                bossHpBarEl.style.width = `${hpPercent}%`;
+            }
+            
+            const bossRewardDescEl = document.getElementById('boss-reward-desc');
+            if (bossRewardDescEl) bossRewardDescEl.innerHTML = `처치 보상: <strong style="color:var(--color-primary);">🪙 ${currentBoss.rewardGold} 골드</strong> / <strong style="color:var(--color-accent);">✨ ${currentBoss.rewardXp} XP</strong>`;
+            
+            const raidApCounterEl = document.getElementById('raid-ap-counter');
+            if (raidApCounterEl) raidApCounterEl.innerText = `${raid.actionPoints} AP`;
+            
+            const btnAttackEl = document.getElementById('btn-attack-boss');
+            if (btnAttackEl) {
+                let attackName = "냥냥펀치 공격";
+                if (gameState.equippedItem === 'broom') attackName = "🧹 빗자루 쓸기 공격";
+                else if (gameState.equippedItem === 'sword') attackName = "🍳 거품기 성검 베기";
+                else if (gameState.equippedItem === 'shield') attackName = "🛡️ 냄비뚜껑 실드 강타";
+                else if (gameState.equippedItem === 'mantle') attackName = "🧥 용사의 망토 돌진";
+                
+                btnAttackEl.innerText = `⚔️ ${attackName} (소모 1 AP)`;
+            }
         }
 
         // ==========================================
@@ -2497,6 +2578,13 @@
                 }
                 
                 gainRewards(xpReward, goldReward);
+
+                // [신규] 레이드 몬스터전 전투 행동력(AP) 1 충전
+                if (!gameState.raid) {
+                    gameState.raid = { currentBossIndex: 0, bossHp: 200, maxHp: 200, actionPoints: 0 };
+                }
+                gameState.raid.actionPoints += 1;
+                screenLog(`⚔️ 유해 몬스터 대항 전투 행동력 +1 AP 획득! (현재: ${gameState.raid.actionPoints} AP)`);
 
                 // [신규] 모험가의 연대기에 기록 추가
                 const todayStr = getTodayString();
@@ -2735,6 +2823,101 @@
                 
                 alert("📅 리셋 테스트 완료!\n날짜 차이가 감지되어 자정 퀘스트 리셋이 즉시 트리거되었습니다.");
             }
+        }
+
+        // ==========================================
+        // 5-4. [신규 추가] 집안의 유해 몬스터 레이드 (Chore Boss Battle)
+        // ==========================================
+        function attackRaidBoss(event) {
+            if (!gameState.raid) {
+                gameState.raid = { currentBossIndex: 0, bossHp: 200, maxHp: 200, actionPoints: 0 };
+            }
+            
+            const raid = gameState.raid;
+            if (raid.actionPoints <= 0) {
+                screenLog("❌ [레이드] 전투 행동력(AP)이 부족합니다! 집안일을 완료해서 충전해 주세요.");
+                alert("⚔️ 전투 행동력(AP)이 부족합니다!\n집안일 하위 퀘스트를 완료하면 1 AP씩 충전됩니다.");
+                return;
+            }
+            
+            if (event) spawnParticles(event);
+            
+            const bosses = [
+                { name: "곰팡이 슬라임", maxHp: 200, rewardGold: 50, rewardXp: 100 },
+                { name: "먼지 마왕 드래곤", maxHp: 500, rewardGold: 120, rewardXp: 250 }
+            ];
+            const currentBoss = bosses[raid.currentBossIndex] || bosses[0];
+            
+            // 1. 공격력 산정 (장착 중인 장비 버프 연동)
+            let damage = 10; // 맨손 기본
+            let hitMessage = "냥냥 펀치로 냥냥하게 때렸습니다!";
+            
+            if (gameState.equippedItem === 'broom') {
+                damage = 25;
+                hitMessage = "🧹 마법 빗자루로 먼지와 함께 싹싹 쓸어버렸습니다!";
+            } else if (gameState.equippedItem === 'crown') {
+                damage = 15;
+                hitMessage = "👑 왕관의 눈부신 오라 광선으로 보스를 정화했습니다!";
+            } else if (gameState.equippedItem === 'glasses') {
+                damage = 20;
+                hitMessage = "🕶️ 멋쟁이 선글라스를 끼고 약점을 째려보며 냥냥 펀치를 꽂았습니다!";
+            } else if (gameState.equippedItem === 'ribbon') {
+                damage = 12;
+                hitMessage = "🎀 러블리 리본을 휘날리며 깜찍한 냥펀치를 날렸습니다!";
+            } else if (gameState.equippedItem === 'shield') {
+                damage = 18;
+                hitMessage = "🛡️ 냄비뚜껑 방패로 강력하게 쾅! 들이박았습니다!";
+            } else if (gameState.equippedItem === 'sword') {
+                damage = 50; // 거품기 성검 위력 폭발!
+                hitMessage = "🍳 거품기 성검을 강력하게 휘둘러 난도질했습니다!";
+            } else if (gameState.equippedItem === 'mantle') {
+                damage = 30; // 용사 빨간망토
+                hitMessage = "🧥 용사의 망토를 흩날리며 멋지게 발차기를 날렸습니다!";
+            }
+            
+            // 2. 공격 연산
+            raid.actionPoints -= 1;
+            raid.bossHp = Math.max(raid.bossHp - damage, 0);
+            screenLog(`⚔️ [레이드] ${hitMessage} (데미지: -${damage} / 보스 HP: ${raid.bossHp})`);
+            
+            // 3. 처치 여부 판정
+            if (raid.bossHp <= 0) {
+                const oldBossIndex = raid.currentBossIndex;
+                const earnedGold = currentBoss.rewardGold;
+                const earnedXp = currentBoss.rewardXp;
+                
+                screenLog(`🏆 [레이드 격퇴 완료!] "${currentBoss.name}"을(를) 완벽히 몰아냈습니다! (+${earnedXp} XP / +${earnedGold} Gold)`);
+                gainRewards(earnedXp, earnedGold);
+                
+                const todayStr = getTodayString();
+                const now = new Date();
+                const timeStr = `${String(now.getHours()).padStart(2, '0')}:${String(now.getMinutes()).padStart(2, '0')}`;
+                
+                if (!gameState.history) gameState.history = [];
+                gameState.history.push({
+                    date: todayStr,
+                    time: timeStr,
+                    questName: "🏆 레이드 보스 토벌",
+                    subQuestName: `★ ${currentBoss.name} 격퇴 성공!`,
+                    xp: earnedXp,
+                    gold: earnedGold
+                });
+                
+                if (oldBossIndex === 0) {
+                    raid.currentBossIndex = 1;
+                    raid.bossHp = 500;
+                    raid.maxHp = 500;
+                    alert(`🎉 축하합니다! 👾 곰팡이 슬라임을 토벌했습니다!\n다음 보스인 🐉 Lv.2 먼지 마왕 드래곤(HP 500)이 출현합니다!`);
+                } else {
+                    raid.currentBossIndex = 0;
+                    raid.bossHp = 200;
+                    raid.maxHp = 200;
+                    alert(`🏆 위대하십니다! 최종 보스 🐉 먼지 마왕 드래곤까지 모두 토벌하셨습니다!\n모험가님의 든든한 힘으로 집안이 쾌적해졌습니다. 보스가 다시 부활합니다!`);
+                }
+            }
+            
+            saveGame();
+            updateUI();
         }
 
         // ==========================================
@@ -3123,10 +3306,20 @@
                 if (!parsed.inventory) {
                     parsed.inventory = ['broom'];
                 } else if (parsed.inventory.length === 0) {
-                    parsed.inventory = ['broom']; // 기존 유저도 가방이 비어있으면 1번 빗자루 기본 지급
+                    parsed.inventory = ['broom'];
                 }
                 if (parsed.equippedItem === undefined) {
                     parsed.equippedItem = null;
+                }
+                
+                // [신규] 몬스터 레이드 데이터 마이그레이션
+                if (!parsed.raid) {
+                    parsed.raid = {
+                        currentBossIndex: 0,
+                        bossHp: 200,
+                        maxHp: 200,
+                        actionPoints: 0
+                    };
                 }
 
                 if (parsed.quests) {
@@ -3257,8 +3450,14 @@
                         }
                     ],
                     refrigerator: [],
-                    inventory: ['broom'], // 초기화 시 1번 마법 빗자루 기본 지급
-                    equippedItem: null
+                    inventory: ['broom'],
+                    equippedItem: null,
+                    raid: {
+                        currentBossIndex: 0,
+                        bossHp: 200,
+                        maxHp: 200,
+                        actionPoints: 0
+                    }
                 };
                 saveGame();
                 updateUI();
