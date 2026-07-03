@@ -1786,22 +1786,41 @@
 
     <!-- 🛠️ [신규 추가] 비상 모험가 데이터 복구 모달 창 -->
     <div class="modal-overlay" id="recovery-modal" onclick="onRecoveryModalOverlayClick(event)">
-        <div class="modal-content" style="max-width: 400px;">
+        <div class="modal-content" style="max-width: 400px; max-height: 90vh; overflow-y: auto;">
             <div class="modal-header">🛠️ 모험가 복구 관리 도구</div>
             <div style="font-size: 0.72rem; color: var(--text-muted); margin-bottom: 12px; line-height: 1.4;">
                 브라우저나 PWA 캐시 문제로 레벨/골드가 소실되었을 경우 복구하는 툴입니다. 복구하고자 하는 수치를 직접 입력해 주세요.
             </div>
-            <div class="form-group">
-                <label for="recovery-level-input">🎯 레벨 (Level)</label>
-                <input type="number" id="recovery-level-input" min="1" max="100" value="1" style="width: 100%; box-sizing: border-box;">
+            
+            <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 10px;">
+                <div class="form-group">
+                    <label for="recovery-level-input">🎯 레벨 (Level)</label>
+                    <input type="number" id="recovery-level-input" min="1" max="100" value="1" style="width: 100%; box-sizing: border-box;">
+                </div>
+                <div class="form-group">
+                    <label for="recovery-gold-input">🪙 골드 (Gold)</label>
+                    <input type="number" id="recovery-gold-input" min="0" max="99999" value="0" style="width: 100%; box-sizing: border-box;">
+                </div>
             </div>
-            <div class="form-group">
-                <label for="recovery-gold-input">🪙 골드 (Gold)</label>
-                <input type="number" id="recovery-gold-input" min="0" max="99999" value="0" style="width: 100%; box-sizing: border-box;">
+
+            <!-- [신규] 레이드 데이터 복구 폼 추가 -->
+            <div style="display: grid; grid-template-columns: 1.2fr 0.8fr; gap: 10px; margin-top: 4px;">
+                <div class="form-group">
+                    <label for="recovery-boss-select">👾 레이드 보스 단계</label>
+                    <select id="recovery-boss-select" style="width: 100%; box-sizing: border-box; background: rgba(0,0,0,0.2); color: #fff; border: 1px solid rgba(255,255,255,0.1); padding: 8px; border-radius: 6px;">
+                        <option value="0">👾 1단계: 곰팡이 슬라임 (HP 200)</option>
+                        <option value="1">🐉 2단계: 먼지 마왕 드래곤 (HP 500)</option>
+                    </select>
+                </div>
+                <div class="form-group">
+                    <label for="recovery-ap-input">⚔️ 행동력 (AP)</label>
+                    <input type="number" id="recovery-ap-input" min="0" max="99" value="0" style="width: 100%; box-sizing: border-box;">
+                </div>
             </div>
+            
             <div class="form-group">
                 <label style="margin-bottom: 6px; display: block;">🎒 보유 아이템 복구</label>
-                <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 8px; background: rgba(0,0,0,0.2); padding: 10px; border-radius: 8px; max-height: 120px; overflow-y: auto;">
+                <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 6px; background: rgba(0,0,0,0.2); padding: 10px; border-radius: 8px; max-height: 120px; overflow-y: auto;">
                     <label style="display: flex; align-items: center; gap: 4px; font-size: 0.75rem; cursor: pointer;">
                         <input type="checkbox" id="rec-item-broom" checked disabled> 🧹 빗자루 (기본)
                     </label>
@@ -1825,11 +1844,11 @@
                     </label>
                 </div>
             </div>
-            <div class="modal-footer" style="margin-top: 16px; display: flex; justify-content: space-between; align-items: center; gap: 8px;">
-                <button class="btn-action repeat" onclick="triggerResetTest()" style="padding: 10px 12px; font-size: 0.7rem; background: rgba(255,255,255,0.02); border: 1px solid rgba(255,255,255,0.08); color: var(--color-primary); touch-action: manipulation;">📅 자정리셋 즉시테스트</button>
-                <div style="display: flex; gap: 8px;">
-                    <button class="btn-modal-cancel" onclick="closeRecoveryModal()">닫기</button>
-                    <button class="btn-action complete" onclick="applyRecoveryData()" style="padding: 10px 15px; font-weight: 700; background: var(--color-primary); color: #000;">🛠️ 복구 적용</button>
+            <div class="modal-footer" style="margin-top: 16px; display: flex; flex-direction: column; gap: 8px; width: 100%;">
+                <button class="btn-action complete" onclick="applyRecoveryData()" style="width: 100%; justify-content: center; padding: 12px; font-weight: 700; background: var(--color-primary); color: #000; font-size: 0.85rem;">🛠️ 복구 적용하기</button>
+                <div style="display: flex; gap: 8px; width: 100%;">
+                    <button class="btn-action repeat" onclick="triggerResetTest()" style="flex: 1; justify-content: center; padding: 10px; font-size: 0.7rem; background: rgba(255,255,255,0.02); border: 1px solid rgba(255,255,255,0.08); color: var(--color-primary); touch-action: manipulation;">📅 자정리셋 테스트</button>
+                    <button class="btn-modal-cancel" onclick="closeRecoveryModal()" style="flex: 1; justify-content: center; padding: 10px; font-size: 0.75rem; border: 1px solid rgba(255,255,255,0.1);">닫기</button>
                 </div>
             </div>
         </div>
@@ -2738,6 +2757,13 @@
             document.getElementById('recovery-level-input').value = gameState.character.level;
             document.getElementById('recovery-gold-input').value = gameState.character.gold;
             
+            // [신규] 레이드 데이터 복구 세팅
+            if (!gameState.raid) {
+                gameState.raid = { currentBossIndex: 0, bossHp: 200, maxHp: 200, actionPoints: 0 };
+            }
+            document.getElementById('recovery-boss-select').value = gameState.raid.currentBossIndex;
+            document.getElementById('recovery-ap-input').value = gameState.raid.actionPoints;
+            
             // 아이템 소지상태 세팅
             const inv = gameState.inventory || [];
             document.getElementById('rec-item-crown').checked = inv.includes('crown');
@@ -2764,6 +2790,8 @@
         function applyRecoveryData() {
             const levelVal = parseInt(document.getElementById('recovery-level-input').value, 10) || 1;
             const goldVal = parseInt(document.getElementById('recovery-gold-input').value, 10) || 0;
+            const bossIndexVal = parseInt(document.getElementById('recovery-boss-select').value, 10) || 0;
+            const apVal = parseInt(document.getElementById('recovery-ap-input').value, 10) || 0;
             
             if (levelVal < 1 || levelVal > 100) {
                 alert("레벨은 1에서 100까지만 가능합니다.");
@@ -2771,6 +2799,10 @@
             }
             if (goldVal < 0) {
                 alert("골드는 0 이상이어야 합니다.");
+                return;
+            }
+            if (apVal < 0 || apVal > 99) {
+                alert("행동력(AP)은 0에서 99까지만 가능합니다.");
                 return;
             }
             
@@ -2785,6 +2817,20 @@
                 nextXp = Math.floor(nextXp * 1.2);
             }
             gameState.character.nextLevelXp = nextXp;
+            
+            // [신규] 레이드 데이터 복구
+            const bosses = [
+                { maxHp: 200 },
+                { maxHp: 500 }
+            ];
+            const targetMaxHp = bosses[bossIndexVal].maxHp;
+            
+            gameState.raid = {
+                currentBossIndex: bossIndexVal,
+                bossHp: targetMaxHp,
+                maxHp: targetMaxHp,
+                actionPoints: apVal
+            };
             
             // 인벤토리 아이템 복구
             const newInv = ['broom']; // 빗자루 기본
@@ -2805,7 +2851,7 @@
             updateUI();
             closeRecoveryModal();
             
-            screenLog(`🛠️ [시스템 복구] 모험가 정보 복구 적용! (Lv.${levelVal} / 🪙${goldVal}G / 아이템 ${newInv.length}종 보유)`);
+            screenLog(`🛠️ [시스템 복구] 모험가 정보 복구 적용! (Lv.${levelVal} / 🪙${goldVal}G / 보스 Lv.${bossIndexVal+1} / ⚔️${apVal}AP)`);
             alert("🎉 모험가 복구가 성공적으로 적용되었습니다!");
         }
 
@@ -2848,31 +2894,46 @@
             ];
             const currentBoss = bosses[raid.currentBossIndex] || bosses[0];
             
-            // 1. 공격력 산정 (장착 중인 장비 버프 연동)
-            let damage = 10; // 맨손 기본
-            let hitMessage = "냥냥 펀치로 냥냥하게 때렸습니다!";
+            // 1. 최소/최대 공격력 난수 범위 산정 (장착 중인 장비 버프 연동)
+            let minDmg = 5;
+            let maxDmg = 15; // 맨손 기본 (평균 10)
+            let weaponName = "맨손 냥냥 펀치";
             
             if (gameState.equippedItem === 'broom') {
-                damage = 25;
-                hitMessage = "🧹 마법 빗자루로 먼지와 함께 싹싹 쓸어버렸습니다!";
+                minDmg = 15; maxDmg = 35;
+                weaponName = "🧹 마법 빗자루 쓸기";
             } else if (gameState.equippedItem === 'crown') {
-                damage = 15;
-                hitMessage = "👑 왕관의 눈부신 오라 광선으로 보스를 정화했습니다!";
+                minDmg = 10; maxDmg = 20;
+                weaponName = "👑 왕관의 정화 오라";
             } else if (gameState.equippedItem === 'glasses') {
-                damage = 20;
-                hitMessage = "🕶️ 멋쟁이 선글라스를 끼고 약점을 째려보며 냥냥 펀치를 꽂았습니다!";
+                minDmg = 12; maxDmg = 28;
+                weaponName = "🕶️ 선글라스 째려보기";
             } else if (gameState.equippedItem === 'ribbon') {
-                damage = 12;
-                hitMessage = "🎀 러블리 리본을 휘날리며 깜찍한 냥펀치를 날렸습니다!";
+                minDmg = 8; maxDmg = 16;
+                weaponName = "🎀 러블리 리본 어택";
             } else if (gameState.equippedItem === 'shield') {
-                damage = 18;
-                hitMessage = "🛡️ 냄비뚜껑 방패로 강력하게 쾅! 들이박았습니다!";
+                minDmg = 12; maxDmg = 24;
+                weaponName = "🛡️ 냄비뚜껑 실드 스매시";
             } else if (gameState.equippedItem === 'sword') {
-                damage = 50; // 거품기 성검 위력 폭발!
-                hitMessage = "🍳 거품기 성검을 강력하게 휘둘러 난도질했습니다!";
+                minDmg = 35; maxDmg = 65; // 거품기 성검 위력 폭발! (평균 50)
+                weaponName = "🍳 거품기 성검 베기";
             } else if (gameState.equippedItem === 'mantle') {
-                damage = 30; // 용사 빨간망토
-                hitMessage = "🧥 용사의 망토를 흩날리며 멋지게 발차기를 날렸습니다!";
+                minDmg = 20; maxDmg = 40;
+                weaponName = "🧥 용사의 빨간망토 돌진";
+            }
+            
+            // 랜덤 난수 피해 생성
+            let damage = Math.floor(Math.random() * (maxDmg - minDmg + 1)) + minDmg;
+            
+            // 10% 확률로 크리티컬 히트 (1.5배 피해)!
+            const isCritical = Math.random() < 0.10;
+            let hitMessage = "";
+            
+            if (isCritical) {
+                damage = Math.ceil(damage * 1.5);
+                hitMessage = `🔥 [CRITICAL HIT!] ${weaponName} 공격이 치명타로 적중했습니다!`;
+            } else {
+                hitMessage = `${weaponName} 공격을 날렸습니다.`;
             }
             
             // 2. 공격 연산
