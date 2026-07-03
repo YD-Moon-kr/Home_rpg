@@ -1,4 +1,4 @@
-const CACHE_NAME = 'chore-rpg-v28'; // 캐시 버전을 v28로 상향하여 모달 내부 터치 액션 복원 배포
+const CACHE_NAME = 'chore-rpg-v29'; // 캐시 버전을 v29로 상향하여 오버레이 기반 모달 스크롤 마스터 솔루션 배포
 const ASSETS = [
   './',
   './index.html',
