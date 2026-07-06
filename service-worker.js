@@ -1,4 +1,4 @@
-const CACHE_NAME = 'chore-rpg-v32'; // 캐시 버전을 v32로 상향하여 Syntax 구문 에러 교정본 배포
+const CACHE_NAME = 'chore-rpg-v33'; // 캐시 버전을 v33으로 상향하여 연구실 & 오피스 커스텀 퀘스트 모달 추가 배포
 const ASSETS = [
   './',
   './index.html',

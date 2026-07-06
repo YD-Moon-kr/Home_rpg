@@ -1621,6 +1621,32 @@
                             <button class="btn-add-food" onclick="openAddFoodModal()" style="width:100%; justify-content:center; margin-top:12px; font-size:0.75rem;">➕ 식재료 던전에 등록</button>
                         </div>
                     </div>
+
+                    <!-- 🏫 [Workplace DLC 전용 핀들] -->
+                    <!-- 1. 연구실(현미경) 핀 -->
+                    <div class="map-pin-container popover-right workplace-pin" style="top: 30%; left: 30%; display: none;">
+                        <div class="map-pin cyan" onclick="toggleMapPopover('wl_lab', event)">🔬</div>
+                        <div class="map-popover" id="popover-wl_lab" style="width: 280px; max-width: 80vw;">
+                            <div class="popover-header">
+                                <span class="popover-title">🔬 연구실 프로젝트</span>
+                                <button class="btn-popover-close" onclick="closeAllPopovers(event)">&times;</button>
+                            </div>
+                            <div class="popover-list" id="popover-list-wl_lab"></div>
+                            <button class="btn-add-food" onclick="openAddQuestModal('wl_lab')" style="width:100%; justify-content:center; margin-top:12px; font-size:0.75rem; touch-action: manipulation;">➕ 연구실 업무 등록</button>
+                        </div>
+                    </div>
+                    <!-- 2. 오피스(컴퓨터) 핀 -->
+                    <div class="map-pin-container popover-up workplace-pin" style="top: 55%; left: 70%; display: none;">
+                        <div class="map-pin gold" onclick="toggleMapPopover('wl_office', event)">💻</div>
+                        <div class="map-popover" id="popover-wl_office" style="width: 280px; max-width: 80vw;">
+                            <div class="popover-header">
+                                <span class="popover-title">💻 오피스 행정 업무</span>
+                                <button class="btn-popover-close" onclick="closeAllPopovers(event)">&times;</button>
+                            </div>
+                            <div class="popover-list" id="popover-list-wl_office"></div>
+                            <button class="btn-add-food" onclick="openAddQuestModal('wl_office')" style="width:100%; justify-content:center; margin-top:12px; font-size:0.75rem; touch-action: manipulation;">➕ 오피스 업무 등록</button>
+                        </div>
+                    </div>
                 </div>
             </div>
 
@@ -1644,6 +1670,10 @@
                 </div>
                 <div class="quest-list" id="workplace-quest-list-container">
                     <!-- JS로 동적 생성 -->
+                </div>
+                <div style="margin-top: 20px; border-top: 1px solid rgba(255,255,255,0.05); padding-top: 16px; display: flex; gap: 8px;">
+                    <button class="btn-add-food" onclick="openAddQuestModal('wl_lab')" style="flex: 1; justify-content: center; font-size: 0.8rem; padding: 10px; touch-action: manipulation; background: rgba(85, 239, 196, 0.15); border-color: rgba(85, 239, 196, 0.3); color: #55efc4;">➕ 연구 프로젝트 추가</button>
+                    <button class="btn-add-food" onclick="openAddQuestModal('wl_office')" style="flex: 1; justify-content: center; font-size: 0.8rem; padding: 10px; touch-action: manipulation; background: rgba(253, 203, 110, 0.15); border-color: rgba(253, 203, 110, 0.3); color: #fdcb6e;">➕ 행정 업무 추가</button>
                 </div>
                 <div style="font-size: 0.72rem; color: var(--text-muted); margin-top: 12px; text-align: center;">
                     💡 수석 연구원 가운🥼 및 황금 머그잔☕ 장비 장착 시 전용 보상 버프가 적용됩니다!
@@ -3556,22 +3586,38 @@
             }
         }
 
-        function openAddQuestModal() {
+        function openAddQuestModal(type) {
+            const addQuestModal = document.getElementById('add-quest-modal');
+            const questType = type || 'home';
+            addQuestModal.dataset.type = questType;
+            
+            // 모달 헤더 텍스트 변경
+            const headerEl = addQuestModal.querySelector('.modal-header');
+            if (headerEl) {
+                if (questType === 'wl_lab') {
+                    headerEl.innerHTML = '🔬 새로운 연구소 프로젝트 추가';
+                } else if (questType === 'wl_office') {
+                    headerEl.innerHTML = '💻 새로운 오피스 업무 추가';
+                } else {
+                    headerEl.innerHTML = '⚔️ 새로운 집안일 퀘스트 추가';
+                }
+            }
+
             document.getElementById('quest-name-input').value = '';
             document.getElementById('quest-difficulty-select').value = 'normal';
             
             const container = document.getElementById('subquest-inputs-container');
             container.innerHTML = `
                 <div class="subquest-input-item" id="sq-input-0">
-                    <input type="text" class="subquest-name-input" placeholder="세부 항목 1 (예: 거울 닦기)" maxlength="20">
+                    <input type="text" class="subquest-name-input" placeholder="세부 항목 1" maxlength="20">
                 </div>
                 <div class="subquest-input-item" id="sq-input-1">
-                    <input type="text" class="subquest-name-input" placeholder="세부 항목 2 (예: 배수구 청소)" maxlength="20">
+                    <input type="text" class="subquest-name-input" placeholder="세부 항목 2" maxlength="20">
                 </div>
             `;
             subquestInputCount = 2;
 
-            document.getElementById('add-quest-modal').classList.add('active');
+            addQuestModal.classList.add('active');
             lockBodyScroll();
             document.getElementById('quest-name-input').focus();
         }
@@ -3613,6 +3659,8 @@
         function submitAddQuestForm() {
             const name = document.getElementById('quest-name-input').value;
             const difficulty = document.getElementById('quest-difficulty-select').value;
+            const addQuestModal = document.getElementById('add-quest-modal');
+            const questType = addQuestModal.dataset.type || 'home';
             
             const container = document.getElementById('subquest-inputs-container');
             const inputElements = container.getElementsByClassName('subquest-name-input');
@@ -3625,8 +3673,14 @@
                 }
             }
 
-            if (addCustomQuest(name, subNames, difficulty)) {
-                closeAddQuestModal();
+            if (questType === 'home') {
+                if (addCustomQuest(name, subNames, difficulty)) {
+                    closeAddQuestModal();
+                }
+            } else {
+                if (addWorkplaceCustomQuest(questType, name, subNames, difficulty)) {
+                    closeAddQuestModal();
+                }
             }
         }
 
@@ -4041,6 +4095,44 @@
                 updateUI();
                 screenLog(`🔄 [일괄 초기화] '${quest.name}'의 모든 상세 업무를 리셋했습니다.`);
             }
+        }
+
+        function addWorkplaceCustomQuest(type, name, subNames, difficulty) {
+            if (!name.trim()) {
+                alert("업무 명칭을 입력해 주세요!");
+                return false;
+            }
+            if (subNames.length === 0) {
+                alert("최소 한 개 이상의 세부 업무 항목을 추가해 주세요!");
+                return false;
+            }
+
+            const targetGroup = gameState.workplaceQuests.find(q => q.id === type);
+            if (!targetGroup) return false;
+
+            let baseXP = 15;
+            let baseGold = 5;
+            if (difficulty === 'easy') { baseXP = 10; baseGold = 3; }
+            else if (difficulty === 'hard') { baseXP = 30; baseGold = 10; }
+
+            subNames.forEach((subName, i) => {
+                const subId = `${type}_custom_${Date.now()}_${i}`;
+                targetGroup.subQuests.push({
+                    id: subId,
+                    name: subName,
+                    xpReward: baseXP,
+                    goldReward: baseGold,
+                    isCompleted: false
+                });
+            });
+
+            targetGroup.isCompleted = false;
+            targetGroup.isExpanded = true;
+            
+            screenLog(`➕ [업무 등록] 새로운 업무 '${name}' (${subNames.length}개 세부항목)가 등록되었습니다!`);
+            saveGame();
+            updateUI();
+            return true;
         }
 
         window.onload = function() {
