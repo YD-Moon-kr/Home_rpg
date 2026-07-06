@@ -1430,35 +1430,50 @@
         }
 
         /* -------------------------------------------------------------
-           [신규 추가] 태블릿 & 폴더블 및 화면 좁은 브라우저 팝오버 짤림 방지
+           [신규 추가] 태블릿 & 모바일 화면 팝오버 짤림 원천 차단 (Bottom Sheet Style)
            ------------------------------------------------------------- */
         @media (max-width: 768px) {
-            /* 768px 이하에서는 수평 팝오버를 핀 하단 중앙 정렬로 자동 전환 */
+            /* 768px 이하에서는 모든 팝오버를 화면 하단 중앙 고정형 Bottom Sheet 카드로 변환 */
+            .map-popover,
             .popover-left .map-popover,
-            .popover-right .map-popover {
-                top: 45px !important;
-                bottom: auto !important;
+            .popover-right .map-popover,
+            .popover-up.popover-left .map-popover,
+            .popover-up.popover-right .map-popover {
+                position: fixed !important;
+                bottom: 24px !important;
+                top: auto !important;
                 left: 50% !important;
                 right: auto !important;
-                transform: translateX(-50%) scale(0.8) translateY(-10px) !important;
-                transform-origin: top center !important;
+                transform: translate(-50%, 120%) scale(0.9) !important;
+                transform-origin: bottom center !important;
+                width: 90vw !important;
+                max-width: 360px !important;
+                z-index: 2000 !important;
+                border-radius: 20px !important;
+                box-shadow: 0 -10px 40px rgba(0, 0, 0, 0.7) !important;
+                transition: all 0.3s cubic-bezier(0.175, 0.885, 0.32, 1.1) !important;
+                opacity: 0 !important;
+                pointer-events: none !important;
             }
+            
+            /* 활성화(active) 되었을 때 화면 위로 부드럽게 슥 올라옴 */
+            .map-popover.active,
             .popover-left .map-popover.active,
-            .popover-right .map-popover.active {
-                transform: translateX(-50%) scale(1) translateY(0) !important;
+            .popover-right .map-popover.active,
+            .popover-up.popover-left .map-popover.active,
+            .popover-up.popover-right .map-popover.active {
+                transform: translate(-50%, 0) scale(1) !important;
                 opacity: 1 !important;
                 pointer-events: auto !important;
             }
-            /* 화살표도 상단 중앙 가리키도록 일괄 정렬 */
+            
+            /* 말풍선 세모 꼬리표는 모바일 화면 하단 카드에 불필요하므로 숨김 처리 */
+            .map-popover::before,
             .popover-left .map-popover::before,
-            .popover-right .map-popover::before {
-                top: -10px !important;
-                bottom: auto !important;
-                left: 50% !important;
-                right: auto !important;
-                transform: translateX(-50%) !important;
-                border-width: 0 10px 10px !important;
-                border-color: transparent transparent var(--color-primary) !important;
+            .popover-right .map-popover::before,
+            .popover-up.popover-left .map-popover::before,
+            .popover-up.popover-right .map-popover::before {
+                display: none !important;
             }
         }
 
