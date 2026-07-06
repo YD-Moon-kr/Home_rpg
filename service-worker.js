@@ -1,4 +1,4 @@
-const CACHE_NAME = 'chore-rpg-v34'; // 캐시 버전을 v34로 상향하여 교회 DLC 이미지 에셋 및 비즈니스 로직 캐싱
+const CACHE_NAME = 'chore-rpg-v35'; // 캐시 버전을 v35로 상향하여 수정사항 반영
 const ASSETS = [
   './',
   './index.html',

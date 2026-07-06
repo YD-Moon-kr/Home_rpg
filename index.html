@@ -326,6 +326,7 @@
             align-items: center;
             justify-content: center;
             font-size: 1.1rem;
+            line-height: 1;
             transition: all 0.3s cubic-bezier(0.175, 0.885, 0.32, 1.275);
             position: relative;
         }
@@ -1268,34 +1269,120 @@
         }
 
         /* -------------------------------------------------------------
+           [신규 추가] 모달 하단 버튼 높이 및 패딩 통일, 균등 배치
+           ------------------------------------------------------------- */
+        .modal-footer {
+            display: flex;
+            gap: 12px;
+            border-top: 1px solid rgba(255, 255, 255, 0.08);
+            padding-top: 16px;
+            margin-top: 8px;
+            width: 100%;
+        }
+
+        .modal-footer .btn-action,
+        .modal-footer .btn-modal-cancel {
+            flex: 1;
+            padding: 12px 20px;
+            font-size: 0.85rem;
+            border-radius: 8px;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            white-space: nowrap;
+            height: 44px;
+            box-sizing: border-box;
+        }
+
+        /* -------------------------------------------------------------
+           [신규 추가] 퀘스트 추가 모달 세부 항목 입력 폼 스타일
+           ------------------------------------------------------------- */
+        .subquest-inputs-list {
+            display: flex;
+            flex-direction: column;
+            gap: 8px;
+            width: 100%;
+        }
+
+        .subquest-input-item {
+            display: flex;
+            align-items: center;
+            gap: 8px;
+            width: 100%;
+        }
+
+        .subquest-input-item input {
+            flex: 1;
+        }
+
+        .btn-remove-input {
+            background: rgba(255, 118, 117, 0.1);
+            border: 1px solid rgba(255, 118, 117, 0.2);
+            color: #ff7675;
+            cursor: pointer;
+            font-size: 0.85rem;
+            padding: 10px 12px;
+            border-radius: 8px;
+            transition: all 0.2s ease;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            height: 44px;
+            box-sizing: border-box;
+        }
+
+        .btn-remove-input:hover {
+            background: rgba(255, 118, 117, 0.2);
+            border-color: #ff7675;
+        }
+
+        /* -------------------------------------------------------------
            [신규 추가] 팝오버 위치별 정렬 제어 (모바일 잘림 전면 차단)
            ------------------------------------------------------------- */
         /* 1. popover-left: 핀 기준 왼쪽으로 열림 (우측 쏠린 핀용) */
         .popover-left .map-popover {
+            top: 50%;
+            bottom: auto;
             left: auto;
-            right: -12px;
-            transform: scale(0.8) translateY(-10px);
+            right: 44px;
+            transform: translateY(-50%) scale(0.8);
+            transform-origin: center right;
         }
         .popover-left .map-popover.active {
-            transform: scale(1) translateY(0);
+            transform: translateY(-50%) scale(1);
         }
         .popover-left .map-popover::before {
+            top: 50%;
+            bottom: auto;
             left: auto;
-            right: 18px;
-            transform: none;
+            right: -10px;
+            transform: translateY(-50%);
+            border-width: 10px 0 10px 10px;
+            border-style: solid;
+            border-color: transparent transparent transparent var(--color-primary);
         }
 
         /* 2. popover-right: 핀 기준 오른쪽으로 열림 (좌측 쏠린 핀용) */
         .popover-right .map-popover {
-            left: -12px;
-            transform: scale(0.8) translateY(-10px);
+            top: 50%;
+            bottom: auto;
+            left: 44px;
+            right: auto;
+            transform: translateY(-50%) scale(0.8);
+            transform-origin: center left;
         }
         .popover-right .map-popover.active {
-            transform: scale(1) translateY(0);
+            transform: translateY(-50%) scale(1);
         }
         .popover-right .map-popover::before {
-            left: 18px;
-            transform: none;
+            top: 50%;
+            bottom: auto;
+            left: -10px;
+            right: auto;
+            transform: translateY(-50%);
+            border-width: 10px 10px 10px 0;
+            border-style: solid;
+            border-color: transparent var(--color-primary) transparent transparent;
         }
 
         /* 3. popover-up .popover-left 조합: 위로 뜨면서 왼쪽 정렬 */
@@ -1575,7 +1662,7 @@
                     </div>
                     
                     <!-- 2. 주방 정돈 및 설거지 핀 & 팝오버 (주방 싱크대 위로 정밀 이동) -->
-                    <div class="map-pin-container popover-down" style="top: 25%; left: 16%;">
+                    <div class="map-pin-container popover-left" style="top: 43%; left: 58%;">
                         <div class="map-pin purple" onclick="toggleMapPopover('q2', event)">🧽</div>
                         <div class="map-popover" id="popover-q2">
                             <div class="popover-header">
@@ -1587,7 +1674,7 @@
                     </div>
                     
                     <!-- 3. 세탁기 기동 및 정리 핀 & 팝오버 (세탁실 세탁기 드럼 부위로 정밀 이동) -->
-                    <div class="map-pin-container popover-right" style="top: 15%; left: 88%;">
+                    <div class="map-pin-container popover-left" style="top: 53%; left: 77%;">
                         <div class="map-pin pink" onclick="toggleMapPopover('q4', event)">👕</div>
                         <div class="map-popover" id="popover-q4">
                             <div class="popover-header">
@@ -1915,7 +2002,7 @@
             </div>
             <div class="modal-footer">
                 <button class="btn-modal-cancel" onclick="closeAddFoodModal()">취소</button>
-                <button class="btn-action complete" onclick="submitAddFoodForm()" style="padding: 10px 20px;">던전에 보관</button>
+                <button class="btn-action complete" onclick="submitAddFoodForm()">던전에 보관</button>
             </div>
         </div>
     </div>
@@ -2007,10 +2094,10 @@
                 </select>
             </div>
             <div class="form-group">
-                <label style="display:flex; justify-content:space-between; align-items:center;">
-                    <span>세부 집안일 항목들 (최대 5개)</span>
-                    <button class="btn-action complete" onclick="addSubquestInputField()" style="padding: 2px 8px; font-size: 0.7rem;">➕ 항목 추가</button>
-                </label>
+                <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 4px;">
+                    <label style="margin: 0;">세부 집안일 항목들 (최대 5개)</label>
+                    <button class="btn-action complete" onclick="addSubquestInputField()" style="padding: 4px 10px; font-size: 0.72rem;">➕ 항목 추가</button>
+                </div>
                 <div class="subquest-inputs-list" id="subquest-inputs-container">
                     <div class="subquest-input-item" id="sq-input-0">
                         <input type="text" class="subquest-name-input" placeholder="세부 항목 1 (예: 거울 닦기)" maxlength="20">
@@ -2022,7 +2109,7 @@
             </div>
             <div class="modal-footer">
                 <button class="btn-modal-cancel" onclick="closeAddQuestModal()">취소</button>
-                <button class="btn-action complete" onclick="submitAddQuestForm()" style="padding: 10px 20px;">퀘스트 봉인 해제(등록)</button>
+                <button class="btn-action complete" onclick="submitAddQuestForm()">퀘스트 봉인 해제(등록)</button>
             </div>
         </div>
     </div>
