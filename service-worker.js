@@ -1,4 +1,4 @@
-const CACHE_NAME = 'chore-rpg-v35'; // 캐시 버전을 v35로 상향하여 수정사항 반영
+const CACHE_NAME = 'chore-rpg-v36'; // 캐시 버전을 v36으로 상향하여 자바스크립트 패치 반영
 const ASSETS = [
   './',
   './index.html',

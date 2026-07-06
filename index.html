@@ -1350,6 +1350,8 @@
         }
         .popover-left .map-popover.active {
             transform: translateY(-50%) scale(1);
+            opacity: 1;
+            pointer-events: auto;
         }
         .popover-left .map-popover::before {
             top: 50%;
@@ -1373,6 +1375,8 @@
         }
         .popover-right .map-popover.active {
             transform: translateY(-50%) scale(1);
+            opacity: 1;
+            pointer-events: auto;
         }
         .popover-right .map-popover::before {
             top: 50%;
@@ -2367,6 +2371,61 @@
         // 3. UI 갱신 로직 (UI Rendering)
         // ==========================================
         function updateUI() {
+            // [방어 코드] 로컬스토리지 보존 상태에 따라 기본 집안일 퀘스트 유실 시 강제 복구
+            const defaultQuests = [
+                { 
+                    id: "q1", 
+                    name: "방바닥 청소", 
+                    isCompleted: false, 
+                    isExpanded: false,
+                    subQuests: [
+                        { id: "q1_1", name: "청소기 돌리기", xpReward: 15, goldReward: 5, isCompleted: false },
+                        { id: "q1_2", name: "물걸레질 수행", xpReward: 20, goldReward: 10, isCompleted: false }
+                    ]
+                },
+                { 
+                    id: "q2", 
+                    name: "주방 정돈 및 설거지", 
+                    isCompleted: false, 
+                    isExpanded: false,
+                    subQuests: [
+                        { id: "q2_1", name: "식기류 세척 및 건조", xpReward: 20, goldReward: 10, isCompleted: false },
+                        { id: "q2_2", name: "싱크대 거름망 및 물기 정리", xpReward: 15, goldReward: 5, isCompleted: false }
+                    ]
+                },
+                { 
+                    id: "q4", 
+                    name: "세탁기 및 옷가지 정리", 
+                    isCompleted: false, 
+                    isExpanded: false,
+                    subQuests: [
+                        { id: "q4_1", name: "세탁기 기동 및 빨래 널기", xpReward: 20, goldReward: 8, isCompleted: false },
+                        { id: "q4_2", name: "마른 옷 개어 수납장 넣기", xpReward: 15, goldReward: 7, isCompleted: false }
+                    ]
+                },
+                { 
+                    id: "q3", 
+                    name: "분리수거 및 쓰레기 처리", 
+                    isCompleted: false, 
+                    isExpanded: false,
+                    subQuests: [
+                        { id: "q3_1", name: "재활용 쓰레기 분류/배출", xpReward: 25, goldReward: 12, isCompleted: false },
+                        { id: "q3_2", name: "일반/음식물 쓰레기 비우기", xpReward: 25, goldReward: 13, isCompleted: false }
+                    ]
+                }
+            ];
+
+            if (!gameState.quests || gameState.quests.length === 0) {
+                gameState.quests = defaultQuests;
+            } else {
+                defaultQuests.forEach(defQ => {
+                    const exists = gameState.quests.some(q => q.id === defQ.id);
+                    if (!exists) {
+                        gameState.quests.push(defQ);
+                    }
+                });
+            }
+
             const char = gameState.character;
             
             // 1. 캐릭터 정보 갱신
