@@ -1430,6 +1430,39 @@
         }
 
         /* -------------------------------------------------------------
+           [신규 추가] 태블릿 & 폴더블 및 화면 좁은 브라우저 팝오버 짤림 방지
+           ------------------------------------------------------------- */
+        @media (max-width: 768px) {
+            /* 768px 이하에서는 수평 팝오버를 핀 하단 중앙 정렬로 자동 전환 */
+            .popover-left .map-popover,
+            .popover-right .map-popover {
+                top: 45px !important;
+                bottom: auto !important;
+                left: 50% !important;
+                right: auto !important;
+                transform: translateX(-50%) scale(0.8) translateY(-10px) !important;
+                transform-origin: top center !important;
+            }
+            .popover-left .map-popover.active,
+            .popover-right .map-popover.active {
+                transform: translateX(-50%) scale(1) translateY(0) !important;
+                opacity: 1 !important;
+                pointer-events: auto !important;
+            }
+            /* 화살표도 상단 중앙 가리키도록 일괄 정렬 */
+            .popover-left .map-popover::before,
+            .popover-right .map-popover::before {
+                top: -10px !important;
+                bottom: auto !important;
+                left: 50% !important;
+                right: auto !important;
+                transform: translateX(-50%) !important;
+                border-width: 0 10px 10px !important;
+                border-color: transparent transparent var(--color-primary) !important;
+            }
+        }
+
+        /* -------------------------------------------------------------
            [신규 추가] 모바일 반응형 최종 미디어 쿼리 (Responsive Mobile Styling)
            ------------------------------------------------------------- */
         @media (max-width: 480px) {

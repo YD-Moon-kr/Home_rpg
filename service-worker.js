@@ -1,4 +1,4 @@
-const CACHE_NAME = 'chore-rpg-v36'; // 캐시 버전을 v36으로 상향하여 자바스크립트 패치 반영
+const CACHE_NAME = 'chore-rpg-v37'; // 캐시 버전을 v37로 상향하여 팝오버 반응형 CSS 패치 반영
 const ASSETS = [
   './',
   './index.html',
