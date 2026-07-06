@@ -1,9 +1,10 @@
-const CACHE_NAME = 'chore-rpg-v33'; // 캐시 버전을 v33으로 상향하여 연구실 & 오피스 커스텀 퀘스트 모달 추가 배포
+const CACHE_NAME = 'chore-rpg-v34'; // 캐시 버전을 v34로 상향하여 교회 DLC 이미지 에셋 및 비즈니스 로직 캐싱
 const ASSETS = [
   './',
   './index.html',
   './house_map.jpg',
   './workplace_map.jpg',
+  './church_map.jpg',
   './character_avatar.jpg',
   './avatar_broom.jpg',
   './avatar_crown.jpg',
@@ -14,6 +15,8 @@ const ASSETS = [
   './avatar_mantle.jpg',
   './avatar_labcoat.jpg',
   './avatar_mug.jpg',
+  './avatar_priest.jpg',
+  './avatar_choir.jpg',
   './monster_slime.jpg',
   './monster_dragon.jpg',
   './manifest.json'

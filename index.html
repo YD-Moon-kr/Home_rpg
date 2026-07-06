@@ -1508,10 +1508,11 @@
             </div>
         </header>
 
-        <!-- 🗺️ [신규 추가] 마이 홈 / 연구실&오피스 DLC 전환 탭 바 -->
-        <div class="tab-container" style="display: flex; gap: 10px; margin-top: 10px;">
-            <button class="btn-action complete active" id="tab-home" onclick="switchTab('home')" style="flex: 1; padding: 12px 20px; font-size: 0.9rem; justify-content: center; background: linear-gradient(135deg, var(--color-primary), var(--color-secondary)); color: #000; border-radius: 8px; touch-action: manipulation;">🏠 마이 홈 (Home)</button>
-            <button class="btn-action repeat" id="tab-workplace" onclick="switchTab('workplace')" style="flex: 1; padding: 12px 20px; font-size: 0.9rem; justify-content: center; color: var(--text-main); border: 1px solid rgba(255,255,255,0.1); background: rgba(255,255,255,0.02); border-radius: 8px; touch-action: manipulation;">🏫 연구실 & 오피스 DLC</button>
+        <!-- 🗺️ [신규 추가] 마이 홈 / 연구실&오피스 DLC / 교회 DLC 전환 탭 바 -->
+        <div class="tab-container" style="display: flex; gap: 8px; margin-top: 10px;">
+            <button class="btn-action complete active" id="tab-home" onclick="switchTab('home')" style="flex: 1; padding: 12px 10px; font-size: 0.85rem; justify-content: center; background: linear-gradient(135deg, var(--color-primary), var(--color-secondary)); color: #000; border-radius: 8px; touch-action: manipulation; font-weight: 700;">🏠 마이 홈</button>
+            <button class="btn-action repeat" id="tab-workplace" onclick="switchTab('workplace')" style="flex: 1; padding: 12px 10px; font-size: 0.85rem; justify-content: center; color: var(--text-main); border: 1px solid rgba(255,255,255,0.1); background: rgba(255,255,255,0.02); border-radius: 8px; touch-action: manipulation; font-weight: 700;">🏫 연구 & 오피스</button>
+            <button class="btn-action repeat" id="tab-church" onclick="switchTab('church')" style="flex: 1; padding: 12px 10px; font-size: 0.85rem; justify-content: center; color: var(--text-main); border: 1px solid rgba(255,255,255,0.1); background: rgba(255,255,255,0.02); border-radius: 8px; touch-action: manipulation; font-weight: 700;">⛪ 신성한 교회</button>
         </div>
 
         <!-- 메인 대시보드 그리드 -->
@@ -1647,6 +1648,32 @@
                             <button class="btn-add-food" onclick="openAddQuestModal('wl_office')" style="width:100%; justify-content:center; margin-top:12px; font-size:0.75rem; touch-action: manipulation;">➕ 오피스 업무 등록</button>
                         </div>
                     </div>
+
+                    <!-- ⛪ [Church DLC 전용 핀들] -->
+                    <!-- 1. 예배당(경배/묵상) 핀 -->
+                    <div class="map-pin-container popover-right church-pin" style="top: 35%; left: 35%; display: none;">
+                        <div class="map-pin cyan" onclick="toggleMapPopover('ch_faith', event)">🕊️</div>
+                        <div class="map-popover" id="popover-ch_faith" style="width: 280px; max-width: 80vw;">
+                            <div class="popover-header">
+                                <span class="popover-title">🕊️ 예배 및 묵상</span>
+                                <button class="btn-popover-close" onclick="closeAllPopovers(event)">&times;</button>
+                            </div>
+                            <div class="popover-list" id="popover-list-ch_faith"></div>
+                            <button class="btn-add-food" onclick="openAddQuestModal('ch_faith')" style="width:100%; justify-content:center; margin-top:12px; font-size:0.75rem; touch-action: manipulation;">➕ 예배/묵상 등록</button>
+                        </div>
+                    </div>
+                    <!-- 2. 친교실(봉사/청소) 핀 -->
+                    <div class="map-pin-container popover-up church-pin" style="top: 60%; left: 65%; display: none;">
+                        <div class="map-pin purple" onclick="toggleMapPopover('ch_service', event)">🧹</div>
+                        <div class="map-popover" id="popover-ch_service" style="width: 280px; max-width: 80vw;">
+                            <div class="popover-header">
+                                <span class="popover-title">🧹 봉사 및 친교</span>
+                                <button class="btn-popover-close" onclick="closeAllPopovers(event)">&times;</button>
+                            </div>
+                            <div class="popover-list" id="popover-list-ch_service"></div>
+                            <button class="btn-add-food" onclick="openAddQuestModal('ch_service')" style="width:100%; justify-content:center; margin-top:12px; font-size:0.75rem; touch-action: manipulation;">➕ 봉사/청소 등록</button>
+                        </div>
+                    </div>
                 </div>
             </div>
 
@@ -1677,6 +1704,23 @@
                 </div>
                 <div style="font-size: 0.72rem; color: var(--text-muted); margin-top: 12px; text-align: center;">
                     💡 수석 연구원 가운🥼 및 황금 머그잔☕ 장비 장착 시 전용 보상 버프가 적용됩니다!
+                </div>
+            </div>
+
+            <!-- ⛪ [신규 추가] 교회 DLC 퀘스트 카드 -->
+            <div class="card" id="church-quest-section" style="display: none;">
+                <div class="card-title">
+                    <div class="card-title-left">⛪ 교회 신앙 & 봉사 활동 (Church)</div>
+                </div>
+                <div class="quest-list" id="church-quest-list-container">
+                    <!-- JS로 동적 생성 -->
+                </div>
+                <div style="margin-top: 20px; border-top: 1px solid rgba(255,255,255,0.05); padding-top: 16px; display: flex; gap: 8px;">
+                    <button class="btn-add-food" onclick="openAddQuestModal('ch_faith')" style="flex: 1; justify-content: center; font-size: 0.8rem; padding: 10px; touch-action: manipulation; background: rgba(85, 239, 196, 0.15); border-color: rgba(85, 239, 196, 0.3); color: #55efc4;">➕ 예배/묵상 추가</button>
+                    <button class="btn-add-food" onclick="openAddQuestModal('ch_service')" style="flex: 1; justify-content: center; font-size: 0.8rem; padding: 10px; touch-action: manipulation; background: rgba(162, 155, 254, 0.15); border-color: rgba(162, 155, 254, 0.3); color: #a29bfe;">➕ 봉사/청소 추가</button>
+                </div>
+                <div style="font-size: 0.72rem; color: var(--text-muted); margin-top: 12px; text-align: center;">
+                    💡 신성 묵주 반지📿 및 천사 성가대 날개👼 장착 시 전용 보상 버프가 적용됩니다!
                 </div>
             </div>
 
@@ -1746,6 +1790,20 @@
                         <span style="font-size: 0.85rem; font-weight: 700;">황금 머그잔</span>
                         <span style="font-size: 0.68rem; color: #fdcb6e; font-weight: 700;">오피스 보상 +20%</span>
                         <button class="btn-action complete" onclick="buyShopItem('mug', 180)" style="width:100%; justify-content:center; padding: 6px; font-size: 0.75rem; margin-top: 4px;" id="btn-buy-mug">🪙 180</button>
+                    </div>
+                    <!-- 11. 신성한 묵주 반지 (DLC) -->
+                    <div class="shop-item" id="shop-rosary" style="background: rgba(255,255,255,0.02); border: 1px solid rgba(255,255,255,0.05); border-radius: 12px; padding: 12px; display: flex; flex-direction: column; align-items: center; text-align: center; gap: 6px; position: relative;">
+                        <span style="font-size: 1.8rem;">📿</span>
+                        <span style="font-size: 0.85rem; font-weight: 700;">신성 묵주 반지</span>
+                        <span style="font-size: 0.68rem; color: #55efc4; font-weight: 700;">예배 골드 +25%</span>
+                        <button class="btn-action complete" onclick="buyShopItem('rosary', 220)" style="width:100%; justify-content:center; padding: 6px; font-size: 0.75rem; margin-top: 4px;" id="btn-buy-rosary">🪙 220</button>
+                    </div>
+                    <!-- 12. 천사 성가대 날개 (DLC) -->
+                    <div class="shop-item" id="shop-wings" style="background: rgba(255,255,255,0.02); border: 1px solid rgba(255,255,255,0.05); border-radius: 12px; padding: 12px; display: flex; flex-direction: column; align-items: center; text-align: center; gap: 6px; position: relative;">
+                        <span style="font-size: 1.8rem;">👼</span>
+                        <span style="font-size: 0.85rem; font-weight: 700;">성가대 천사 날개</span>
+                        <span style="font-size: 0.68rem; color: #ffeaa7; font-weight: 700;">봉사 경험치 +25%</span>
+                        <button class="btn-action complete" onclick="buyShopItem('wings', 300)" style="width:100%; justify-content:center; padding: 6px; font-size: 0.75rem; margin-top: 4px;" id="btn-buy-wings">🪙 300</button>
                     </div>
                     <!-- 4. 참치 캔 -->
                     <div class="shop-item" id="shop-tuna" style="background: rgba(255,255,255,0.02); border: 1px solid rgba(255,255,255,0.05); border-radius: 12px; padding: 12px; display: flex; flex-direction: column; align-items: center; text-align: center; gap: 6px; position: relative;">
@@ -1999,7 +2057,9 @@
             sword: { name: "거품기 성검", icon: "🍳", desc: "임박 식재료 보상 +50%" },
             mantle: { name: "용사 빨간망토", icon: "🧥", desc: "모든 획득 보상 +8%" },
             labcoat: { name: "수석 연구원 가운", icon: "🥼", desc: "연구실 퀘스트 경험치 +20%" },
-            mug: { name: "황금 아라비카 머그", icon: "☕", desc: "오피스 퀘스트 골드 +20%" }
+            mug: { name: "황금 아라비카 머그", icon: "☕", desc: "오피스 퀘스트 골드 +20%" },
+            rosary: { name: "신성 묵주 반지", icon: "📿", desc: "교회 예배/묵상 골드 +25%" },
+            wings: { name: "천사 성가대 날개", icon: "👼", desc: "교회 봉사/청소 경험치 +25%" }
         };
 
         // ==========================================
@@ -2080,6 +2140,28 @@
                         { id: "wl_office_1", name: "📧 이메일 답장 및 메일함 정리", xpReward: 15, goldReward: 5, isCompleted: false },
                         { id: "wl_office_2", name: "📊 주간 진행 보고서 작성 및 결재", xpReward: 35, goldReward: 12, isCompleted: false },
                         { id: "wl_office_3", name: "📂 책상 서류 철 수납 및 모니터 소독", xpReward: 15, goldReward: 6, isCompleted: false }
+                    ]
+                }
+            ],
+            churchQuests: [
+                {
+                    id: "ch_faith",
+                    name: "🕊️ 예배 및 묵상",
+                    isCompleted: false,
+                    isExpanded: false,
+                    subQuests: [
+                        { id: "ch_faith_1", name: "📖 오늘의 성경/경전 1장 묵상", xpReward: 20, goldReward: 5, isCompleted: false },
+                        { id: "ch_faith_2", name: "🧎 하루를 돌아보는 감사의 묵도", xpReward: 15, goldReward: 5, isCompleted: false }
+                    ]
+                },
+                {
+                    id: "ch_service",
+                    name: "🧹 봉사 및 친교",
+                    isCompleted: false,
+                    isExpanded: false,
+                    subQuests: [
+                        { id: "ch_service_1", name: "🧹 예배당 헌금함 소독 및 청소", xpReward: 30, goldReward: 8, isCompleted: false },
+                        { id: "ch_service_2", name: "🍞 이웃 나눔 급식 돕기 및 봉사", xpReward: 40, goldReward: 10, isCompleted: false }
                     ]
                 }
             ]
@@ -2205,13 +2287,15 @@
             document.getElementById('char-name').innerText = char.name;
             document.getElementById('char-gold').innerText = `🪙 ${char.gold}`;
             
-            // [신규] 장착 장비에 따른 캐릭터 아바타 이미지 실시간 변경 (9종 및 DLC 탭 대응)
+            // [신규] 장착 장비에 따른 캐릭터 아바타 이미지 실시간 변경 (교회 DLC 대응)
             const charAvatarEl = document.getElementById('char-avatar');
             if (charAvatarEl) {
                 if (gameState.equippedItem) {
                     charAvatarEl.src = `avatar_${gameState.equippedItem}.jpg`;
                 } else if (gameState.currentTab === 'workplace') {
                     charAvatarEl.src = 'avatar_mug.jpg'; // 직장 기본 고양이
+                } else if (gameState.currentTab === 'church') {
+                    charAvatarEl.src = 'avatar_choir.jpg'; // 성가대 기본 고양이
                 } else {
                     charAvatarEl.src = 'character_avatar.jpg'; // 집안일 기본 고양이
                 }
@@ -2512,7 +2596,7 @@
 
             // 7. [신규 추가] 상점 아이템 구매 버튼 상태 동기화
             if (!gameState.inventory) gameState.inventory = [];
-            const equipItemKeys = ['broom', 'crown', 'glasses', 'ribbon', 'shield', 'sword', 'mantle', 'labcoat', 'mug'];
+            const equipItemKeys = ['broom', 'crown', 'glasses', 'ribbon', 'shield', 'sword', 'mantle', 'labcoat', 'mug', 'rosary', 'wings'];
             equipItemKeys.forEach(key => {
                 const btn = document.getElementById(`btn-buy-${key}`);
                 if (btn) {
@@ -2522,7 +2606,7 @@
                         btn.style.opacity = '0.5';
                         btn.className = 'btn-action repeat';
                     } else {
-                        const prices = { broom: 80, crown: 150, glasses: 50, ribbon: 40, shield: 100, sword: 120, mantle: 200, labcoat: 250, mug: 180 };
+                        const prices = { broom: 80, crown: 150, glasses: 50, ribbon: 40, shield: 100, sword: 120, mantle: 200, labcoat: 250, mug: 180, rosary: 220, wings: 300 };
                         const price = prices[key] || 100;
                         btn.innerText = `🪙 ${price}`;
                         btn.disabled = false;
@@ -2786,48 +2870,211 @@
                 });
             }
 
-            // 🗺️ 탭 활성화 상태 토글 및 지도 스왑
-            const isHome = (gameState.currentTab === "home");
+            // ==========================================
+            // [신규 추가] Church DLC 전용 UI 동기화
+            // ==========================================
+            const chQuestContainer = document.getElementById('church-quest-list-container');
+            if (chQuestContainer) {
+                chQuestContainer.innerHTML = '';
+                
+                if (!gameState.churchQuests) {
+                    gameState.churchQuests = [
+                        {
+                            id: "ch_faith",
+                            name: "🕊️ 예배 및 묵상",
+                            isCompleted: false,
+                            isExpanded: false,
+                            subQuests: [
+                                { id: "ch_faith_1", name: "📖 오늘의 성경/경전 1장 묵상", xpReward: 20, goldReward: 5, isCompleted: false },
+                                { id: "ch_faith_2", name: "🧎 하루를 돌아보는 감사의 묵도", xpReward: 15, goldReward: 5, isCompleted: false }
+                            ]
+                        },
+                        {
+                            id: "ch_service",
+                            name: "🧹 봉사 및 친교",
+                            isCompleted: false,
+                            isExpanded: false,
+                            subQuests: [
+                                { id: "ch_service_1", name: "🧹 예배당 헌금함 소독 및 청소", xpReward: 30, goldReward: 8, isCompleted: false },
+                                { id: "ch_service_2", name: "🍞 이웃 나눔 급식 돕기 및 봉사", xpReward: 40, goldReward: 10, isCompleted: false }
+                            ]
+                        }
+                    ];
+                }
+                
+                gameState.churchQuests.forEach(quest => {
+                    const subQuests = quest.subQuests || [];
+                    const completedCount = subQuests.filter(sq => sq.isCompleted).length;
+                    const totalCount = subQuests.length;
+                    const progressPercent = totalCount > 0 ? Math.round((completedCount / totalCount) * 100) : 0;
+                    
+                    const allCompleted = totalCount > 0 && completedCount === totalCount;
+                    quest.isCompleted = allCompleted;
+                    
+                    const questGroup = document.createElement('div');
+                    questGroup.id = `quest-group-${quest.id}`;
+                    questGroup.className = `quest-group ${quest.isExpanded ? 'expanded' : ''} ${allCompleted ? 'completed-all' : ''}`;
+                    
+                    let headerRightHtml = '';
+                    if (allCompleted) {
+                        headerRightHtml = `
+                            <div class="quest-actions" onclick="event.stopPropagation();">
+                                <button class="btn-action reset-all" onclick="resetAllWorkplaceSubQuests('${quest.id}', event)">🔄 일괄 반복</button>
+                            </div>
+                        `;
+                    } else {
+                        headerRightHtml = `
+                            <div class="quest-actions" onclick="event.stopPropagation();" style="gap:15px;">
+                                <div class="quest-progress-container">
+                                    <div class="quest-progress-text">${completedCount} / ${totalCount} 완료</div>
+                                    <div class="quest-progress-bg">
+                                        <div class="quest-progress-fill" style="width: ${progressPercent}%;"></div>
+                                    </div>
+                                </div>
+                            </div>
+                        `;
+                    }
+                    
+                    let subQuestsHtml = '';
+                    subQuests.forEach(sq => {
+                        subQuestsHtml += `
+                            <div class="subquest-item ${sq.isCompleted ? 'completed' : ''}">
+                                <div class="subquest-info">
+                                    <div class="subquest-name">
+                                        ${sq.isCompleted ? '✅' : '🕊️'} ${sq.name}
+                                    </div>
+                                    <div class="subquest-rewards">
+                                        <span class="reward-tag xp">✨ +${sq.xpReward} XP</span>
+                                        <span class="reward-tag gold">🪙 +${sq.goldReward} Gold</span>
+                                    </div>
+                                </div>
+                                <div class="quest-actions">
+                                    ${sq.isCompleted 
+                                        ? `<button class="btn-action repeat" onclick="resetWorkplaceSubQuest('${quest.id}', '${sq.id}')">🔄 다시 수행</button>`
+                                        : `<button class="btn-action complete" onclick="completeWorkplaceSubQuest('${quest.id}', '${sq.id}', event)">완료하기</button>`
+                                    }
+                                </div>
+                            </div>
+                        `;
+                    });
+                    
+                    questGroup.innerHTML = `
+                        <div class="quest-header" onclick="toggleWorkplaceQuestExpand('${quest.id}')">
+                            <div class="quest-header-left">
+                                <span class="arrow-icon">▶</span>
+                                <div class="quest-title-container">
+                                    <div class="quest-group-title">
+                                        ${allCompleted ? '⛪' : '🕊️'} ${quest.name} 
+                                        ${allCompleted ? '<span style="font-size:0.75rem; background:rgba(135,211,124,0.15); padding:2px 6px; border-radius:4px; margin-left:6px;">활동 완료!</span>' : ''}
+                                    </div>
+                                </div>
+                            </div>
+                            ${headerRightHtml}
+                        </div>
+                        <div class="subquest-list">
+                            ${subQuestsHtml}
+                        </div>
+                    `;
+                    chQuestContainer.appendChild(questGroup);
+                });
+            }
+
+            // ⛪ Church DLC 팝오버 내용 동적 렌더링
+            if (gameState.churchQuests) {
+                gameState.churchQuests.forEach(quest => {
+                    const popoverList = document.getElementById(`popover-list-${quest.id}`);
+                    if (!popoverList) return;
+
+                    popoverList.innerHTML = '';
+                    const subQuests = quest.subQuests || [];
+                    const completedCount = subQuests.filter(sq => sq.isCompleted).length;
+                    const totalCount = subQuests.length;
+                    const allCompleted = totalCount > 0 && completedCount === totalCount;
+
+                    subQuests.forEach(sq => {
+                        const item = document.createElement('div');
+                        item.className = `popover-item ${sq.isCompleted ? 'completed' : ''}`;
+                        
+                        item.innerHTML = `
+                            <div style="display:flex; flex-direction:column; gap:2px; max-width: 170px;">
+                                <span style="font-size:0.8rem; font-weight:600; color:var(--text-main); text-decoration:${sq.isCompleted ? 'line-through' : 'none'};">
+                                    ${sq.isCompleted ? '✅' : '🕊️'} ${sq.name}
+                                </span>
+                                <span style="font-size:0.7rem; color:var(--text-muted);">
+                                    ✨+${sq.xpReward} / 🪙+${sq.goldReward}
+                                </span>
+                            </div>
+                            <div>
+                                ${sq.isCompleted 
+                                    ? `<button class="btn-action repeat" style="padding:4px 8px; font-size:0.65rem;" onclick="resetWorkplaceSubQuest('${quest.id}', '${sq.id}')">🔄 다시</button>`
+                                    : `<button class="btn-action complete" style="padding:4px 8px; font-size:0.65rem;" onclick="completeWorkplaceSubQuest('${quest.id}', '${sq.id}', event)">완료</button>`
+                                }
+                            </div>
+                        `;
+                        popoverList.appendChild(item);
+                    });
+
+                    if (allCompleted) {
+                        const resetBtnContainer = document.createElement('div');
+                        resetBtnContainer.style.marginTop = '12px';
+                        resetBtnContainer.style.borderTop = '1px solid rgba(255,255,255,0.05)';
+                        resetBtnContainer.style.paddingTop = '8px';
+                        resetBtnContainer.innerHTML = `
+                            <button class="btn-action reset-all" style="width:100%; justify-content:center;" onclick="resetAllWorkplaceSubQuests('${quest.id}', event)">🔄 일괄 반복</button>
+                        `;
+                        popoverList.appendChild(resetBtnContainer);
+                    }
+                });
+            }
+
+            // 🗺️ 탭 활성화 상태 토글 및 지도 스왑 (3분할 대응)
+            const activeTab = gameState.currentTab || "home";
             const tabHomeBtn = document.getElementById('tab-home');
             const tabWpBtn = document.getElementById('tab-workplace');
+            const tabChBtn = document.getElementById('tab-church');
             
-            if (tabHomeBtn && tabWpBtn) {
-                if (isHome) {
-                    tabHomeBtn.className = "btn-action complete active";
-                    tabHomeBtn.style.background = "linear-gradient(135deg, var(--color-primary), var(--color-secondary))";
-                    tabHomeBtn.style.color = "#000";
-                    
-                    tabWpBtn.className = "btn-action repeat";
-                    tabWpBtn.style.background = "rgba(255,255,255,0.02)";
-                    tabWpBtn.style.color = "var(--text-main)";
-                } else {
-                    tabWpBtn.className = "btn-action complete active";
-                    tabWpBtn.style.background = "linear-gradient(135deg, var(--color-primary), var(--color-secondary))";
-                    tabWpBtn.style.color = "#000";
-                    
-                    tabHomeBtn.className = "btn-action repeat";
-                    tabHomeBtn.style.background = "rgba(255,255,255,0.02)";
-                    tabHomeBtn.style.color = "var(--text-main)";
-                }
+            if (tabHomeBtn && tabWpBtn && tabChBtn) {
+                [tabHomeBtn, tabWpBtn, tabChBtn].forEach(btn => {
+                    btn.className = "btn-action repeat";
+                    btn.style.background = "rgba(255,255,255,0.02)";
+                    btn.style.color = "var(--text-main)";
+                });
+
+                let activeBtn = tabHomeBtn;
+                if (activeTab === "workplace") activeBtn = tabWpBtn;
+                else if (activeTab === "church") activeBtn = tabChBtn;
+
+                activeBtn.className = "btn-action complete active";
+                activeBtn.style.background = "linear-gradient(135deg, var(--color-primary), var(--color-secondary))";
+                activeBtn.style.color = "#000";
             }
             
             const spaceMapEl = document.getElementById('space-map');
             if (spaceMapEl) {
-                spaceMapEl.src = isHome ? "house_map.jpg" : "workplace_map.jpg";
+                if (activeTab === "home") spaceMapEl.src = "house_map.jpg";
+                else if (activeTab === "workplace") spaceMapEl.src = "workplace_map.jpg";
+                else if (activeTab === "church") spaceMapEl.src = "church_map.jpg";
             }
             
-            const homePins = document.querySelectorAll('.map-pin-container:not(.workplace-pin)');
+            // 핀 토글링
+            const homePins = document.querySelectorAll('.map-pin-container:not(.workplace-pin):not(.church-pin)');
             const wpPins = document.querySelectorAll('.workplace-pin');
-            homePins.forEach(p => p.style.display = isHome ? 'block' : 'none');
-            wpPins.forEach(p => p.style.display = isHome ? 'none' : 'block');
+            const chPins = document.querySelectorAll('.church-pin');
             
+            homePins.forEach(p => p.style.display = (activeTab === "home") ? 'block' : 'none');
+            wpPins.forEach(p => p.style.display = (activeTab === "workplace") ? 'block' : 'none');
+            chPins.forEach(p => p.style.display = (activeTab === "church") ? 'block' : 'none');
+            
+            // 섹션 카드 토글링
             const homeQuestSec = document.getElementById('home-quest-section');
             const wpQuestSec = document.getElementById('workplace-quest-section');
+            const chQuestSec = document.getElementById('church-quest-section');
             const refCardSec = document.getElementById('refrigerator-card-section');
             
-            if (homeQuestSec) homeQuestSec.style.display = isHome ? 'block' : 'none';
-            if (refCardSec) refCardSec.style.display = isHome ? 'block' : 'none';
-            if (wpQuestSec) wpQuestSec.style.display = isHome ? 'none' : 'block';
+            if (homeQuestSec) homeQuestSec.style.display = (activeTab === "home") ? 'block' : 'none';
+            if (refCardSec) refCardSec.style.display = (activeTab === "home") ? 'block' : 'none';
+            if (wpQuestSec) wpQuestSec.style.display = (activeTab === "workplace") ? 'block' : 'none';
+            if (chQuestSec) chQuestSec.style.display = (activeTab === "church") ? 'block' : 'none';
         }
 
         // ==========================================
@@ -3598,6 +3845,10 @@
                     headerEl.innerHTML = '🔬 새로운 연구소 프로젝트 추가';
                 } else if (questType === 'wl_office') {
                     headerEl.innerHTML = '💻 새로운 오피스 업무 추가';
+                } else if (questType === 'ch_faith') {
+                    headerEl.innerHTML = '🕊️ 새로운 예배 및 묵상 추가';
+                } else if (questType === 'ch_service') {
+                    headerEl.innerHTML = '🧹 새로운 봉사 및 친교 추가';
                 } else {
                     headerEl.innerHTML = '⚔️ 새로운 집안일 퀘스트 추가';
                 }
@@ -3827,6 +4078,35 @@
                         q.isExpanded = false;
                     });
 
+                    // [신규] Church DLC 데이터 마이그레이션
+                    if (!parsed.churchQuests) {
+                        parsed.churchQuests = [
+                            {
+                                id: "ch_faith",
+                                name: "🕊️ 예배 및 묵상",
+                                isCompleted: false,
+                                isExpanded: false,
+                                subQuests: [
+                                    { id: "ch_faith_1", name: "📖 오늘의 성경/경전 1장 묵상", xpReward: 20, goldReward: 5, isCompleted: false },
+                                    { id: "ch_faith_2", name: "🧎 하루를 돌아보는 감사의 묵도", xpReward: 15, goldReward: 5, isCompleted: false }
+                                ]
+                            },
+                            {
+                                id: "ch_service",
+                                name: "🧹 봉사 및 친교",
+                                isCompleted: false,
+                                isExpanded: false,
+                                subQuests: [
+                                    { id: "ch_service_1", name: "🧹 예배당 헌금함 소독 및 청소", xpReward: 30, goldReward: 8, isCompleted: false },
+                                    { id: "ch_service_2", name: "🍞 이웃 나눔 급식 돕기 및 봉사", xpReward: 40, goldReward: 10, isCompleted: false }
+                                ]
+                            }
+                        ];
+                    }
+                    parsed.churchQuests.forEach(q => {
+                        q.isExpanded = false;
+                    });
+
                     localStorage.setItem("houseChoreGameData", JSON.stringify(parsed));
                 }
                 
@@ -3953,6 +4233,28 @@
                                 { id: "wl_office_3", name: "📂 책상 서류 철 수납 및 모니터 소독", xpReward: 15, goldReward: 6, isCompleted: false }
                             ]
                         }
+                    ],
+                    churchQuests: [
+                        {
+                            id: "ch_faith",
+                            name: "🕊️ 예배 및 묵상",
+                            isCompleted: false,
+                            isExpanded: false,
+                            subQuests: [
+                                { id: "ch_faith_1", name: "📖 오늘의 성경/경전 1장 묵상", xpReward: 20, goldReward: 5, isCompleted: false },
+                                { id: "ch_faith_2", name: "🧎 하루를 돌아보는 감사의 묵도", xpReward: 15, goldReward: 5, isCompleted: false }
+                            ]
+                        },
+                        {
+                            id: "ch_service",
+                            name: "🧹 봉사 및 친교",
+                            isCompleted: false,
+                            isExpanded: false,
+                            subQuests: [
+                                { id: "ch_service_1", name: "🧹 예배당 헌금함 소독 및 청소", xpReward: 30, goldReward: 8, isCompleted: false },
+                                { id: "ch_service_2", name: "🍞 이웃 나눔 급식 돕기 및 봉사", xpReward: 40, goldReward: 10, isCompleted: false }
+                            ]
+                        }
                     ]
                 };
                 saveGame();
@@ -3966,7 +4268,7 @@
             closeAllPopovers();
             saveGame();
             updateUI();
-            screenLog(`🗺️ 영토 탭 전환: [${tab === 'home' ? '🏠 마이 홈' : '🏫 연구실 & 오피스'}]`);
+            screenLog(`🗺️ 영토 탭 전환: [${tab === 'home' ? '🏠 마이 홈' : tab === 'workplace' ? '🏫 연구실 & 오피스' : '⛪ 신성한 교회'}]`);
         }
 
         function toggleWorkplaceQuestExpand(questId) {
@@ -3984,7 +4286,11 @@
                 spawnParticles(event);
             }
 
-            const quest = gameState.workplaceQuests.find(q => q.id === questId);
+            // 연구소 또는 교회 퀘스트 그룹 탐색
+            let quest = gameState.workplaceQuests.find(q => q.id === questId);
+            if (!quest && gameState.churchQuests) {
+                quest = gameState.churchQuests.find(q => q.id === questId);
+            }
             if (!quest) return;
 
             const subQuest = quest.subQuests.find(sq => sq.id === subQuestId);
@@ -4001,11 +4307,15 @@
             let xpReward = subQuest.xpReward;
             let goldReward = subQuest.goldReward;
 
-            // 연구실/오피스 전용 장비 버프
+            // 연구실/오피스/교회 전용 장비 버프
             if (gameState.equippedItem === 'labcoat' && questId === 'wl_lab') {
                 xpReward = Math.ceil(xpReward * 1.20); // 🥼 연구실 경험치 +20%
             } else if (gameState.equippedItem === 'mug' && questId === 'wl_office') {
                 goldReward = Math.ceil(goldReward * 1.20); // ☕ 오피스 골드 +20%
+            } else if (gameState.equippedItem === 'rosary' && questId === 'ch_faith') {
+                goldReward = Math.ceil(goldReward * 1.25); // 📿 교회 예배/묵상 골드 +25%
+            } else if (gameState.equippedItem === 'wings' && questId === 'ch_service') {
+                xpReward = Math.ceil(xpReward * 1.25); // 👼 교회 봉사/청소 경험치 +25%
             }
 
             // 공용 장비 버프
@@ -4051,15 +4361,19 @@
                     bonusXp = Math.ceil(bonusXp * 1.20);
                 } else if (gameState.equippedItem === 'mug' && questId === 'wl_office') {
                     bonusGold = Math.ceil(bonusGold * 1.20);
+                } else if (gameState.equippedItem === 'rosary' && questId === 'ch_faith') {
+                    bonusGold = Math.ceil(bonusGold * 1.25);
+                } else if (gameState.equippedItem === 'wings' && questId === 'ch_service') {
+                    bonusXp = Math.ceil(bonusXp * 1.25);
                 }
 
                 gameState.character.currentXp += bonusXp;
                 gameState.character.gold = Math.min(gameState.character.gold + bonusGold, 99999);
 
-                screenLog(`🏆 [업무 완료 보너스] '${quest.name}' 완료! ✨+${bonusXp}XP / 🪙+${bonusGold}G 획득!`);
+                screenLog(`🏆 [DLC 완료 보너스] '${quest.name}' 완료! ✨+${bonusXp}XP / 🪙+${bonusGold}G 획득!`);
             }
 
-            screenLog(`💼 [업무 수행] ${subQuest.name} 완료! ✨+${xpReward}XP / 🪙+${goldReward}G / ⚔️ AP +1 획득!`);
+            screenLog(`💼 [DLC 수행] ${subQuest.name} 완료! ✨+${xpReward}XP / 🪙+${goldReward}G / ⚔️ AP +1 획득!`);
 
             // 6. 레벨업 체크
             checkLevelUp();
@@ -4069,7 +4383,10 @@
         }
 
         function resetWorkplaceSubQuest(questId, subQuestId) {
-            const quest = gameState.workplaceQuests.find(q => q.id === questId);
+            let quest = gameState.workplaceQuests.find(q => q.id === questId);
+            if (!quest && gameState.churchQuests) {
+                quest = gameState.churchQuests.find(q => q.id === questId);
+            }
             if (!quest) return;
 
             const subQuest = quest.subQuests.find(sq => sq.id === subQuestId);
@@ -4078,14 +4395,17 @@
                 quest.isCompleted = false; // 서브퀘스트 반복 시 메인도 완료 해제
                 saveGame();
                 updateUI();
-                screenLog(`🔄 [업무 초기화] '${subQuest.name}'을 다시 수행할 수 있게 되었습니다.`);
+                screenLog(`🔄 [DLC 초기화] '${subQuest.name}'을 다시 수행할 수 있게 되었습니다.`);
             }
         }
 
         function resetAllWorkplaceSubQuests(questId, event) {
             if (event) event.stopPropagation();
 
-            const quest = gameState.workplaceQuests.find(q => q.id === questId);
+            let quest = gameState.workplaceQuests.find(q => q.id === questId);
+            if (!quest && gameState.churchQuests) {
+                quest = gameState.churchQuests.find(q => q.id === questId);
+            }
             if (quest) {
                 quest.isCompleted = false;
                 quest.subQuests.forEach(sq => {
@@ -4093,7 +4413,7 @@
                 });
                 saveGame();
                 updateUI();
-                screenLog(`🔄 [일괄 초기화] '${quest.name}'의 모든 상세 업무를 리셋했습니다.`);
+                screenLog(`🔄 [DLC 일괄 초기화] '${quest.name}'의 모든 상세 업무를 리셋했습니다.`);
             }
         }
 
@@ -4107,7 +4427,10 @@
                 return false;
             }
 
-            const targetGroup = gameState.workplaceQuests.find(q => q.id === type);
+            let targetGroup = gameState.workplaceQuests.find(q => q.id === type);
+            if (!targetGroup && gameState.churchQuests) {
+                targetGroup = gameState.churchQuests.find(q => q.id === type);
+            }
             if (!targetGroup) return false;
 
             let baseXP = 15;
