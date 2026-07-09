@@ -1647,11 +1647,12 @@
             </div>
         </header>
 
-        <!-- 🗺️ [신규 추가] 마이 홈 / 연구실&오피스 DLC / 교회 DLC 전환 탭 바 -->
-        <div class="tab-container" style="display: flex; gap: 8px; margin-top: 10px;">
+        <!-- 🗺️ [신규 추가] 마이 홈 / 연구실&오피스 DLC / 교회 DLC / 클라이밍 DLC 전환 탭 바 -->
+        <div class="tab-container" style="display: flex; gap: 8px; margin-top: 10px; flex-wrap: wrap;">
             <button class="btn-action complete active" id="tab-home" onclick="switchTab('home')" style="flex: 1; padding: 12px 10px; font-size: 0.85rem; justify-content: center; background: linear-gradient(135deg, var(--color-primary), var(--color-secondary)); color: #000; border-radius: 8px; touch-action: manipulation; font-weight: 700;">🏠 마이 홈</button>
             <button class="btn-action repeat" id="tab-workplace" onclick="switchTab('workplace')" style="flex: 1; padding: 12px 10px; font-size: 0.85rem; justify-content: center; color: var(--text-main); border: 1px solid rgba(255,255,255,0.1); background: rgba(255,255,255,0.02); border-radius: 8px; touch-action: manipulation; font-weight: 700;">🏫 연구 & 오피스</button>
             <button class="btn-action repeat" id="tab-church" onclick="switchTab('church')" style="flex: 1; padding: 12px 10px; font-size: 0.85rem; justify-content: center; color: var(--text-main); border: 1px solid rgba(255,255,255,0.1); background: rgba(255,255,255,0.02); border-radius: 8px; touch-action: manipulation; font-weight: 700;">⛪ 신성한 교회</button>
+            <button class="btn-action repeat" id="tab-climbing" onclick="switchTab('climbing')" style="flex: 1; padding: 12px 10px; font-size: 0.85rem; justify-content: center; color: var(--text-main); border: 1px solid rgba(255,255,255,0.1); background: rgba(255,255,255,0.02); border-radius: 8px; touch-action: manipulation; font-weight: 700;">🧗 클라이밍</button>
         </div>
 
         <!-- 메인 대시보드 그리드 -->
@@ -1813,6 +1814,43 @@
                             <button class="btn-add-food" onclick="openAddQuestModal('ch_service')" style="width:100%; justify-content:center; margin-top:12px; font-size:0.75rem; touch-action: manipulation;">➕ 봉사/청소 등록</button>
                         </div>
                     </div>
+
+                    <!-- 🧗 [Climbing DLC 전용 핀들] -->
+                    <!-- 1. 볼더링 완등 카운터 핀 -->
+                    <div class="map-pin-container popover-left climbing-pin" style="top: 45%; left: 50%; display: none;">
+                        <div class="map-pin gold" onclick="toggleMapPopover('cl_bouldering', event)">🧗</div>
+                        <div class="map-popover" id="popover-cl_bouldering" style="width: 320px; max-width: 85vw;">
+                            <div class="popover-header">
+                                <span class="popover-title">🧗 난이도별 완등 기록</span>
+                                <button class="btn-popover-close" onclick="closeAllPopovers(event)">&times;</button>
+                            </div>
+                            <div class="climbing-level-banner" style="background: rgba(255, 165, 0, 0.15); border: 1px solid rgba(255, 165, 0, 0.3); border-radius: 8px; padding: 8px; text-align: center; margin-bottom: 12px; font-size: 0.85rem; font-weight: bold; color: #ffa500;">
+                                등급 레벨: <span id="cl-level-val">Lv.1 초보 볼더러</span><br>
+                                <span style="font-size: 0.72rem; color: var(--text-muted); font-weight: normal;">누적 완등: <span id="cl-count-val">0</span> / <span id="cl-next-val">5</span> 개</span>
+                                <div style="width: 100%; height: 6px; background: rgba(255,255,255,0.05); border-radius: 3px; margin-top: 6px; overflow: hidden;">
+                                    <div id="cl-xp-bar" style="width: 0%; height: 100%; background: #ffa500; transition: width 0.3s;"></div>
+                                </div>
+                            </div>
+                            <div class="popover-list" id="popover-list-cl_bouldering" style="max-height: 250px; overflow-y: auto; display: flex; flex-direction: column; gap: 8px; padding-right: 4px;">
+                                <!-- JS로 11개 난이도 항목 동적 렌더링 -->
+                            </div>
+                        </div>
+                    </div>
+                    
+                    <!-- 2. 볼더링 커스텀 프로젝트 핀 -->
+                    <div class="map-pin-container popover-left climbing-pin" style="top: 25%; left: 75%; display: none;">
+                        <div class="map-pin purple" onclick="toggleMapPopover('cl_project', event)">📌</div>
+                        <div class="map-popover" id="popover-cl_project" style="width: 300px; max-width: 82vw;">
+                            <div class="popover-header">
+                                <span class="popover-title">📌 볼더링 커스텀 프로젝트</span>
+                                <button class="btn-popover-close" onclick="closeAllPopovers(event)">&times;</button>
+                            </div>
+                            <div class="popover-list" id="popover-list-cl_project" style="max-height: 200px; overflow-y: auto; display: flex; flex-direction: column; gap: 6px;">
+                                <!-- 커스텀 프로젝트 리스트 동적 렌더링 -->
+                            </div>
+                            <button class="btn-add-food" onclick="openAddClimbingProjectModal()" style="width:100%; justify-content:center; margin-top:12px; font-size:0.75rem; touch-action: manipulation;">➕ 새 프로젝트 등록</button>
+                        </div>
+                    </div>
                 </div>
             </div>
 
@@ -1860,6 +1898,50 @@
                 </div>
                 <div style="font-size: 0.72rem; color: var(--text-muted); margin-top: 12px; text-align: center;">
                     💡 신성 묵주 반지📿 및 천사 성가대 날개👼 장착 시 전용 보상 버프가 적용됩니다!
+                </div>
+            </div>
+
+            <!-- 🧗 [신규 추가] 클라이밍 퀘스트 카드 (Climbing DLC) -->
+            <div class="card" id="climbing-quest-section" style="display: none;">
+                <div class="card-title">
+                    <div class="card-title-left">🧗 볼더링 완등 및 프로젝트 기록 (Climbing)</div>
+                </div>
+                
+                <!-- 클라이밍 등급 상태 바 -->
+                <div class="climbing-level-banner" style="background: rgba(255, 165, 0, 0.1); border: 1px solid rgba(255, 165, 0, 0.2); border-radius: 12px; padding: 12px; text-align: center; margin-bottom: 16px;">
+                    <div style="font-size: 1.1rem; font-weight: bold; color: #ffa500; margin-bottom: 4px;">
+                        🧗 클라이머 등급: <span id="cl-card-level-val">Lv.1 초보 볼더러</span>
+                    </div>
+                    <div style="font-size: 0.8rem; color: var(--text-muted); margin-bottom: 8px;">
+                        누적 완등 횟수: <span id="cl-card-count-val">0</span> / <span id="cl-card-next-val">5</span> 개
+                    </div>
+                    <div style="width: 100%; height: 10px; background: rgba(255,255,255,0.05); border-radius: 5px; overflow: hidden; margin: 0 auto; max-width: 300px;">
+                        <div id="cl-card-xp-bar" style="width: 0%; height: 100%; background: #ffa500; transition: width 0.3s;"></div>
+                    </div>
+                </div>
+
+                <div style="display: grid; grid-template-columns: repeat(auto-fit, minmax(280px, 1fr)); gap: 16px;">
+                    <!-- 좌측: 난이도별 완등 카운터 일지 -->
+                    <div style="background: rgba(255,255,255,0.01); border: 1px solid rgba(255,255,255,0.03); border-radius: 12px; padding: 12px;">
+                        <div style="font-size: 0.85rem; font-weight: bold; margin-bottom: 10px; color: var(--color-primary);">🔴 난이도별 볼더링 완등 일지</div>
+                        <div id="cl-quest-grades-list" style="display: flex; flex-direction: column; gap: 6px; max-height: 380px; overflow-y: auto; padding-right: 4px;">
+                            <!-- JS로 난이도 리스트 생성 -->
+                        </div>
+                    </div>
+                    
+                    <!-- 우측: 커스텀 프로젝트 목록 -->
+                    <div style="background: rgba(255,255,255,0.01); border: 1px solid rgba(255,255,255,0.03); border-radius: 12px; padding: 12px; display: flex; flex-direction: column;">
+                        <div style="font-size: 0.85rem; font-weight: bold; margin-bottom: 10px; color: var(--color-secondary); display: flex; justify-content: space-between; align-items: center;">
+                            <span>📌 나의 도전 중인 볼더링 프로젝트</span>
+                            <button class="btn-action complete" onclick="openAddClimbingProjectModal()" style="padding: 4px 8px; font-size: 0.72rem; border-radius: 6px;">➕ 프로젝트 추가</button>
+                        </div>
+                        <div id="cl-quest-projects-list" style="flex: 1; max-height: 340px; overflow-y: auto; padding-right: 4px;">
+                            <!-- JS로 커스텀 프로젝트들 렌더링 -->
+                        </div>
+                    </div>
+                </div>
+                <div style="font-size: 0.72rem; color: var(--text-muted); margin-top: 16px; text-align: center; border-top: 1px solid rgba(255,255,255,0.05); padding-top: 12px;">
+                    💡 볼더링 문제를 완등하면 등급 수치(개수)가 쌓이고, 일반 골드🪙와 일반 경험치✨도 획득합니다!
                 </div>
             </div>
 
@@ -1943,6 +2025,20 @@
                         <span style="font-size: 0.85rem; font-weight: 700;">성가대 천사 날개</span>
                         <span style="font-size: 0.68rem; color: #ffeaa7; font-weight: 700;">봉사 경험치 +25%</span>
                         <button class="btn-action complete" onclick="buyShopItem('wings', 300)" style="width:100%; justify-content:center; padding: 6px; font-size: 0.75rem; margin-top: 4px;" id="btn-buy-wings">🪙 300</button>
+                    </div>
+                    <!-- 13. 전문가용 초크 백 (DLC - Climbing) -->
+                    <div class="shop-item" id="shop-chalkbag" style="background: rgba(255,255,255,0.02); border: 1px solid rgba(255,255,255,0.05); border-radius: 12px; padding: 12px; display: flex; flex-direction: column; align-items: center; text-align: center; gap: 6px; position: relative;">
+                        <span style="font-size: 1.8rem;">🎒</span>
+                        <span style="font-size: 0.85rem; font-weight: 700;">전문가 초크백</span>
+                        <span style="font-size: 0.68rem; color: #ffa500; font-weight: 700;">완등 경험치 +15%</span>
+                        <button class="btn-action complete" onclick="buyShopItem('chalkbag', 150)" style="width:100%; justify-content:center; padding: 6px; font-size: 0.75rem; margin-top: 4px;" id="btn-buy-chalkbag">🪙 150</button>
+                    </div>
+                    <!-- 14. 프로 클라이밍 슈즈 (DLC - Climbing) -->
+                    <div class="shop-item" id="shop-climbshoes" style="background: rgba(255,255,255,0.02); border: 1px solid rgba(255,255,255,0.05); border-radius: 12px; padding: 12px; display: flex; flex-direction: column; align-items: center; text-align: center; gap: 6px; position: relative;">
+                        <span style="font-size: 1.8rem;">👟</span>
+                        <span style="font-size: 0.85rem; font-weight: 700;">프로 암벽화</span>
+                        <span style="font-size: 0.68rem; color: #ffa500; font-weight: 700;">완등 골드 +15%</span>
+                        <button class="btn-action complete" onclick="buyShopItem('climbshoes', 200)" style="width:100%; justify-content:center; padding: 6px; font-size: 0.75rem; margin-top: 4px;" id="btn-buy-climbshoes">🪙 200</button>
                     </div>
                     <!-- 4. 참치 캔 -->
                     <div class="shop-item" id="shop-tuna" style="background: rgba(255,255,255,0.02); border: 1px solid rgba(255,255,255,0.05); border-radius: 12px; padding: 12px; display: flex; flex-direction: column; align-items: center; text-align: center; gap: 6px; position: relative;">
@@ -2198,7 +2294,9 @@
             labcoat: { name: "수석 연구원 가운", icon: "🥼", desc: "연구실 퀘스트 경험치 +20%" },
             mug: { name: "황금 아라비카 머그", icon: "☕", desc: "오피스 퀘스트 골드 +20%" },
             rosary: { name: "신성 묵주 반지", icon: "📿", desc: "교회 예배/묵상 골드 +25%" },
-            wings: { name: "천사 성가대 날개", icon: "👼", desc: "교회 봉사/청소 경험치 +25%" }
+            wings: { name: "천사 성가대 날개", icon: "👼", desc: "교회 봉사/청소 경험치 +25%" },
+            chalkbag: { name: "전문가용 초크 백", icon: "🎒", desc: "볼더링 완등 경험치 +15%" },
+            climbshoes: { name: "프로 클라이밍 슈즈", icon: "👟", desc: "볼더링 완등 골드 +15%" }
         };
 
         // ==========================================
@@ -2790,7 +2888,7 @@
 
             // 7. [신규 추가] 상점 아이템 구매 버튼 상태 동기화
             if (!gameState.inventory) gameState.inventory = [];
-            const equipItemKeys = ['broom', 'crown', 'glasses', 'ribbon', 'shield', 'sword', 'mantle', 'labcoat', 'mug', 'rosary', 'wings'];
+            const equipItemKeys = ['broom', 'crown', 'glasses', 'ribbon', 'shield', 'sword', 'mantle', 'labcoat', 'mug', 'rosary', 'wings', 'chalkbag', 'climbshoes'];
             equipItemKeys.forEach(key => {
                 const btn = document.getElementById(`btn-buy-${key}`);
                 if (btn) {
@@ -2800,7 +2898,7 @@
                         btn.style.opacity = '0.5';
                         btn.className = 'btn-action repeat';
                     } else {
-                        const prices = { broom: 80, crown: 150, glasses: 50, ribbon: 40, shield: 100, sword: 120, mantle: 200, labcoat: 250, mug: 180, rosary: 220, wings: 300 };
+                        const prices = { broom: 80, crown: 150, glasses: 50, ribbon: 40, shield: 100, sword: 120, mantle: 200, labcoat: 250, mug: 180, rosary: 220, wings: 300, chalkbag: 150, climbshoes: 200 };
                         const price = prices[key] || 100;
                         btn.innerText = `🪙 ${price}`;
                         btn.disabled = false;
@@ -3221,14 +3319,15 @@
                 });
             }
 
-            // 🗺️ 탭 활성화 상태 토글 및 지도 스왑 (3분할 대응)
+            // 🗺️ 탭 활성화 상태 토글 및 지도 스왑 (4분할 대응)
             const activeTab = gameState.currentTab || "home";
             const tabHomeBtn = document.getElementById('tab-home');
             const tabWpBtn = document.getElementById('tab-workplace');
             const tabChBtn = document.getElementById('tab-church');
+            const tabClBtn = document.getElementById('tab-climbing');
             
-            if (tabHomeBtn && tabWpBtn && tabChBtn) {
-                [tabHomeBtn, tabWpBtn, tabChBtn].forEach(btn => {
+            if (tabHomeBtn && tabWpBtn && tabChBtn && tabClBtn) {
+                [tabHomeBtn, tabWpBtn, tabChBtn, tabClBtn].forEach(btn => {
                     btn.className = "btn-action repeat";
                     btn.style.background = "rgba(255,255,255,0.02)";
                     btn.style.color = "var(--text-main)";
@@ -3237,6 +3336,7 @@
                 let activeBtn = tabHomeBtn;
                 if (activeTab === "workplace") activeBtn = tabWpBtn;
                 else if (activeTab === "church") activeBtn = tabChBtn;
+                else if (activeTab === "climbing") activeBtn = tabClBtn;
 
                 activeBtn.className = "btn-action complete active";
                 activeBtn.style.background = "linear-gradient(135deg, var(--color-primary), var(--color-secondary))";
@@ -3248,27 +3348,37 @@
                 if (activeTab === "home") spaceMapEl.src = "house_map.jpg";
                 else if (activeTab === "workplace") spaceMapEl.src = "workplace_map.jpg";
                 else if (activeTab === "church") spaceMapEl.src = "church_map.jpg";
+                else if (activeTab === "climbing") spaceMapEl.src = "climbing_map.jpg";
             }
             
             // 핀 토글링
-            const homePins = document.querySelectorAll('.map-pin-container:not(.workplace-pin):not(.church-pin)');
+            const homePins = document.querySelectorAll('.map-pin-container:not(.workplace-pin):not(.church-pin):not(.climbing-pin)');
             const wpPins = document.querySelectorAll('.workplace-pin');
             const chPins = document.querySelectorAll('.church-pin');
+            const clPins = document.querySelectorAll('.climbing-pin');
             
             homePins.forEach(p => p.style.display = (activeTab === "home") ? 'block' : 'none');
             wpPins.forEach(p => p.style.display = (activeTab === "workplace") ? 'block' : 'none');
             chPins.forEach(p => p.style.display = (activeTab === "church") ? 'block' : 'none');
+            clPins.forEach(p => p.style.display = (activeTab === "climbing") ? 'block' : 'none');
             
             // 섹션 카드 토글링
             const homeQuestSec = document.getElementById('home-quest-section');
             const wpQuestSec = document.getElementById('workplace-quest-section');
             const chQuestSec = document.getElementById('church-quest-section');
+            const clQuestSec = document.getElementById('climbing-quest-section');
             const refCardSec = document.getElementById('refrigerator-card-section');
             
             if (homeQuestSec) homeQuestSec.style.display = (activeTab === "home") ? 'block' : 'none';
             if (refCardSec) refCardSec.style.display = (activeTab === "home") ? 'block' : 'none';
             if (wpQuestSec) wpQuestSec.style.display = (activeTab === "workplace") ? 'block' : 'none';
             if (chQuestSec) chQuestSec.style.display = (activeTab === "church") ? 'block' : 'none';
+            if (clQuestSec) clQuestSec.style.display = (activeTab === "climbing") ? 'block' : 'none';
+
+            // 클라이밍 데이터 렌더링 호출
+            if (activeTab === "climbing") {
+                updateClimbingUI();
+            }
         }
 
         // ==========================================
@@ -4301,6 +4411,20 @@
                         q.isExpanded = false;
                     });
 
+                    // [신규] Climbing 데이터 마이그레이션
+                    if (!parsed.climbingData) {
+                        parsed.climbingData = {
+                            level: 1,
+                            completedCount: 0,
+                            nextLevelCount: 5,
+                            grades: {
+                                red: 0, orange: 0, yellow: 0, green: 0, blue: 0, navy: 0, purple: 0,
+                                brown: 0, white: 0, grey: 0, black: 0
+                            },
+                            projects: []
+                        };
+                    }
+
                     localStorage.setItem("houseChoreGameData", JSON.stringify(parsed));
                 }
                 
@@ -4449,7 +4573,17 @@
                                 { id: "ch_service_2", name: "🍞 이웃 나눔 급식 돕기 및 봉사", xpReward: 40, goldReward: 10, isCompleted: false }
                             ]
                         }
-                    ]
+                    ],
+                    climbingData: {
+                        level: 1,
+                        completedCount: 0,
+                        nextLevelCount: 5,
+                        grades: {
+                            red: 0, orange: 0, yellow: 0, green: 0, blue: 0, navy: 0, purple: 0,
+                            brown: 0, white: 0, grey: 0, black: 0
+                        },
+                        projects: []
+                    }
                 };
                 saveGame();
                 updateUI();
@@ -4694,6 +4828,370 @@
                 });
             }
         };
+
+        // ==========================================
+        // 🧗 Climbing (클라이밍) DLC 전용 비즈니스 로직
+        // ==========================================
+        const CL_GRADES = [
+            { key: 'red', name: '빨강', class: 'badge-red', xp: 50, gold: 10, weight: 1.0 },
+            { key: 'orange', name: '주황', class: 'badge-orange', xp: 100, gold: 20, weight: 1.0 },
+            { key: 'yellow', name: '노랑', class: 'badge-yellow', xp: 150, gold: 30, weight: 1.0 },
+            { key: 'green', name: '초록', class: 'badge-green', xp: 200, gold: 40, weight: 1.0 },
+            { key: 'blue', name: '파랑', class: 'badge-blue', xp: 300, gold: 60, weight: 1.0 },
+            { key: 'navy', name: '남색', class: 'badge-navy', xp: 400, gold: 80, weight: 1.0 },
+            { key: 'purple', name: '보라', class: 'badge-purple', xp: 500, gold: 100, weight: 1.0 },
+            { key: 'brown', name: '갈색', class: 'badge-brown', xp: 60, gold: 12, weight: 1.0 },
+            { key: 'white', name: '흰색', class: 'badge-white', xp: 80, gold: 16, weight: 1.0 },
+            { key: 'grey', name: '회색', class: 'badge-grey', xp: 100, gold: 20, weight: 1.0 },
+            { key: 'black', name: '검은색', class: 'badge-black', xp: 150, gold: 30, weight: 1.5 }
+        ];
+
+        const CL_LEVEL_NAMES = {
+            1: "초보 볼더러",
+            2: "지구력 새싹",
+            3: "홈짐 매니아",
+            4: "볼더러 크루원",
+            5: "탑 클라이머",
+            6: "볼더링 용사",
+            7: "완등 머신",
+            8: "락 마스터",
+            9: "암벽 전설",
+            10: "무지개 정복자"
+        };
+
+        function getClimbingLevelName(level) {
+            return CL_LEVEL_NAMES[level] || `그레이트 마스터 (Lv.${level})`;
+        }
+
+        function updateClimbingUI() {
+            if (!gameState.climbingData) {
+                gameState.climbingData = {
+                    level: 1, completedCount: 0, nextLevelCount: 5,
+                    grades: { red: 0, orange: 0, yellow: 0, green: 0, blue: 0, navy: 0, purple: 0, brown: 0, white: 0, grey: 0, black: 0 },
+                    projects: []
+                };
+            }
+
+            const data = gameState.climbingData;
+            const levelName = getClimbingLevelName(data.level);
+            const xpPercent = Math.min((data.completedCount / data.nextLevelCount) * 100, 100);
+
+            // 1. 핀 내부 배너 업데이트
+            const pinLevelEl = document.getElementById('cl-level-val');
+            const pinCountEl = document.getElementById('cl-count-val');
+            const pinNextEl = document.getElementById('cl-next-val');
+            const pinXpBar = document.getElementById('cl-xp-bar');
+
+            if (pinLevelEl) pinLevelEl.innerText = `Lv.${data.level} ${levelName}`;
+            if (pinCountEl) pinCountEl.innerText = data.completedCount;
+            if (pinNextEl) pinNextEl.innerText = data.nextLevelCount;
+            if (pinXpBar) pinXpBar.style.width = `${xpPercent}%`;
+
+            // 2. 메인 섹션 카드 업데이트
+            const cardLevelEl = document.getElementById('cl-card-level-val');
+            const cardCountEl = document.getElementById('cl-card-count-val');
+            const cardNextEl = document.getElementById('cl-card-next-val');
+            const cardXpBar = document.getElementById('cl-card-xp-bar');
+
+            if (cardLevelEl) cardLevelEl.innerText = `Lv.${data.level} ${levelName}`;
+            if (cardCountEl) cardCountEl.innerText = data.completedCount;
+            if (cardNextEl) cardNextEl.innerText = data.nextLevelCount;
+            if (cardXpBar) cardXpBar.style.width = `${xpPercent}%`;
+
+            // 3. 핀 팝오버 난이도 목록 & 메인 카드 난이도 목록 동시에 갱신
+            const pinGradesList = document.getElementById('popover-list-cl_bouldering');
+            const cardGradesList = document.getElementById('cl-quest-grades-list');
+
+            const makeGradesHTML = (isPopover) => {
+                let html = '';
+                CL_GRADES.forEach(g => {
+                    const count = data.grades[g.key] || 0;
+                    html += `
+                        <div class="climbing-grade-row">
+                            <span class="climbing-badge ${g.class}">${g.name}</span>
+                            <span style="font-weight: bold; font-size: 0.8rem; margin-left: 8px; flex: 1;">${count} 개 완등</span>
+                            <button class="btn-cl-complete" onclick="recordBouldering('${g.key}', event)">
+                                ➕ 완등 기록
+                            </button>
+                        </div>
+                    `;
+                });
+                return html;
+            };
+
+            if (pinGradesList) pinGradesList.innerHTML = makeGradesHTML(true);
+            if (cardGradesList) cardGradesList.innerHTML = makeGradesHTML(false);
+
+            // 4. 프로젝트 목록 갱신
+            const pinProjectsList = document.getElementById('popover-list-cl_project');
+            const cardProjectsList = document.getElementById('cl-quest-projects-list');
+
+            const makeProjectsHTML = () => {
+                const projects = data.projects || [];
+                if (projects.length === 0) {
+                    return `<div style="text-align: center; color: var(--text-muted); font-size: 0.8rem; padding: 20px 0;">등록된 도전 프로젝트가 없습니다.</div>`;
+                }
+
+                let html = '';
+                projects.forEach(p => {
+                    const gradeObj = CL_GRADES.find(g => g.key === p.grade) || CL_GRADES[0];
+                    html += `
+                        <div class="cl-project-item">
+                            <div class="cl-project-info">
+                                <span class="cl-project-title">${p.title}</span>
+                                <div class="cl-project-meta">
+                                    <span class="climbing-badge ${gradeObj.class}" style="padding: 1px 4px; font-size: 0.65rem;">${gradeObj.name}</span>
+                                    <span style="margin-left: 4px;">시도: ${p.attempts}회</span>
+                                </div>
+                            </div>
+                            <div style="display: flex; gap: 6px;">
+                                <button class="btn-action complete" onclick="completeClimbingProject('${p.id}', event)" style="padding: 4px 8px; font-size: 0.7rem; border-radius: 6px;">
+                                    🎯 완등
+                                </button>
+                                <button class="btn-action cancel" onclick="deleteClimbingProject('${p.id}', event)" style="padding: 4px 6px; font-size: 0.7rem; border-radius: 6px; background: rgba(255,255,255,0.05); color: #ccc;">
+                                    ❌
+                                </button>
+                            </div>
+                        </div>
+                    `;
+                });
+                return html;
+            };
+
+            const projectsHTML = makeProjectsHTML();
+            if (pinProjectsList) pinProjectsList.innerHTML = projectsHTML;
+            if (cardProjectsList) cardProjectsList.innerHTML = projectsHTML;
+        }
+
+        function recordBouldering(gradeKey, event) {
+            if (event) {
+                event.stopPropagation();
+                spawnParticles(event);
+            }
+
+            const data = gameState.climbingData;
+            const gradeObj = CL_GRADES.find(g => g.key === gradeKey);
+            if (!gradeObj) return;
+
+            // 1. 카운트 증가
+            data.grades[gradeKey] = (data.grades[gradeKey] || 0) + 1;
+            
+            // "개 세듯이" 완등 개수를 가중치에 맞춰 누적합니다.
+            const earnedCount = gradeObj.weight;
+            data.completedCount = parseFloat((data.completedCount + earnedCount).toFixed(2));
+
+            // 2. 보상 지급 (장비 버프 연동)
+            let xpReward = gradeObj.xp;
+            let goldReward = gradeObj.gold;
+
+            // 클라이밍 전용 장비 버프
+            if (gameState.equippedItem === 'chalkbag') {
+                xpReward = Math.ceil(xpReward * 1.15); // 🎒 초크백 경험치 +15%
+            }
+            if (gameState.equippedItem === 'climbshoes') {
+                goldReward = Math.ceil(goldReward * 1.15); // 👟 암벽화 골드 +15%
+            }
+
+            // 공용 장비 버프 적용
+            if (gameState.equippedItem === 'broom') goldReward = Math.ceil(goldReward * 1.10);
+            if (gameState.equippedItem === 'crown') xpReward = Math.ceil(xpReward * 1.15);
+            if (gameState.equippedItem === 'mantle') {
+                xpReward = Math.ceil(xpReward * 1.08);
+                goldReward = Math.ceil(goldReward * 1.08);
+            }
+
+            gameState.character.gold = Math.min(gameState.character.gold + goldReward, 99999);
+            gameState.character.currentXp += xpReward;
+
+            screenLog(`🧗 [완등 성공] ${gradeObj.name} 난이도 문제 완등! ✨+${xpReward}XP / 🪙+${goldReward}G / 완등 개수 +${earnedCount}개!`);
+
+            // 3. 타임라인 히스토리 추가
+            const todayStr = getTodayString();
+            const timeStr = new Date().toLocaleTimeString();
+            if (!gameState.history) gameState.history = [];
+            gameState.history.push({
+                date: todayStr,
+                time: timeStr,
+                questName: "🧗 클라이밍 일지",
+                subQuestName: `${gradeObj.name} 난이도 완등 기록`,
+                xp: xpReward,
+                gold: goldReward
+            });
+
+            // 4. 레벨업 체크
+            checkClimbingLevelUp();
+            checkLevelUp();
+
+            saveGame();
+            updateUI();
+        }
+
+        function checkClimbingLevelUp() {
+            const data = gameState.climbingData;
+            if (data.completedCount >= data.nextLevelCount) {
+                // 초과한 수치를 가지고 레벨업
+                data.completedCount = parseFloat((data.completedCount - data.nextLevelCount).toFixed(2));
+                const oldLevel = data.level;
+                data.level++;
+                
+                // 다음 요구 완등 개수 1.5배 상향 조정
+                const reqs = { 1: 5, 2: 10, 3: 15, 4: 25, 5: 40, 6: 60, 7: 85, 8: 115, 9: 150 };
+                data.nextLevelCount = reqs[data.level] || 200;
+
+                // 알림 팝업 호출
+                setTimeout(() => {
+                    alert(`🎉 축하합니다! 클라이머 등급이 Lv.${oldLevel} [${getClimbingLevelName(oldLevel)}]에서 Lv.${data.level} [${getClimbingLevelName(data.level)}]으로 상승했습니다!`);
+                }, 100);
+            }
+        }
+
+        function openAddClimbingProjectModal() {
+            closeAllPopovers();
+            document.getElementById('add-climbing-project-modal').classList.add('active');
+        }
+
+        function closeAddClimbingProjectModal() {
+            document.getElementById('add-climbing-project-modal').classList.remove('active');
+        }
+
+        function addClimbingProject() {
+            const title = document.getElementById('cl-proj-title-input').value.trim();
+            const grade = document.getElementById('cl-proj-grade-select').value;
+            const attempts = parseInt(document.getElementById('cl-proj-attempts-input').value) || 1;
+
+            if (!title) {
+                alert("프로젝트 이름을 입력하세요!");
+                return;
+            }
+
+            const data = gameState.climbingData;
+            const newProj = {
+                id: 'clp_' + Date.now(),
+                title: title,
+                grade: grade,
+                attempts: attempts
+            };
+
+            if (!data.projects) data.projects = [];
+            data.projects.push(newProj);
+
+            closeAddClimbingProjectModal();
+            
+            // 입력창 리셋
+            document.getElementById('cl-proj-title-input').value = '';
+            document.getElementById('cl-proj-attempts-input').value = 1;
+
+            screenLog(`📌 [클라이밍 프로젝트] '${title}' 목표가 신규 등록되었습니다!`);
+            saveGame();
+            updateUI();
+        }
+
+        function completeClimbingProject(projectId, event) {
+            if (event) {
+                event.stopPropagation();
+                spawnParticles(event);
+            }
+
+            const data = gameState.climbingData;
+            const idx = data.projects.findIndex(p => p.id === projectId);
+            if (idx === -1) return;
+
+            const proj = data.projects[idx];
+            const gradeObj = CL_GRADES.find(g => g.key === proj.grade) || CL_GRADES[0];
+
+            // 보상 및 기록 (커스텀 프로젝트 완등 시 개수를 2개 쳐줌)
+            const earnedCount = 2;
+            data.completedCount = parseFloat((data.completedCount + earnedCount).toFixed(2));
+            
+            let xpReward = gradeObj.xp * 2;
+            let goldReward = gradeObj.gold * 2;
+
+            if (gameState.equippedItem === 'chalkbag') xpReward = Math.ceil(xpReward * 1.15);
+            if (gameState.equippedItem === 'climbshoes') goldReward = Math.ceil(goldReward * 1.15);
+
+            gameState.character.gold = Math.min(gameState.character.gold + goldReward, 99999);
+            gameState.character.currentXp += xpReward;
+
+            screenLog(`🏆 [프로젝트 완등 성공] '${proj.title}' 클리어! ✨+${xpReward}XP / 🪙+${goldReward}G / 완등 개수 +2개 획득!`);
+
+            // 히스토리 추가
+            const todayStr = getTodayString();
+            const timeStr = new Date().toLocaleTimeString();
+            if (!gameState.history) gameState.history = [];
+            gameState.history.push({
+                date: todayStr,
+                time: timeStr,
+                questName: "🧗 클라이밍 프로젝트",
+                subQuestName: `'${proj.title}' 완등 성공`,
+                xp: xpReward,
+                gold: goldReward
+            });
+
+            // 프로젝트 목록에서 삭제
+            data.projects.splice(idx, 1);
+
+            checkClimbingLevelUp();
+            checkLevelUp();
+            saveGame();
+            updateUI();
+        }
+
+        function deleteClimbingProject(projectId, event) {
+            if (event) event.stopPropagation();
+
+            if (confirm("정말로 이 클라이밍 프로젝트를 목록에서 삭제하시겠습니까?")) {
+                const data = gameState.climbingData;
+                const idx = data.projects.findIndex(p => p.id === projectId);
+                if (idx !== -1) {
+                    const title = data.projects[idx].title;
+                    data.projects.splice(idx, 1);
+                    screenLog(`🗑️ [프로젝트 삭제] '${title}' 목표가 삭제되었습니다.`);
+                    saveGame();
+                    updateUI();
+                }
+            }
+        }
+
+        // ==========================================
+        // 🧗 클라이밍 새 프로젝트 모달 HTML 동적 렌더링
+        // ==========================================
+        document.write(`
+            <div class="modal-overlay" id="add-climbing-project-modal" onclick="if(event.target===this) closeAddClimbingProjectModal()">
+                <div class="modal-content" style="max-width: 400px; border-radius: 20px; border: 2px solid var(--color-secondary);">
+                    <div class="modal-header">
+                        <div class="modal-title">🧗 새 볼더링 프로젝트 등록</div>
+                    </div>
+                    <div class="form-group" style="margin-top: 16px;">
+                        <label>프로젝트/문제 명칭</label>
+                        <input type="text" id="cl-proj-title-input" placeholder="예: 더클라임 일산 파랑 5번" maxlength="30" style="width: 100%; box-sizing: border-box;">
+                    </div>
+                    <div class="form-group" style="margin-top: 12px;">
+                        <label>난이도 색상</label>
+                        <select id="cl-proj-grade-select" style="width: 100%; box-sizing: border-box; background: #2d3436; color: #fff; border: 1px solid rgba(255,255,255,0.1); border-radius: 8px; padding: 8px;">
+                            <option value="red">🔴 빨강 (V1)</option>
+                            <option value="orange">🟠 주황 (V2)</option>
+                            <option value="yellow">🟡 노랑 (V3)</option>
+                            <option value="green">🟢 초록 (V4)</option>
+                            <option value="blue">🔵 파랑 (V5)</option>
+                            <option value="navy">🍇 남색 (V6)</option>
+                            <option value="purple">🟣 보라 (V7)</option>
+                            <option value="brown">🟤 갈색 (V8)</option>
+                            <option value="white">⚪ 흰색 (V9)</option>
+                            <option value="grey">🔘 회색 (V10)</option>
+                            <option value="black">⚫ 검은색 (V11+)</option>
+                        </select>
+                    </div>
+                    <div class="form-group" style="margin-top: 12px; margin-bottom: 20px;">
+                        <label>현재까지 시도 횟수</label>
+                        <input type="number" id="cl-proj-attempts-input" value="1" min="1" max="999" style="width: 100%; box-sizing: border-box;">
+                    </div>
+                    <div class="modal-footer" style="display: flex; gap: 8px;">
+                        <button class="btn-modal-cancel" onclick="closeAddClimbingProjectModal()">취소</button>
+                        <button class="btn-action complete" onclick="addClimbingProject()">등록하기</button>
+                    </div>
+                </div>
+            </div>
+        `);
     </script>
 </body>
 </html>

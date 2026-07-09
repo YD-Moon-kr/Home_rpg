@@ -1,10 +1,11 @@
-const CACHE_NAME = 'chore-rpg-v38'; // 캐시 버전을 v38로 상향하여 팝오버 Bottom Sheet 스타일 패치 반영
+const CACHE_NAME = 'chore-rpg-v39'; // 캐시 버전을 v39로 상향하여 클라이밍 DLC 리소스 및 기능 반영
 const ASSETS = [
   './',
   './index.html',
   './house_map.jpg',
   './workplace_map.jpg',
   './church_map.jpg',
+  './climbing_map.jpg',
   './character_avatar.jpg',
   './avatar_broom.jpg',
   './avatar_crown.jpg',
@@ -17,6 +18,8 @@ const ASSETS = [
   './avatar_mug.jpg',
   './avatar_priest.jpg',
   './avatar_choir.jpg',
+  './avatar_chalkbag.jpg',
+  './avatar_climbshoes.jpg',
   './monster_slime.jpg',
   './monster_dragon.jpg',
   './manifest.json'
