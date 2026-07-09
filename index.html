@@ -4704,7 +4704,7 @@
             screenLog(`💼 [DLC 수행] ${subQuest.name} 완료! ✨+${xpReward}XP / 🪙+${goldReward}G / ⚔️ AP +1 획득!`);
 
             // 6. 레벨업 체크
-            checkLevelUp();
+            levelUp();
 
             saveGame();
             updateUI();
@@ -5020,7 +5020,7 @@
 
             // 4. 레벨업 체크
             checkClimbingLevelUp();
-            checkLevelUp();
+            levelUp();
 
             saveGame();
             updateUI();
@@ -5131,7 +5131,7 @@
             data.projects.splice(idx, 1);
 
             checkClimbingLevelUp();
-            checkLevelUp();
+            levelUp();
             saveGame();
             updateUI();
         }

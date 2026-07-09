@@ -1,4 +1,4 @@
-const CACHE_NAME = 'chore-rpg-v39'; // 캐시 버전을 v39로 상향하여 클라이밍 DLC 리소스 및 기능 반영
+const CACHE_NAME = 'chore-rpg-v40'; // 캐시 버전을 v40으로 상향하여 완등 기록 버그 수정사항 반영
 const ASSETS = [
   './',
   './index.html',
