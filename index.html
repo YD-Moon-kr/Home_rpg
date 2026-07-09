@@ -4839,11 +4839,11 @@
             { key: 'green', name: '초록', class: 'badge-green', xp: 200, gold: 40, weight: 1.0 },
             { key: 'blue', name: '파랑', class: 'badge-blue', xp: 300, gold: 60, weight: 1.0 },
             { key: 'navy', name: '남색', class: 'badge-navy', xp: 400, gold: 80, weight: 1.0 },
-            { key: 'purple', name: '보라', class: 'badge-purple', xp: 500, gold: 100, weight: 1.0 },
-            { key: 'brown', name: '갈색', class: 'badge-brown', xp: 60, gold: 12, weight: 1.0 },
-            { key: 'white', name: '흰색', class: 'badge-white', xp: 80, gold: 16, weight: 1.0 },
-            { key: 'grey', name: '회색', class: 'badge-grey', xp: 100, gold: 20, weight: 1.0 },
-            { key: 'black', name: '검은색', class: 'badge-black', xp: 150, gold: 30, weight: 1.5 }
+            { key: 'purple', name: '보라', class: 'badge-purple', xp: 500, gold: 100, weight: 3.0 },
+            { key: 'brown', name: '갈색', class: 'badge-brown', xp: 600, gold: 120, weight: 5.0 },
+            { key: 'white', name: '흰색', class: 'badge-white', xp: 800, gold: 160, weight: 10.0 },
+            { key: 'grey', name: '회색', class: 'badge-grey', xp: 1000, gold: 200, weight: 20.0 },
+            { key: 'black', name: '검은색', class: 'badge-black', xp: 1500, gold: 300, weight: 50.0 }
         ];
 
         const CL_LEVEL_NAMES = {
@@ -5099,8 +5099,8 @@
             const proj = data.projects[idx];
             const gradeObj = CL_GRADES.find(g => g.key === proj.grade) || CL_GRADES[0];
 
-            // 보상 및 기록 (커스텀 프로젝트 완등 시 개수를 2개 쳐줌)
-            const earnedCount = 2;
+            // 보상 및 기록 (커스텀 프로젝트 완등 시 개수를 해당 난이도 가중치의 2배로 쳐줌)
+            const earnedCount = gradeObj.weight * 2;
             data.completedCount = parseFloat((data.completedCount + earnedCount).toFixed(2));
             
             let xpReward = gradeObj.xp * 2;
@@ -5112,7 +5112,7 @@
             gameState.character.gold = Math.min(gameState.character.gold + goldReward, 99999);
             gameState.character.currentXp += xpReward;
 
-            screenLog(`🏆 [프로젝트 완등 성공] '${proj.title}' 클리어! ✨+${xpReward}XP / 🪙+${goldReward}G / 완등 개수 +2개 획득!`);
+            screenLog(`🏆 [프로젝트 완등 성공] '${proj.title}' 클리어! ✨+${xpReward}XP / 🪙+${goldReward}G / 완등 개수 +${earnedCount}개 획득!`);
 
             // 히스토리 추가
             const todayStr = getTodayString();
