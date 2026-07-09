@@ -1940,6 +1940,17 @@
                         </div>
                     </div>
                 </div>
+
+                <!-- 📜 [신규 추가] 실시간 완등 타임라인 로그 -->
+                <div style="background: rgba(255,255,255,0.01); border: 1px solid rgba(255,255,255,0.03); border-radius: 12px; padding: 12px; margin-top: 16px;">
+                    <div style="font-size: 0.85rem; font-weight: bold; margin-bottom: 10px; color: #ffa500; display: flex; justify-content: space-between; align-items: center;">
+                        <span>📜 최근 완등 일지 기록 타임라인 (최근 10개)</span>
+                    </div>
+                    <div id="cl-quest-history-list" style="display: flex; flex-direction: column; gap: 6px; max-height: 250px; overflow-y: auto; padding-right: 4px;">
+                        <!-- JS로 타임라인 동적 생성 -->
+                    </div>
+                </div>
+
                 <div style="font-size: 0.72rem; color: var(--text-muted); margin-top: 16px; text-align: center; border-top: 1px solid rgba(255,255,255,0.05); padding-top: 12px;">
                     💡 볼더링 문제를 완등하면 등급 수치(개수)가 쌓이고, 일반 골드🪙와 일반 경험치✨도 획득합니다!
                 </div>
@@ -4961,6 +4972,42 @@
             const projectsHTML = makeProjectsHTML();
             if (pinProjectsList) pinProjectsList.innerHTML = projectsHTML;
             if (cardProjectsList) cardProjectsList.innerHTML = projectsHTML;
+
+            // 5. 완등 타임라인 기록 렌더링
+            const cardHistoryList = document.getElementById('cl-quest-history-list');
+            if (cardHistoryList) {
+                const history = gameState.history || [];
+                // 클라이밍 관련 로그 필터링
+                const clHistory = history.filter(h => h.questName === "🧗 클라이밍 일지" || h.questName === "🧗 클라이밍 프로젝트");
+                // 가장 최근 로그가 위로 올라오도록 정렬 후 최대 10개
+                const recentClHistory = [...clHistory].reverse().slice(0, 10);
+
+                if (recentClHistory.length === 0) {
+                    cardHistoryList.innerHTML = `<div style="text-align: center; color: var(--text-muted); font-size: 0.8rem; padding: 20px 0;">아직 완등 기록 타임라인이 비어 있습니다.</div>`;
+                } else {
+                    let html = '';
+                    recentClHistory.forEach(h => {
+                        // 난이도 이름 추출
+                        let badgeHtml = '';
+                        const matchedGrade = CL_GRADES.find(g => h.subQuestName.includes(g.name));
+                        if (matchedGrade) {
+                            badgeHtml = `<span class="climbing-badge ${matchedGrade.class}" style="padding: 1px 6px; font-size: 0.65rem; margin-right: 6px;">${matchedGrade.name}</span>`;
+                        }
+                        
+                        html += `
+                            <div style="display: flex; justify-content: space-between; align-items: center; padding: 8px 10px; background: rgba(255,255,255,0.01); border: 1px solid rgba(255,255,255,0.03); border-radius: 8px; font-size: 0.78rem;">
+                                <div style="display: flex; align-items: center; flex-wrap: wrap; gap: 4px;">
+                                    <span style="color: var(--text-muted); font-size: 0.7rem; margin-right: 6px;">[${h.date} ${h.time.substring(0, 5)}]</span>
+                                    ${badgeHtml}
+                                    <span style="font-weight: 500;">${h.subQuestName}</span>
+                                </div>
+                                <span style="font-size: 0.72rem; color: #ffa500; font-weight: bold;">🪙+${h.gold} / ✨+${h.xp}XP</span>
+                            </div>
+                        `;
+                    });
+                    cardHistoryList.innerHTML = html;
+                }
+            }
         }
 
         function recordBouldering(gradeKey, event) {
