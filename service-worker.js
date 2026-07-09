@@ -1,4 +1,4 @@
-const CACHE_NAME = 'chore-rpg-v42'; // 캐시 버전을 v42로 상향하여 클라이밍 완등 히스토리 타임라인 기능 반영
+const CACHE_NAME = 'chore-rpg-v43'; // 캐시 버전을 v43으로 상향하여 데이터 백업/가져오기 기능 반영
 const ASSETS = [
   './',
   './index.html',

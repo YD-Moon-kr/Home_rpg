@@ -2140,6 +2140,50 @@
                     </div>
                 </div>
             </div>
+
+            <!-- ⚙️ [신규 추가] 시스템 설정 및 데이터 백업 카드 -->
+            <div class="card system-config-card" style="margin-top: 16px;">
+                <div class="card-title">⚙️ 시스템 설정 및 데이터 백업</div>
+                <div style="font-size: 0.72rem; color: var(--text-muted); margin-bottom: 12px; line-height: 1.4;">
+                    게임 데이터를 파일(JSON)로 저장하거나 백업 텍스트를 복사하여 안전하게 보존하고 다른 브라우저/기기로 이전할 수 있습니다.
+                </div>
+                
+                <div style="display: flex; gap: 8px; flex-wrap: wrap; margin-bottom: 12px;">
+                    <button class="btn-action complete" onclick="exportGameDataToFile()" style="flex: 1; justify-content: center; font-size: 0.78rem; padding: 10px; min-width: 120px;">
+                        📥 파일로 내보내기
+                    </button>
+                    <button class="btn-action repeat" onclick="document.getElementById('import-file-input').click()" style="flex: 1; justify-content: center; font-size: 0.78rem; padding: 10px; min-width: 120px; border: 1px solid rgba(255,255,255,0.1); background: rgba(255,255,255,0.02); color: var(--text-main);">
+                        📤 파일 가져오기
+                    </button>
+                    <input type="file" id="import-file-input" accept=".json" onchange="importGameDataFromFile(event)" style="display: none;">
+                </div>
+
+                <div style="background: rgba(0,0,0,0.2); border: 1px solid rgba(255,255,255,0.05); border-radius: 10px; padding: 10px; display: flex; flex-direction: column; gap: 8px;">
+                    <span style="font-size: 0.75rem; font-weight: bold; color: var(--color-secondary);">📋 텍스트 백업 코드</span>
+                    <textarea id="backup-text-area" readonly placeholder="여기에 백업 코드가 생성됩니다." style="width: 100%; height: 60px; background: rgba(0,0,0,0.3); border: 1px solid rgba(255,255,255,0.1); border-radius: 6px; padding: 6px; font-family: monospace; font-size: 0.65rem; color: #ccc; resize: none; box-sizing: border-box;"></textarea>
+                    <div style="display: flex; gap: 6px;">
+                        <button class="btn-action complete" onclick="generateBackupText()" style="flex: 1; font-size: 0.7rem; padding: 6px; justify-content: center;">
+                            🔑 코드 생성
+                        </button>
+                        <button class="btn-action repeat" onclick="copyBackupText()" style="flex: 1; font-size: 0.7rem; padding: 6px; justify-content: center; border: 1px solid rgba(255,255,255,0.08); background: rgba(255,255,255,0.01);">
+                            📎 복사하기
+                        </button>
+                        <button class="btn-action cancel" onclick="loadBackupText()" style="flex: 1; font-size: 0.7rem; padding: 6px; justify-content: center; background: rgba(255,255,255,0.05); color: #fff;">
+                            💡 코드 로드
+                        </button>
+                    </div>
+                </div>
+
+                <!-- 비상 복구 모달 열기용 및 전체 리셋 링크 -->
+                <div style="margin-top: 14px; padding-top: 10px; border-top: 1px solid rgba(255,255,255,0.05); display: flex; justify-content: space-between; align-items: center;">
+                    <button onclick="openRecoveryModal()" style="background: none; border: none; color: #a29bfe; font-size: 0.72rem; cursor: pointer; text-decoration: underline; padding: 0;">
+                        🛠️ 수동 수치 복구 도구 열기
+                    </button>
+                    <button onclick="resetGameData()" style="background: none; border: none; color: #ff7675; font-size: 0.72rem; cursor: pointer; text-decoration: underline; padding: 0;">
+                        ⚠️ 데이터 완전 초기화
+                    </button>
+                </div>
+            </div>
         </div>
     </div>
 
@@ -4599,6 +4643,138 @@
                 saveGame();
                 updateUI();
                 screenLog("🧹 게임 데이터를 초기화하였습니다. 새로운 모험을 시작하세요!");
+            }
+        }
+
+        // ==========================================
+        // ⚙️ 시스템 데이터 백업 (Save/Export/Import)
+        // ==========================================
+        function exportGameDataToFile() {
+            const dataStr = localStorage.getItem("houseChoreGameData");
+            if (!dataStr) {
+                alert("내보낼 데이터가 존재하지 않습니다!");
+                return;
+            }
+            
+            const today = new Date();
+            const dateStr = today.getFullYear() + '-' 
+                + String(today.getMonth() + 1).padStart(2, '0') + '-' 
+                + String(today.getDate()).padStart(2, '0');
+            
+            const blob = new Blob([dataStr], { type: "application/json" });
+            const url = URL.createObjectURL(blob);
+            
+            const a = document.createElement('a');
+            a.href = url;
+            a.download = `house_chore_rpg_backup_${dateStr}.json`;
+            document.body.appendChild(a);
+            a.click();
+            document.body.removeChild(a);
+            URL.revokeObjectURL(url);
+            
+            screenLog("📥 게임 데이터를 JSON 파일로 성공적으로 내보냈습니다!");
+        }
+
+        function importGameDataFromFile(event) {
+            const file = event.target.files[0];
+            if (!file) return;
+
+            const reader = new FileReader();
+            reader.onload = function(e) {
+                try {
+                    const contents = e.target.result;
+                    const parsed = JSON.parse(contents);
+                    
+                    // 무결성 검증 (기본적인 필드가 들어있는지 확인)
+                    if (!parsed.character || !parsed.quests) {
+                        throw new Error("유효한 세이브 파일 데이터 형식이 아닙니다.");
+                    }
+                    
+                    if (confirm("가져온 데이터로 덮어쓰시겠습니까? 현재 진행 상황은 사라집니다.")) {
+                        localStorage.setItem("houseChoreGameData", JSON.stringify(parsed));
+                        screenLog("🔄 데이터를 성공적으로 가져왔습니다. 페이지를 새로고침합니다...");
+                        setTimeout(() => {
+                            window.location.reload();
+                        }, 1000);
+                    }
+                } catch (err) {
+                    alert("파일을 읽는 도중 오류가 발생했습니다: " + err.message);
+                }
+            };
+            reader.readAsText(file);
+            // 파일 선택창 리셋
+            event.target.value = '';
+        }
+
+        function generateBackupText() {
+            const dataStr = localStorage.getItem("houseChoreGameData");
+            if (!dataStr) {
+                alert("백업할 데이터가 없습니다!");
+                return;
+            }
+            try {
+                // 한글 깨짐을 방지하기 위한 Base64 변환
+                const base64Code = btoa(encodeURIComponent(dataStr).replace(/%([0-9A-F]{2})/g, function(match, p1) {
+                    return String.fromCharCode(parseInt(p1, 16));
+                }));
+                const textEl = document.getElementById('backup-text-area');
+                if (textEl) {
+                    textEl.value = base64Code;
+                    screenLog("🔑 백업 코드가 생성되었습니다. 아래 텍스트를 복사해 가세요.");
+                }
+            } catch (err) {
+                alert("백업 코드 생성 실패: " + err.message);
+            }
+        }
+
+        function copyBackupText() {
+            const textEl = document.getElementById('backup-text-area');
+            if (!textEl || !textEl.value) {
+                alert("먼저 [코드 생성] 버튼을 눌러주세요!");
+                return;
+            }
+            
+            textEl.select();
+            textEl.setSelectionRange(0, 99999); // 모바일 디바이스 지원
+            
+            navigator.clipboard.writeText(textEl.value)
+                .then(() => {
+                    screenLog("📎 백업 코드가 클립보드에 성공적으로 복사되었습니다!");
+                })
+                .catch(err => {
+                    alert("클립보드 복사에 실패했습니다. 직접 선택하여 복사해 주세요.");
+                });
+        }
+
+        function loadBackupText() {
+            const textEl = document.getElementById('backup-text-area');
+            const code = textEl ? textEl.value.trim() : "";
+            if (!code) {
+                alert("백업 텍스트 필드에 코드를 입력하거나 붙여넣어 주세요!");
+                return;
+            }
+            
+            try {
+                // Base64 디코딩
+                const dataStr = decodeURIComponent(atob(code).split('').map(function(c) {
+                    return '%' + ('00' + c.charCodeAt(0).toString(16)).slice(-2);
+                }).join(''));
+                
+                const parsed = JSON.parse(dataStr);
+                
+                if (!parsed.character || !parsed.quests) {
+                    throw new Error("필수 데이터 키가 유실되었습니다.");
+                }
+                
+                if (confirm("백업 코드로 게임 데이터를 덮어쓰시겠습니까?")) {
+                    localStorage.setItem("houseChoreGameData", JSON.stringify(parsed));
+                    screenLog("🔄 데이터를 성공적으로 복원했습니다. 페이지를 새로고침합니다...");
+                    setTimeout(() => {
+                        window.location.reload();
+                    }, 1000);
+                }
+            } catch (err) {
+                alert("올바르지 않은 백업 코드입니다. 다시 한 번 확인해 주세요: " + err.message);
             }
         }
 
