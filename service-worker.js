@@ -1,4 +1,4 @@
-const CACHE_NAME = 'chore-rpg-v43'; // 캐시 버전을 v43으로 상향하여 데이터 백업/가져오기 기능 반영
+const CACHE_NAME = 'chore-rpg-v44'; // 캐시 버전을 v44로 상향하여 클라이밍 독립 경험치/골드 미지급 반영
 const ASSETS = [
   './',
   './index.html',

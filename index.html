@@ -1952,7 +1952,7 @@
                 </div>
 
                 <div style="font-size: 0.72rem; color: var(--text-muted); margin-top: 16px; text-align: center; border-top: 1px solid rgba(255,255,255,0.05); padding-top: 12px;">
-                    💡 볼더링 문제를 완등하면 등급 수치(개수)가 쌓이고, 일반 골드🪙와 일반 경험치✨도 획득합니다!
+                    💡 볼더링 문제를 완등하면 등급 수치(개수)가 쌓여 클라이머 등급 레벨이 상승합니다! (일반 경험치/골드와는 독립적으로 작동합니다.)
                 </div>
             </div>
 
@@ -2041,14 +2041,14 @@
                     <div class="shop-item" id="shop-chalkbag" style="background: rgba(255,255,255,0.02); border: 1px solid rgba(255,255,255,0.05); border-radius: 12px; padding: 12px; display: flex; flex-direction: column; align-items: center; text-align: center; gap: 6px; position: relative;">
                         <span style="font-size: 1.8rem;">🎒</span>
                         <span style="font-size: 0.85rem; font-weight: 700;">전문가 초크백</span>
-                        <span style="font-size: 0.68rem; color: #ffa500; font-weight: 700;">완등 경험치 +15%</span>
+                        <span style="font-size: 0.68rem; color: #ffa500; font-weight: 700;">일반 완등 개수 +15%</span>
                         <button class="btn-action complete" onclick="buyShopItem('chalkbag', 150)" style="width:100%; justify-content:center; padding: 6px; font-size: 0.75rem; margin-top: 4px;" id="btn-buy-chalkbag">🪙 150</button>
                     </div>
                     <!-- 14. 프로 클라이밍 슈즈 (DLC - Climbing) -->
                     <div class="shop-item" id="shop-climbshoes" style="background: rgba(255,255,255,0.02); border: 1px solid rgba(255,255,255,0.05); border-radius: 12px; padding: 12px; display: flex; flex-direction: column; align-items: center; text-align: center; gap: 6px; position: relative;">
                         <span style="font-size: 1.8rem;">👟</span>
                         <span style="font-size: 0.85rem; font-weight: 700;">프로 암벽화</span>
-                        <span style="font-size: 0.68rem; color: #ffa500; font-weight: 700;">완등 골드 +15%</span>
+                        <span style="font-size: 0.68rem; color: #ffa500; font-weight: 700;">프로젝트 완등 개수 +20%</span>
                         <button class="btn-action complete" onclick="buyShopItem('climbshoes', 200)" style="width:100%; justify-content:center; padding: 6px; font-size: 0.75rem; margin-top: 4px;" id="btn-buy-climbshoes">🪙 200</button>
                     </div>
                     <!-- 4. 참치 캔 -->
@@ -2350,8 +2350,8 @@
             mug: { name: "황금 아라비카 머그", icon: "☕", desc: "오피스 퀘스트 골드 +20%" },
             rosary: { name: "신성 묵주 반지", icon: "📿", desc: "교회 예배/묵상 골드 +25%" },
             wings: { name: "천사 성가대 날개", icon: "👼", desc: "교회 봉사/청소 경험치 +25%" },
-            chalkbag: { name: "전문가용 초크 백", icon: "🎒", desc: "볼더링 완등 경험치 +15%" },
-            climbshoes: { name: "프로 클라이밍 슈즈", icon: "👟", desc: "볼더링 완등 골드 +15%" }
+            chalkbag: { name: "전문가용 초크 백", icon: "🎒", desc: "일반 완등 개수 가중치 +15%" },
+            climbshoes: { name: "프로 클라이밍 슈즈", icon: "👟", desc: "프로젝트 완등 개수 가중치 +20%" }
         };
 
         // ==========================================
@@ -5200,33 +5200,16 @@
             data.grades[gradeKey] = (data.grades[gradeKey] || 0) + 1;
             
             // "개 세듯이" 완등 개수를 가중치에 맞춰 누적합니다.
-            const earnedCount = gradeObj.weight;
+            let earnedCount = gradeObj.weight;
+            
+            // 클라이밍 전용 장비 버프 (완등 개수 획득 비율 가산)
+            if (gameState.equippedItem === 'chalkbag') {
+                earnedCount = parseFloat((earnedCount * 1.15).toFixed(2)); // 🎒 초크백 착용 시 일반 완등 개수 +15%
+            }
+
             data.completedCount = parseFloat((data.completedCount + earnedCount).toFixed(2));
 
-            // 2. 보상 지급 (장비 버프 연동)
-            let xpReward = gradeObj.xp;
-            let goldReward = gradeObj.gold;
-
-            // 클라이밍 전용 장비 버프
-            if (gameState.equippedItem === 'chalkbag') {
-                xpReward = Math.ceil(xpReward * 1.15); // 🎒 초크백 경험치 +15%
-            }
-            if (gameState.equippedItem === 'climbshoes') {
-                goldReward = Math.ceil(goldReward * 1.15); // 👟 암벽화 골드 +15%
-            }
-
-            // 공용 장비 버프 적용
-            if (gameState.equippedItem === 'broom') goldReward = Math.ceil(goldReward * 1.10);
-            if (gameState.equippedItem === 'crown') xpReward = Math.ceil(xpReward * 1.15);
-            if (gameState.equippedItem === 'mantle') {
-                xpReward = Math.ceil(xpReward * 1.08);
-                goldReward = Math.ceil(goldReward * 1.08);
-            }
-
-            gameState.character.gold = Math.min(gameState.character.gold + goldReward, 99999);
-            gameState.character.currentXp += xpReward;
-
-            screenLog(`🧗 [완등 성공] ${gradeObj.name} 난이도 문제 완등! ✨+${xpReward}XP / 🪙+${goldReward}G / 완등 개수 +${earnedCount}개!`);
+            screenLog(`🧗 [완등 성공] ${gradeObj.name} 난이도 문제 완등! 완등 개수 +${earnedCount}개!`);
 
             // 3. 타임라인 히스토리 추가
             const todayStr = getTodayString();
@@ -5236,14 +5219,13 @@
                 date: todayStr,
                 time: timeStr,
                 questName: "🧗 클라이밍 일지",
-                subQuestName: `${gradeObj.name} 난이도 완등 기록`,
-                xp: xpReward,
-                gold: goldReward
+                subQuestName: `${gradeObj.name} 난이도 완등 기록 (완등 개수 +${earnedCount}개)`,
+                xp: 0,
+                gold: 0
             });
 
             // 4. 레벨업 체크
             checkClimbingLevelUp();
-            levelUp();
 
             saveGame();
             updateUI();
@@ -5323,19 +5305,16 @@
             const gradeObj = CL_GRADES.find(g => g.key === proj.grade) || CL_GRADES[0];
 
             // 보상 및 기록 (커스텀 프로젝트 완등 시 개수를 해당 난이도 가중치의 2배로 쳐줌)
-            const earnedCount = gradeObj.weight * 2;
+            let earnedCount = gradeObj.weight * 2;
+            
+            // 클라이밍 전용 장비 버프 (프로젝트 완등 개수 획득 비율 가산)
+            if (gameState.equippedItem === 'climbshoes') {
+                earnedCount = parseFloat((earnedCount * 1.20).toFixed(2)); // 👟 프로 암벽화 장착 시 프로젝트 완등 개수 +20%
+            }
+
             data.completedCount = parseFloat((data.completedCount + earnedCount).toFixed(2));
             
-            let xpReward = gradeObj.xp * 2;
-            let goldReward = gradeObj.gold * 2;
-
-            if (gameState.equippedItem === 'chalkbag') xpReward = Math.ceil(xpReward * 1.15);
-            if (gameState.equippedItem === 'climbshoes') goldReward = Math.ceil(goldReward * 1.15);
-
-            gameState.character.gold = Math.min(gameState.character.gold + goldReward, 99999);
-            gameState.character.currentXp += xpReward;
-
-            screenLog(`🏆 [프로젝트 완등 성공] '${proj.title}' 클리어! ✨+${xpReward}XP / 🪙+${goldReward}G / 완등 개수 +${earnedCount}개 획득!`);
+            screenLog(`🏆 [프로젝트 완등 성공] '${proj.title}' 클리어! 완등 개수 +${earnedCount}개 획득!`);
 
             // 히스토리 추가
             const todayStr = getTodayString();
@@ -5345,16 +5324,15 @@
                 date: todayStr,
                 time: timeStr,
                 questName: "🧗 클라이밍 프로젝트",
-                subQuestName: `'${proj.title}' 완등 성공`,
-                xp: xpReward,
-                gold: goldReward
+                subQuestName: `'${proj.title}' 완등 성공 (완등 개수 +${earnedCount}개)`,
+                xp: 0,
+                gold: 0
             });
 
             // 프로젝트 목록에서 삭제
             data.projects.splice(idx, 1);
 
             checkClimbingLevelUp();
-            levelUp();
             saveGame();
             updateUI();
         }
